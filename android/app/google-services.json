@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "553646305221",
+    "project_id": "basa-bari1",
+    "storage_bucket": "basa-bari1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553646305221:android:cb7100f349dc07d629e5ac",
+        "android_client_info": {
+          "package_name": "com.basabari"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553646305221-0bugao8u3466879tjev2mmlsat9d8orb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.basabari",
+            "certificate_hash": "66ff7a244d2a27159b0fcc18220ab816a210d9ca"
+          }
+        },
+        {
+          "client_id": "553646305221-uvdggmq5prm63aok9vm58h6148lccdus.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHApXiGd3uCltYEGKatXivHVbFyosgeEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553646305221-uvdggmq5prm63aok9vm58h6148lccdus.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
