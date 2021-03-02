@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import styled from "styled-components";
-import {StatusBar, TouchableOpacity, View} from 'react-native';
+import {StatusBar, View} from 'react-native';
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
