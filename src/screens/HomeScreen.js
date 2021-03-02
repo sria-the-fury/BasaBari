@@ -4,7 +4,7 @@ import {TextComponent} from "../components/TextComponent";
 import {TempData} from "../TempData";
 import {View, TouchableOpacity, StatusBar, FlatList, Image} from 'react-native';
 import {Icon} from "react-native-elements";
-import {EachListing} from "../components/EachListing";
+import {EachListing} from "../components/listings/EachListing";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../context/FirebaseContext";
 
@@ -41,11 +41,11 @@ export default function  HomeScreen () {
                     docs.forEach(doc => {
                         data.push({
                             id: doc.id,
-                            postedBy: doc.data().postedBy,
                             postedTime: doc.data().postedTime,
                             address: doc.data().address,
                             images: doc.data().images,
-                            userId: doc.data().userId
+                            userId: doc.data().userId,
+                            roomNumbers: doc.data().roomNumbers
                         });
 
                     });

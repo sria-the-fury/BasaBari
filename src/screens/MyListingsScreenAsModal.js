@@ -5,7 +5,7 @@ import {TempData} from "../TempData";
 import {View} from "react-native";
 import {Text, TouchableOpacity, StatusBar, FlatList, Image} from 'react-native';
 import {Icon} from "react-native-elements";
-import {EachMyListing} from "../components/EachMyListing";
+import {EachMyListing} from "../components/listings/EachMyListing";
 
 export default function MyListingScreenAsModal(props) {
 

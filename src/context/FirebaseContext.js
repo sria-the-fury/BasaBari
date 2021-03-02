@@ -2,6 +2,8 @@ import React, {createContext} from "react";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
+import { v4 as uuidv4 } from 'uuid';
+import _ from "lodash";
 
 export const FirebaseContext = createContext(undefined);
 
@@ -141,6 +143,88 @@ const Firebase = {
     signIn: async (email, password) => {
 
         return auth().signInWithEmailAndPassword(email, password);
+
+    },
+
+
+    //adding Data to Cloud Firestore
+
+    addListing: async (listingData) => {
+
+        try {
+            const currentUserUID = Firebase.getCurrentUser().uid;
+            const listingId = uuidv4()
+
+
+            const isListingImagesUploaded = await Firebase.uploadingListingImages(listingData.listingImages,listingId);
+            if(isListingImagesUploaded){
+                await firestore().collection('listings').doc(listingId).set(
+                    {
+                        address: listingData.address,
+                        postedTime: new Date(),
+                        userId: currentUserUID,
+                        roomNumbers: listingData.roomNumbers,
+                        facilities: listingData.facilities,
+                        rentPerMonth: listingData.rentPerMonth,
+                        availableForBachelor: listingData.forBachelor,
+                        moreDetails: listingData.moreDetails,
+                        listingId: listingId,
+                        isNegotiable: listingData.isNegotiable,
+                        images: []
+
+
+                    }
+                );
+
+            }
+
+            return true;
+
+        } catch (error) {
+            console.log(error.message+`@addListing`);
+
+        }
+        return false
+
+    },
+
+    uploadingListingImages: async (images, listingId) => {
+
+        try {
+            let imagesUrlArray = []
+            _.each(images,  async (image) => {
+                const photo = await Firebase.getBlob(image.imageUri);
+
+                const imageRef = storage().ref(`listingImages/${listingId}`).child(image.imageId);
+
+                await imageRef.put(photo);
+
+                const url = await  imageRef.getDownloadURL();
+
+                imagesUrlArray.push({
+                    imageId: image.imageId,
+                    imageUrl: url
+                });
+
+                if(imagesUrlArray.length === images.length){
+
+                    await firestore().collection('listings').doc(listingId).update({
+                        images: imagesUrlArray
+                    });
+                }
+
+            });
+
+            return true;
+
+
+
+
+        } catch (e) {
+            console.log(e.message+'@uploading Listing Images');
+
+        }
+        return false;
 
     },
 

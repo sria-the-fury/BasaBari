@@ -229,7 +229,8 @@ marginBottom: 5px;
 const BodyContainer = styled.View`
 width:100%;
 paddingVertical: 15px;
-marginBottom: 60px;
+marginBottom: 50px;
+marginTop: 50px;
 
 `;
 
@@ -237,6 +238,8 @@ const ScrollViewContainer = styled.ScrollView`
 backgroundColor: #39345b;
 width:100%;
 overflow:hidden;
+marginBottom: 60px;
+
 
 
 `;

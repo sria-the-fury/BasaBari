@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {Icon} from "react-native-elements";
-import {TextComponent} from "./TextComponent";
+import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
-import {ListingsFullDetailsModal} from "../modals/ListingsFullDetailsModal";
+import {ListingsFullDetailsModal} from "../../modals/ListingsFullDetailsModal";
 
 export const EachMyListing = (props) => {
     const {item} = props;

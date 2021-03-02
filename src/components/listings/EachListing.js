@@ -1,16 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {Icon} from "react-native-elements";
-import {TextComponent} from "./TextComponent";
+import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
-import {ListingsFullDetailsModal} from "../modals/ListingsFullDetailsModal";
+import {ListingsFullDetailsModal} from "../../modals/ListingsFullDetailsModal";
 import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
+import {FirebaseContext} from "../../context/FirebaseContext";
+
 
 export const EachListing = (props) => {
+    const firebase = useContext(FirebaseContext);
     const {item} = props;
-    const {images} = item;
+    const {images, roomNumbers} = item;
     const [postedUser, setPostedUser] = useState('');
+    const [postedUserId, setPostedUserId] = useState('');
 
 
     const [openMyListingsModal, setMyListingsModal] = useState(false);
@@ -36,6 +40,7 @@ export const EachListing = (props) => {
     useEffect(() => {
         const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
+                setPostedUserId(doc.id);
                 setPostedUser(doc.data());
             });
 
@@ -43,8 +48,14 @@ export const EachListing = (props) => {
     },[]);
 
     const getFirstNameFromPostedUser = () => {
-        const nameAsArray = item.postedBy.split(' ');
-        return nameAsArray[0];
+
+        if(item.userId === postedUserId){
+            return 'Myself';
+        }
+        else {
+            const nameAsArray = postedUser ? postedUser.userName.split(' ') : null;
+            return postedUser ? nameAsArray[0] : null;
+        }
     }
 
 
@@ -74,7 +85,7 @@ export const EachListing = (props) => {
             </TimeContainer>
 
 
-            <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.id.toString()} horizontal={true}
+            <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
                       showsHorizontalScrollIndicator={false}/>
 
             <LocationContainer>
@@ -92,20 +103,20 @@ export const EachListing = (props) => {
             <HomeItemsNumbersContainer>
                 <HomeItemsNumbers>
                     <Icon name={'bed'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>3</TextComponent>
+                    <TextComponent>{roomNumbers.bedRoom}</TextComponent>
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>
                     <Icon name={'bathtub'} type={'material'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>2</TextComponent>
+                    <TextComponent>{roomNumbers.washRoom}</TextComponent>
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>
                     <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>1</TextComponent>
+                    <TextComponent>{roomNumbers.dinning}</TextComponent>
                 </HomeItemsNumbers>
 
-                <TextComponent>Total Room: 4</TextComponent>
+                <TextComponent>Total Room: {Number(roomNumbers.bedRoom) + Number(roomNumbers.dinning)}</TextComponent>
 
                 <Icon raised name={'reader-outline'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} onPress={() => setMyListingsModal(true)}/>
 
