@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import styled from "styled-components";
-import {StatusBar, View} from 'react-native';
+import {StatusBar, TouchableOpacity, View} from 'react-native';
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
@@ -9,9 +9,13 @@ import {FirebaseContext} from "../context/FirebaseContext";
 import {UpdateEmailOrPasswordModal} from "../modals/UpdateEmailOrPasswordModal";
 import firestore from "@react-native-firebase/firestore";
 import {ProfileUpdateModal} from "../modals/ProfileUpdateModal";
+import ImagePicker from "react-native-customized-image-picker";
 
 
 export default function ProfileScreen(props) {
+
+    const [updateProfileImageUri, setUpdateProfileImageUri] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     //this components state
     const [userInfoFromCollection, setUserInfoFromCollection] = useState(null);
@@ -30,6 +34,7 @@ export default function ProfileScreen(props) {
 
     //extra props with modal
     const [updateType, setUpdateType] = useState('');
+
 
 
 //functions for closing Modals
@@ -52,7 +57,7 @@ export default function ProfileScreen(props) {
         if(loggedOut) setUser({isLoggedIn: false});
     }
 
-    useEffect(() => {
+    useEffect( () => {
         const subscriber = firestore().collection('users').doc(profileUserInfo.uid).onSnapshot(
             doc=> {
                 setUserInfoFromCollection(doc.data());
@@ -62,6 +67,52 @@ export default function ProfileScreen(props) {
     },[]);
 
 
+    const uploadUpdateProfileImage = async (path) => {
+        try {
+            console.log('hello');
+            setLoading(true);
+            await firebase.uploadProfilePhoto(path)
+
+        } catch (e) {
+            alert(e.message);
+        } finally {
+            setLoading(false);
+            removeTempImages();
+        }
+    }
+    const chooseProfileImage = () => {
+        removeTempImages();
+        ImagePicker.openPicker({
+            width: 800,
+            height: 800,
+            compressQuality: 80,
+            minCompressSize: 120,
+            cropping: true,
+            imageLoader: 'UNIVERSAL'
+        }).then(image => {
+            if(image.length){
+                console.log('okkk')
+                uploadUpdateProfileImage(image[0].path).then(() => {
+                    setLoading(false);
+                })
+            }
+            setUpdateProfileImageUri(image[0].path);
+
+
+        });
+
+    }
+
+    const removeTempImages = () => {
+        ImagePicker.clean()
+            .then(() => {
+
+            })
+            .catch(e => {
+                console.log(e);
+            });
+
+    }
 
 
 
@@ -77,11 +128,18 @@ export default function ProfileScreen(props) {
                 </View>
 
                 <ProfileAndUserInfoContainer>
-                    <ProfileImageContainer style={{elevation: 20,
+                    <ProfileImageContainer style={{elevation: 10,
                         shadowColor: '#000', shadowOpacity: 1,
                         shadowRadius: 5.32,}}>
 
                         <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/afjal.jpg')}/>
+                        <TouchableOpacity style={{position: "absolute", top: 5, left:6, backgroundColor: 'white',borderColor: 'white', borderWidth: 4, borderRadius:50}}
+                                          onPress={() => chooseProfileImage()} disabled={loading}>
+                            { loading ? <Loading/> :
+                                <Icon name={'add-photo-alternate'} type={'md'} size={24} color={'red'}
+                                />
+                            }
+                        </TouchableOpacity>
                     </ProfileImageContainer>
                     <UserInfo>
 
@@ -155,7 +213,7 @@ export default function ProfileScreen(props) {
             <UpdateEmailOrPasswordModal modalVisible={openEmailOrPassWordUpdateModal} updateType={updateType}
                                         modalHide={closeEmailOrPassWordUpdateModal}/>
             {userInfoFromCollection ? <ProfileUpdateModal modalVisible={openProfileUpdateModal} modalHide={closeProfileUpdateModal}
-                                userInfo={userInfoFromCollection}
+                                                          userInfo={userInfoFromCollection}
             /> : null}
             {/*<MyListingsModal modalVisible={openMyListingsModal} modalHide={closeMyListingsModal} />*/}
 
@@ -178,7 +236,7 @@ const HeaderTop = styled.View`
 height: 200px;
 width:100%;
 backgroundColor: ${StatusBarAndTopHeaderBGColor};
-paddingHorizontal: 20px;
+paddingHorizontal: 10px;
 paddingVertical: 20px;
 
 borderBottomRightRadius: 20px;
@@ -190,7 +248,7 @@ const ProfileAndUserInfoContainer = styled.View`
 flexDirection: row;
 top:0;
 alignItems: center;
-justifyContent: center;
+paddingHorizontal: 10px;
 `;
 
 const ProfileImageContainer = styled.View`
@@ -308,3 +366,10 @@ alignItems: center;
 `;
 
 
+const Loading = styled.ActivityIndicator.attrs(props => ({
+    color: 'red',
+    size: 'small',
+
+
+
+}))``;

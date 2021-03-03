@@ -80,6 +80,7 @@ const Firebase = {
 
 
         }catch (error) {
+            console.log(error.message+'@uploadingProfileImage');
 
         }
 
