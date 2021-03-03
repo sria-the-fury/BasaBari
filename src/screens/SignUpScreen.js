@@ -129,9 +129,10 @@ export default function SignUpScreen(props) {
                                 type='md'
                                 color='#1c3787' size={30}
                             />
+                            <TextComponent style={{fontSize: 18}}>+88</TextComponent>
 
                             <TextInput placeholder={'Phone No.'} autoCapitalize={'none'} dataDetectorTypes={'phoneNumber'} keyboardType={'phone-pad'} maxLength={11}
-                                        autoCorrect={false} onChangeText={(phone) => setPhoneNumber('+88'+phone.trim()) }/>
+                                       autoCompleteType={'off'} onChangeText={(phone) => setPhoneNumber(phone.trim()) }/>
 
                         </LabelAndInputWrapper>
 

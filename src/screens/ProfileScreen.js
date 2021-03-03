@@ -89,13 +89,13 @@ export default function ProfileScreen(props) {
 
                         <EachInfoWrapper>
                             <Icon name={'email'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
-                            <TextComponent bold numberOfLines={1} dataDetectorType={'email'}>{profileUserInfo.email}</TextComponent>
+                            <TextComponent bold numberOfLines={1}>{profileUserInfo.email}</TextComponent>
                         </EachInfoWrapper>
 
                         {userInfoFromCollection ?
                             <EachInfoWrapper>
                                 <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
-                                <TextComponent bold numberOfLines={1} dataDetectorType={'phoneNumber'}>{userInfoFromCollection.phoneNumber}</TextComponent>
+                                <TextComponent bold numberOfLines={1} >{userInfoFromCollection.phoneNumber}</TextComponent>
                             </EachInfoWrapper>
                             : <TextComponent bold numberOfLines={1}>''</TextComponent>
                         }
@@ -166,7 +166,7 @@ export default function ProfileScreen(props) {
 
 const StatusBarAndTopHeaderBGColor = '#d0ff00';
 const profileIconsColor = '#5e0059';
-const Container = styled.View`
+const Container = styled.SafeAreaView`
 
 flex:1;
 backgroundColor: #39345b;

@@ -7,6 +7,7 @@ import {Icon} from "react-native-elements";
 import {EachListing} from "../components/listings/EachListing";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../context/FirebaseContext";
+import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 
 export default function  HomeScreen () {
 
@@ -45,7 +46,12 @@ export default function  HomeScreen () {
                             address: doc.data().address,
                             images: doc.data().images,
                             userId: doc.data().userId,
-                            roomNumbers: doc.data().roomNumbers
+                            roomNumbers: doc.data().roomNumbers,
+                            facilities: doc.data().facilities,
+                            forBachelor: doc.data().availableForBachelor,
+                            forFamily: doc.data().forFamily,
+                            rentPerMonth: doc.data().rentPerMonth,
+                            isNegotiable: doc.data().isNegotiable
                         });
 
                     });
@@ -64,7 +70,7 @@ export default function  HomeScreen () {
 
     return (
         <Container>
-            <StatusBar backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="dark-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             {/*<HeaderContainer>*/}
             {/*    <TouchableOpacity onPress={() => props.navigation.goBack()}>*/}
 
@@ -90,7 +96,7 @@ export default function  HomeScreen () {
 const StatusBarAndTopHeaderBGColor = 'red';
 
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
 flex:1;
 
 `;

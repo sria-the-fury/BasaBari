@@ -31,8 +31,9 @@ export default function AddListingScreen(props) {
     })
 
     const [forBachelor, setForBachelor] = useState(false);
-    const [address, setAddress] = useState(null);
-    const [moreDetails, setMoreDetails] = useState(null);
+    const [forFamily, setForFamily] = useState(false);
+    const [address, setAddress] = useState('');
+    const [moreDetails, setMoreDetails] = useState('');
     const [rentPerMonth, setRentPerMonth] = useState(0);
     const [loading, setLoading] = useState(false);
     const [isNegotiable, setNegotiable] = useState(false);
@@ -147,7 +148,7 @@ export default function AddListingScreen(props) {
     const addListing = async () => {
         setLoading(true);
         try {
-            const listingData =  {facilities, roomNumbers, forBachelor, moreDetails, address, rentPerMonth, listingImages, isNegotiable}
+            const listingData =  {facilities, roomNumbers, forBachelor, moreDetails, address, rentPerMonth, listingImages, isNegotiable, forFamily}
             const isListingAdded = await firebase.addListing(listingData);
             if(isListingAdded) props.navigation.goBack();
         } catch (error) {
@@ -163,10 +164,8 @@ export default function AddListingScreen(props) {
 
     const disableSubmit = () => {
 
-        return (listingImages.length < 3 || rentPerMonth === 0 || moreDetails === null || address === null || (roomNumbers.washRoom === 0 || roomNumbers.dinning === 0 || roomNumbers.bedRoom === 0))
+        return ((forBachelor === false && forFamily === false) || listingImages.length < 3 || rentPerMonth === 0 || moreDetails === '' || address === '' || (roomNumbers.washRoom === 0 || roomNumbers.dinning === 0 || roomNumbers.bedRoom === 0))
     }
-
-    console.log("disableSubmit=>", disableSubmit())
 
 
     return (
@@ -319,7 +318,7 @@ export default function AddListingScreen(props) {
 
                                 <RoomInput placeholder={'Bed room'} keyboardType={'numeric'} maxLength={1}
                                            onChangeText={(bedRoom) => setRoomNumbers(prev => ({...prev, bedRoom: bedRoom}))}
-                                           autoCorrect={false} />
+                                           autoCorrect={false} autoComplete={false}/>
 
                             </RoomLabelAndInputWrapper>
 
@@ -358,21 +357,39 @@ export default function AddListingScreen(props) {
 
                 </FacilitiesContainer>
 
-                <BachelorContainer>
+                <BachelorOrFamilyContainer>
 
-                    <CustomCheckbox title={'Available for Bachelor?'} textSize={16} textColor={'white'}
-                                    checkedIcon={<Icon
-                                        name={forBachelor ? 'checkbox' : 'square-outline'}
-                                        type='ionicon'
-                                        color={forBachelor ? 'green' : 'white'} size={30}
-                                        onPress={() => setForBachelor(!forBachelor)}
-                                    />}
+                    <TextComponent center bold color={'white'} medium>RENT AVAILABLE FOR:</TextComponent>
 
-                                    checked={forBachelor}
+                    <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                        <CustomCheckbox title={'Bachelor?'} textSize={16} textColor={'white'}
+                                        checkedIcon={<Icon
+                                            name={forBachelor ? 'checkbox' : 'square-outline'}
+                                            type='ionicon'
+                                            color={forBachelor ? 'green' : 'white'} size={30}
+                                            onPress={() => setForBachelor(!forBachelor)}
+                                        />}
 
-                    />
+                                        checked={forBachelor}
 
-                </BachelorContainer>
+                        />
+
+                        <CustomCheckbox title={'Family?'} textSize={16} textColor={'white'}
+                                        checkedIcon={<Icon
+                                            name={forFamily ? 'checkbox' : 'square-outline'}
+                                            type='ionicon'
+                                            color={forFamily ? 'green' : 'white'} size={30}
+                                            onPress={() => setForFamily(!forFamily)}
+                                        />}
+
+                                        checked={forFamily}
+
+                        />
+
+                    </View>
+
+
+                </BachelorOrFamilyContainer>
 
 
                 <MainContainerForRent>
@@ -614,13 +631,12 @@ fontSize: 18px;
 `;
 
 
-const BachelorContainer = styled.View`
+const BachelorOrFamilyContainer = styled.View`
 paddingHorizontal: 10px;
 backgroundColor: #f7047e;
 borderRadius: 10px;
 marginTop: 20px;
-justifyContent: center;
-alignSelf: center;
+
 `;
 
 

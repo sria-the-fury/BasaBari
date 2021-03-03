@@ -12,9 +12,9 @@ import {FirebaseContext} from "../../context/FirebaseContext";
 export const EachListing = (props) => {
     const firebase = useContext(FirebaseContext);
     const {item} = props;
-    const {images, roomNumbers} = item;
+    const {images, roomNumbers, forFamily, forBachelor} = item;
     const [postedUser, setPostedUser] = useState('');
-    const [postedUserId, setPostedUserId] = useState('');
+    const currentUserId = firebase.getCurrentUser().uid;
 
 
     const [openMyListingsModal, setMyListingsModal] = useState(false);
@@ -40,7 +40,6 @@ export const EachListing = (props) => {
     useEffect(() => {
         const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
-                setPostedUserId(doc.id);
                 setPostedUser(doc.data());
             });
 
@@ -49,13 +48,19 @@ export const EachListing = (props) => {
 
     const getFirstNameFromPostedUser = () => {
 
-        if(item.userId === postedUserId){
+        if(item.userId === currentUserId){
             return 'Myself';
         }
         else {
             const nameAsArray = postedUser ? postedUser.userName.split(' ') : null;
             return postedUser ? nameAsArray[0] : null;
         }
+    }
+
+    const currentUserListings = () => {
+        if(item.userId === currentUserId) return true;
+        else return false;
+
     }
 
 
@@ -116,13 +121,22 @@ export const EachListing = (props) => {
                     <TextComponent>{roomNumbers.dinning}</TextComponent>
                 </HomeItemsNumbers>
 
-                <TextComponent>Total Room: {Number(roomNumbers.bedRoom) + Number(roomNumbers.dinning)}</TextComponent>
+                <RentType>
+                    {
+                        forFamily && forBachelor ? <TextComponent color={'white'} bold tiny>Bachelor/Family</TextComponent>
+                            : forBachelor ? <TextComponent color={'white'} tiny bold>BACHELOR</TextComponent>
+                            : <TextComponent color={'white'} bold tiny>FAMILY</TextComponent>
+
+
+                    }
+                </RentType>
 
                 <Icon raised name={'reader-outline'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} onPress={() => setMyListingsModal(true)}/>
 
             </HomeItemsNumbersContainer>
 
-            <ListingsFullDetailsModal modalVisible={openMyListingsModal} modalHide={closeMyListingsModal} listingsData={item}/>
+            <ListingsFullDetailsModal modalVisible={openMyListingsModal} modalHide={closeMyListingsModal} listingsData={item} postedUserInfo={postedUser}
+                                      currentUserListings={currentUserListings()}/>
         </CardsContainer>
     )
 }
@@ -209,3 +223,10 @@ height: 20px;
 width: 20px;
 borderRadius: 10px;
 `;
+
+const RentType = styled.View`
+backgroundColor: #9c45c1;
+paddingVertical: 5px;
+paddingHorizontal: 5px;
+borderRadius: 20px;
+`

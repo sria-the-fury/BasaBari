@@ -167,6 +167,7 @@ const Firebase = {
                         facilities: listingData.facilities,
                         rentPerMonth: listingData.rentPerMonth,
                         availableForBachelor: listingData.forBachelor,
+                        forFamily: listingData.forFamily,
                         moreDetails: listingData.moreDetails,
                         listingId: listingId,
                         isNegotiable: listingData.isNegotiable,

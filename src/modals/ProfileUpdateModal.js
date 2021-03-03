@@ -121,7 +121,7 @@ export const ProfileUpdateModal = (props) => {
                                 justifyContent: 'center',
                                 top: 60
                             }}>
-                                <Icon name={'photo'} type={'material'} size={70}
+                                <Icon name={'add-photo-alternate'} type={'material'} size={70}
                                       color={'rgba(255, 255, 255, 0.7)'}/>
                             </View>
 
@@ -147,6 +147,7 @@ export const ProfileUpdateModal = (props) => {
                                     type='md'
                                     color='#1c3787' size={30}
                                 />
+                                <TextComponent style={{fontSize:18}}>+88</TextComponent>
 
                                 <TextInput placeholder={'Phone No.'} autoCapitalize={'none'} value={updatePhoneNumber}
                                            dataDetectorTypes={'phoneNumber'} keyboardType={'phone-pad'} maxLength={14}
