@@ -6,7 +6,7 @@ import {Icon} from "react-native-elements";
 import {FirebaseContext} from "../context/FirebaseContext";
 
 export const UpdateEmailOrPasswordModal = (props) => {
-    const {modalVisible, modalHide, updateType} = props;
+    const {modalVisible, modalHide, updateType, email} = props;
     const [updatedEmail, setUpdatedEmail] = useState('');
     const [updatedPassword, setUpdatedPassword] = useState('');
     const [showPassword, setShowPassword] = useState(true);
@@ -91,7 +91,7 @@ export const UpdateEmailOrPasswordModal = (props) => {
                                         color='#1c3787' size={30}
                                     />
 
-                                    <TextInput placeholder={'Email'} autoCapitalize={'none'} keyboardType={'email-address'}
+                                    <TextInput placeholder={email} autoCapitalize={'none'} keyboardType={'email-address'}
                                                autoCompleteType={'email'} autoCorrect={false} onChangeText={(updatedEmail) => setUpdatedEmail(updatedEmail.trim())}/>
 
                                 </LabelAndInputWrapper>

@@ -266,6 +266,42 @@ const Firebase = {
         return false;
     },
 
+    updateUserProfileName: async (userName) => {
+        try {
+            const uid = Firebase.getCurrentUser().uid;
+            const currentUserName = Firebase.getCurrentUser().displayName;
+            await Firebase.getCurrentUser().updateProfile({
+                displayName: userName,
+
+            });
+
+            await firestore().collection('users').doc(uid).update({
+                userName: userName,
+            });
+
+            if(currentUserName === userName)
+                return true;
+
+
+
+        } catch (e) {
+            console.log(e.message+'@updateProfileName');
+        }
+    },
+
+    updateProfilePhoneNumber: async (phoneNumber) => {
+        try {
+            const uid = Firebase.getCurrentUser().uid;
+            await firestore().collection('users').doc(uid).update({
+                phoneNumber: phoneNumber,
+            });
+
+        }catch (e) {
+            console.log(e.message+'@updateProfilePhoneNumber');
+
+        }
+    },
+
     updateProfileInfo: async (updatedInfo) => {
 
         try {
