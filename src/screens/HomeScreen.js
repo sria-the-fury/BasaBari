@@ -13,29 +13,12 @@ export default function  HomeScreen () {
 
     const [ListingsData, setListingsData] = useState(null);
 
-    // const ViewUserInfo = () => {
-    //
-    //     if(user){
-    //         return(
-    //             user.map((user) =>
-    //                 <View key={user.userId}>
-    //                     <TextComponent>{user.userId}</TextComponent>
-    //                     <TextComponent>{user.userName}</TextComponent>
-    //                     <TextComponent>{user.userAge}</TextComponent>
-    //                 </View>
-    //             )
-    //
-    //         );
-    //     } else return <TextComponent>No User</TextComponent>;
-    //
-    //
-    // }
 
 
 
     useEffect(() => {
 
-        const subscriber = firestore().collection('listings').onSnapshot(
+        const subscriber = firestore().collection('listings').orderBy('postedTime', 'desc').onSnapshot(
             docs=> {
                 let data=[];
                 if(!docs.empty) {
@@ -51,7 +34,8 @@ export default function  HomeScreen () {
                             forBachelor: doc.data().availableForBachelor,
                             forFamily: doc.data().forFamily,
                             rentPerMonth: doc.data().rentPerMonth,
-                            isNegotiable: doc.data().isNegotiable
+                            isNegotiable: doc.data().isNegotiable,
+                            usersInFav: doc.data().usersInFav
                         });
 
                     });

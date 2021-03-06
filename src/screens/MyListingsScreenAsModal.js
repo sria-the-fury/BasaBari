@@ -1,13 +1,54 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {TempData} from "../TempData";
-import {View} from "react-native";
 import {Text, TouchableOpacity, StatusBar, FlatList, Image} from 'react-native';
 import {Icon} from "react-native-elements";
-import {EachMyListing} from "../components/listings/EachMyListing";
+import {FirebaseContext} from "../context/FirebaseContext";
+import firestore from "@react-native-firebase/firestore";
+import {EachListing} from "../components/listings/EachListing";
 
 export default function MyListingScreenAsModal(props) {
+    const firebase =  useContext(FirebaseContext);
+    const currentUserId = firebase.getCurrentUser().uid;
+
+
+    const [ListingsData, setListingsData] = useState(null);
+
+
+
+
+    useEffect(() => {
+
+        const subscriber = firestore().collection('listings').where('userId', '==', currentUserId).onSnapshot(
+            docs=> {
+                let data=[];
+                if(!docs.empty) {
+                    docs.forEach(doc => {
+                        data.push({
+                            id: doc.id,
+                            postedTime: doc.data().postedTime,
+                            address: doc.data().address,
+                            images: doc.data().images,
+                            userId: doc.data().userId,
+                            roomNumbers: doc.data().roomNumbers,
+                            facilities: doc.data().facilities,
+                            forBachelor: doc.data().availableForBachelor,
+                            forFamily: doc.data().forFamily,
+                            rentPerMonth: doc.data().rentPerMonth,
+                            isNegotiable: doc.data().isNegotiable
+                        });
+
+                    });
+                    setListingsData(data);
+                }
+
+
+            });
+
+        return () => subscriber();
+
+
+    }, []);
 
 
     return (
@@ -27,7 +68,7 @@ export default function MyListingScreenAsModal(props) {
                 <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
 
             </HeaderContainer>
-            <FlatList data={TempData} renderItem={({item}) => <EachMyListing item = {item}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
+            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
         </Container>
     )
 }

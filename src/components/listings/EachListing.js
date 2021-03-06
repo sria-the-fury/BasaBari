@@ -12,7 +12,7 @@ import {FirebaseContext} from "../../context/FirebaseContext";
 export const EachListing = (props) => {
     const firebase = useContext(FirebaseContext);
     const {item} = props;
-    const {images, roomNumbers, forFamily, forBachelor} = item;
+    const {images, roomNumbers, forFamily, forBachelor, usersInFav} = item;
     const [postedUser, setPostedUser] = useState('');
     const currentUserId = firebase.getCurrentUser().uid;
 
@@ -61,7 +61,30 @@ export const EachListing = (props) => {
         if(item.userId === currentUserId) return true;
         else return false;
 
+    };
+
+
+
+    //add favorite
+
+    const addRemoveFavorite = async (listingId) => {
+
+        try{
+            const isCurrentUserFavList = usersInFav ? usersInFav.find(userId => userId === currentUserId) : null;
+            if(currentUserId === isCurrentUserFavList){
+                const updateType= 'REMOVE'
+
+                await firebase.updateFavoriteListing(listingId, currentUserId, updateType);
+
+            }
+            else await firebase.updateFavoriteListing(listingId, currentUserId);
+        } catch (e) {
+            alert(e.message);
+
+        }
     }
+    const isCurrentUserFavList = usersInFav ? usersInFav.includes(currentUserId) : false;
+
 
 
     return (
@@ -69,7 +92,9 @@ export const EachListing = (props) => {
 
             <TimeContainer>
 
-                <Icon name={'heart'} type={'ionicon'} size={25} style={{marginRight: 5}} color={item.favorite ? '#b716af' : 'grey'}/>
+                <Icon name={'heart'} type={'ionicon'} size={25}
+                      style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'grey'}
+                      onPress={() => addRemoveFavorite(item.id)}/>
 
                 <View style={{alignItems: "center", flexDirection: 'row'}}>
                     <Icon name={'time-outline'} type={'ionicon'} size={15} style={{marginRight: 5}}/>

@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 
-import {View, Text, TouchableOpacity, StatusBar, Image, FlatList, Pressable} from 'react-native';
+import {View, Text, TouchableOpacity, StatusBar, Image, FlatList} from 'react-native';
 import { Divider } from 'react-native-elements';
 import {Icon} from "react-native-elements";
 import ImagePicker from "react-native-customized-image-picker";
@@ -192,7 +192,7 @@ export default function AddListingScreen(props) {
 
                 <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
                     <View style={{flexDirection: "row", alignItems: "center"}}>
-                        <Icon raised name={'add-photo-alternate'} type={'md'} size={24} onPress={() => pickImage()} disabled={listingImages && listingImages.length === 5}/>
+                        <Icon raised name={'add-photo-alternate'} type={'md'} size={20} onPress={() => pickImage()} disabled={listingImages && listingImages.length === 5}/>
                         <TextComponent bold color={listingImages.length === 5 ? 'grey': 'black'}>
                             Select Image: {listingImages ? listingImages.length : 0} of 5 (Min: 3)
                         </TextComponent>
@@ -200,7 +200,7 @@ export default function AddListingScreen(props) {
 
 
                     <Icon raised name={'image-not-supported'} type={'material'} color={'red'}
-                          size={24} onPress={() => removeAllImagesOnce()} disabled={listingImages.length === 0}/>
+                          size={20} onPress={() => removeAllImagesOnce()} disabled={listingImages.length === 0}/>
 
                 </View>
 
@@ -325,7 +325,7 @@ export default function AddListingScreen(props) {
 
                             <RoomLabelAndInputWrapper>
                                 <Icon
-                                    name='restaurant'
+                                    name='restaurant-outline'
                                     type='ionicon'
                                     color='#1c3787' size={30}
                                 />
@@ -339,8 +339,8 @@ export default function AddListingScreen(props) {
 
                             <RoomLabelAndInputWrapper>
                                 <Icon
-                                    name='bathtub'
-                                    type='md'
+                                    name='toilet'
+                                    type='font-awesome-5'
                                     color='#1c3787' size={30}
                                 />
 
@@ -679,7 +679,7 @@ borderRadius: 10px;
 `
 
 
-const Loading = styled.ActivityIndicator.attrs(props => ({
+const Loading = styled.ActivityIndicator.attrs(() => ({
     color: 'white',
     size: 'small',
 

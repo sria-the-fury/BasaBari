@@ -302,31 +302,24 @@ const Firebase = {
         }
     },
 
-    updateProfileInfo: async (updatedInfo) => {
-
-        try {
-            const uid = Firebase.getCurrentUser().uid;
-            await Firebase.getCurrentUser().updateProfile({
-                displayName: updatedInfo.updateUserName,
-
-            });
-
-            await firestore().collection('users').doc(uid).update({
-                userName: updatedInfo.updateUserName,
-                phoneNumber: updatedInfo.updatePhoneNumber
-            });
-
-            if(updatedInfo.updateProfileImageUri){
-                await Firebase.uploadProfilePhoto(updatedInfo.updateProfileImageUri);
+    updateFavoriteListing: async (listingId, favoriteUserId, updateType) => {
+        try{
+            if(updateType === 'REMOVE'){
+                await firestore().collection('listings').doc(listingId).set({
+                    usersInFav: firestore.FieldValue.arrayRemove(favoriteUserId)
+                }, {merge: true});
+            }
+            else {
+                await firestore().collection('listings').doc(listingId).set({
+                    usersInFav: firestore.FieldValue.arrayUnion(favoriteUserId)
+                }, {merge: true});
             }
 
-            return true;
-
-        } catch (error) {
-            console.log(error.message+'@updateProfileInfo')
-
+        } catch (e) {
+            console.log(e.message+'@updateFavorite');
         }
-    }
+
+    },
 
 
 }
