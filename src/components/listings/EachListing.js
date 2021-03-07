@@ -88,7 +88,7 @@ export const EachListing = (props) => {
 
     const removeListing = async (listingId) => {
         try {
-            await firebase.removeListing(listingId);
+            await firebase.removeListing(listingId, images);
         } catch (error){
             alert(error.message);
         }

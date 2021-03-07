@@ -323,9 +323,14 @@ const Firebase = {
 
     //remove functions go here
 
-    removeListing: async (listingId) => {
+    removeListing: async (listingId, storageImages) => {
         try{
             await firestore().collection('listings').doc(listingId).delete();
+            _.each(storageImages, async (image) => {
+                const imageRef = storage().ref(`listingImages/${listingId}`).child(image.imageId);
+                await imageRef.delete();
+            });
+
 
         }catch (e) {
             console.log(e.message+'@removeListing');
