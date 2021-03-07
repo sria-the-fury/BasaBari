@@ -321,6 +321,18 @@ const Firebase = {
 
     },
 
+    //remove functions go here
+
+    removeListing: async (listingId) => {
+        try{
+            await firestore().collection('listings').doc(listingId).delete();
+
+        }catch (e) {
+            console.log(e.message+'@removeListing');
+
+        }
+    }
+
 
 }
 

@@ -1,12 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, View} from 'react-native';
-import {Icon} from "react-native-elements";
+import {ActivityIndicator, FlatList, View} from 'react-native';
+import {Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
 import {ListingsFullDetailsModal} from "../../modals/ListingsFullDetailsModal";
 import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
+
 
 
 export const EachListing = (props) => {
@@ -58,8 +59,7 @@ export const EachListing = (props) => {
     }
 
     const currentUserListings = () => {
-        if(item.userId === currentUserId) return true;
-        else return false;
+        return item.userId === currentUserId;
 
     };
 
@@ -83,6 +83,17 @@ export const EachListing = (props) => {
 
         }
     }
+
+    //remove listing
+
+    const removeListing = async (listingId) => {
+        try {
+            await firebase.removeListing(listingId);
+        } catch (error){
+            alert(error.message);
+        }
+
+    }
     const isCurrentUserFavList = usersInFav ? usersInFav.includes(currentUserId) : false;
 
 
@@ -92,9 +103,17 @@ export const EachListing = (props) => {
 
             <TimeContainer>
 
-                <Icon name={'heart'} type={'ionicon'} size={25}
-                      style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'grey'}
-                      onPress={() => addRemoveFavorite(item.id)}/>
+                { currentUserListings() ?
+
+                    <View style={{alignItems: "center", flexDirection: 'row'}}>
+                        <PostedUserAvatar source={{uri: postedUser.profilePhotoUrl}} style={{marginRight: 2}}/>
+                        <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
+                    </View>
+                    :
+                    <Icon name={'heart'} type={'ionicon'} size={25}
+                          style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'grey'}
+                          onPress={() => addRemoveFavorite(item.id)}/>
+                }
 
                 <View style={{alignItems: "center", flexDirection: 'row'}}>
                     <Icon name={'time-outline'} type={'ionicon'} size={15} style={{marginRight: 5}}/>
@@ -102,21 +121,30 @@ export const EachListing = (props) => {
 
                 </View>
 
-                <View style={{alignItems: "center", flexDirection: 'row'}}>
-                    <PostedUserAvatar source={{uri: postedUser.profilePhotoUrl}} style={{marginRight: 2}}/>
-                    {/*<Icon name={'person-circle-outline'} type={'ionicon'} size={25} style={{marginRight: 5}}/>*/}
-
-                    <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
-
-                </View>
+                { currentUserListings() ?
+                    <Icon name={'trash'} type={'ionicon'} size={20}
+                          style={{marginRight: 5}} color={'red'} onPress={() => removeListing(item.id)}/> :
+                    <View style={{alignItems: "center", flexDirection: 'row'}}>
+                        <PostedUserAvatar source={{uri: postedUser.profilePhotoUrl}} style={{marginRight: 2}}/>
+                        <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
+                    </View>
+                }
 
 
 
             </TimeContainer>
 
 
-            <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
-                      showsHorizontalScrollIndicator={false}/>
+            { images.length ?
+                <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
+                          showsHorizontalScrollIndicator={false}/> :
+                <View style={{flexDirection: 'row'}}>
+                    <ListingsImagesContainer/>
+                    <ListingsImagesContainer/>
+                </View>
+
+            }
+
 
             <LocationContainer>
                 <Icon name={'navigate'} type={'ionicon'} size={18} style={{marginRight: 5}} color={'blue'}/>
@@ -124,11 +152,6 @@ export const EachListing = (props) => {
 
             </LocationContainer>
 
-            {/*<BottomActionsButtonContainer>*/}
-            {/*    <Icon raised name={'trash'} type={'ionicon'} size={20} style={{marginRight: 10}} color={'red'} />*/}
-            {/*    <Icon raised name={'create'} type={'ionicon'} size={20} style={{marginRight: 10}} color={'black'}/>*/}
-
-            {/*</BottomActionsButtonContainer>*/}
 
             <HomeItemsNumbersContainer>
                 <HomeItemsNumbers>
@@ -163,24 +186,28 @@ export const EachListing = (props) => {
             <ListingsFullDetailsModal modalVisible={openMyListingsModal} modalHide={closeMyListingsModal} listingsData={item} postedUserInfo={postedUser}
                                       currentUserListings={currentUserListings()}/>
         </CardsContainer>
+
     )
 }
 
 const renderImage= (image) => {
 
     return(
-        <View style={{marginHorizontal:15}}>
-            <ListingsImagesContainer source={{uri: image.imageUrl}}/>
+        <View style={{marginHorizontal:10}}>
+            <Image source={{uri: image.imageUrl}} style={{ height: 150, width: 150, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator style={{color: 'blue'}}/>}/>
 
         </View>
     )
 
 };
 
-const ListingsImagesContainer = styled.Image`
+
+const ListingsImagesContainer = styled.View`
 height:150px;
 width:150px;
+backgroundColor: #d8d4d4;
 borderRadius: 10px;
+marginHorizontal: 10px;
 
 `;
 
@@ -220,13 +247,6 @@ paddingTop: 10px
 
 `;
 
-const BottomActionsButtonContainer = styled.View`
-flexDirection : row;
-alignItems: center;
-paddingBottom: 5px;
-paddingTop: 5px
-justifyContent: space-between;
-`;
 
 const HomeItemsNumbers = styled.View`
 flexDirection : row;
