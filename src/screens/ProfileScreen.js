@@ -200,7 +200,7 @@ export default function ProfileScreen(props) {
                                maxLength={23} onChangeText={(updateName) => setUpdateName(updateName)}
                     />
                     {/*<TextComponent bold large  color={'#6526a5'} numberOfLines={1}>{profileUserInfo.displayName}</TextComponent>*/}
-                    <Icon raised name={'log-out'} type={'ionicon'} size={15} color={'red'} onPress={() => loggedOut()}/>
+                    <Icon name={'log-out'} type={'ionicon'} size={25} color={'red'} onPress={() => loggedOut()}/>
                 </View>
 
                 <ProfileImageContainer style={{elevation: 10,

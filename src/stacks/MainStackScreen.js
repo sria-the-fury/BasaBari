@@ -1,6 +1,6 @@
 import React,{useContext} from 'react';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {Icon} from "react-native-elements";
+import {Icon, Image} from "react-native-elements";
 import { Text, View} from "react-native";
 
 import HomeScreen from "../screens/HomeScreen";
@@ -9,7 +9,6 @@ import AddListingScreen from "../screens/AddListingScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {FirebaseContext} from "../context/FirebaseContext";
-import styled from "styled-components";
 
 
 export default function MainStackScreen() {
@@ -76,7 +75,13 @@ export default function MainStackScreen() {
                     <View>
                         {
                             getCurrentUserProfileUrl ?
-                                <VisibleProfileImageInBottomTab source={{uri: getCurrentUserProfileUrl}} style={{borderColor: focused ? '#5d00ff' : 'white'}}/>
+                                <Image source={{uri: getCurrentUserProfileUrl}} style={{borderColor: focused ? '#5d00ff' : 'white',
+                                    height: 32,
+                                    width: 32,
+                                    borderRadius: 16,
+                                    shadowColor: '#000',
+                                    shadowOpacity: 5,
+                                    borderWidth: 2}}/>
                                 :
                                 <Icon name={'person-circle'} type='ionicon' size={30} color={focused ? '#5d00ff' :'#666666' }/>
 
@@ -124,15 +129,6 @@ export default function MainStackScreen() {
 }
 
 
-const VisibleProfileImageInBottomTab = styled.Image`
-height: 32px;
-width: 32px;
-borderRadius: 16px;
-shadowColor: #000;
-shadowOpacity: 5;
-borderWidth: 2px;
-
-`
 
 
 

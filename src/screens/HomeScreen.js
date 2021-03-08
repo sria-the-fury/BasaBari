@@ -35,7 +35,8 @@ export default function  HomeScreen () {
                             forFamily: doc.data().forFamily,
                             rentPerMonth: doc.data().rentPerMonth,
                             isNegotiable: doc.data().isNegotiable,
-                            usersInFav: doc.data().usersInFav
+                            usersInFav: doc.data().usersInFav,
+                            moreDetails: doc.data().moreDetails
                         });
 
                     });

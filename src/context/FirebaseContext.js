@@ -321,11 +321,149 @@ const Firebase = {
 
     },
 
+    //listings update separate functions
+
+    updateListingImages : async (newImages, removedImageId, getImagesAfterRemove, listingId) => {
+
+        try {
+            if(getImagesAfterRemove.length !== 0){
+                await firestore().collection('listings').doc(listingId).update({
+                    images: getImagesAfterRemove
+
+                });
+            }
+
+
+            if(removedImageId.length !== 0){
+                _.each(removedImageId, async (imageId) => {
+                    console.log('imageId=>', imageId);
+                    const imageRef = storage().ref(`listingImages/${listingId}`).child(imageId);
+                    await imageRef.delete();
+
+                });
+            }
+
+            if(newImages.length !== 0) {
+                console.log('new images');
+                _.each(newImages,  async (image) => {
+                    const photo = await Firebase.getBlob(image.imageUrl);
+
+                    const imageRef = storage().ref(`listingImages/${listingId}`).child(image.imageId);
+
+                    await imageRef.put(photo);
+
+                    const url = await  imageRef.getDownloadURL();
+
+                    await firestore().collection('listings').doc(listingId).update({
+                        images: firestore.FieldValue.arrayUnion({imageId: image.imageId, imageUrl: url})
+                    });
+
+                });
+
+            }
+
+
+
+
+        } catch (e) {
+            console.log(e.message+'@updateListingImage');
+
+        }
+    },
+
+    updateListingAddress: async (updateAddress,listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                address: updateAddress
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingAddress');
+
+        }
+    },
+
+    updateListingFacilities: async (updateFacilities,listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                facilities: updateFacilities
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingFacilities');
+
+        }
+    },
+
+    updateListingRoomNumbers: async (updateRoomNumbers,listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                roomNumbers: updateRoomNumbers
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingRoomNumbers');
+
+        }
+    },
+
+    updateListingRentType: async (updateForBachelor, updateForFamily ,listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                availableForBachelor: updateForFamily,
+                forFamily: updateForFamily
+            } );
+
+        } catch (e) {
+            console.log(e.message+'@updateListingRentType');
+
+        }
+    },
+
+    updateListingRent: async (updateRentPerMonth, listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                rentPerMonth: updateRentPerMonth
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingRent');
+
+        }
+    },
+    updateListingRentNegotiable: async (updateIsNegotiable, listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                isNegotiable: updateIsNegotiable
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingRentNegotiable');
+
+        }
+    },
+
+    updateListingMoreDetails: async (updateMoreDetails, listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                moreDetails: updateMoreDetails
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingMoreDetails');
+
+        }
+    },
+
+
+
+
     //remove functions go here
 
     removeListing: async (listingId, storageImages) => {
         try{
             await firestore().collection('listings').doc(listingId).delete();
+            //remove this listings images when remove the listings
             _.each(storageImages, async (image) => {
                 const imageRef = storage().ref(`listingImages/${listingId}`).child(image.imageId);
                 await imageRef.delete();

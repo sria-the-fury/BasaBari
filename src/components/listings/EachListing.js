@@ -13,7 +13,7 @@ import {FirebaseContext} from "../../context/FirebaseContext";
 export const EachListing = (props) => {
     const firebase = useContext(FirebaseContext);
     const {item} = props;
-    const {images, roomNumbers, forFamily, forBachelor, usersInFav} = item;
+    const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails} = item;
     const [postedUser, setPostedUser] = useState('');
     const currentUserId = firebase.getCurrentUser().uid;
 
@@ -135,7 +135,7 @@ export const EachListing = (props) => {
             </TimeContainer>
 
 
-            { images.length ?
+            { images && images.length !== 0 ?
                 <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
                           showsHorizontalScrollIndicator={false}/> :
                 <View style={{flexDirection: 'row'}}>
@@ -148,7 +148,8 @@ export const EachListing = (props) => {
 
             <LocationContainer>
                 <Icon name={'navigate'} type={'ionicon'} size={18} style={{marginRight: 5}} color={'blue'}/>
-                <TextComponent bold semiLarge numberOfLines={1} ellipsizeMode={'tail'}>{item.address}</TextComponent>
+                <TextComponent style={{ flex:1,
+                    flexWrap: 'wrap'}} semiLarge ellipsizeMode={'tail'}>{item.address}</TextComponent>
 
             </LocationContainer>
 

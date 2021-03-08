@@ -1,8 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import {View, Modal, Pressable, ScrollView, StatusBar, FlatList, Linking, Text, TouchableOpacity} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
+import {ListingsUpdateModal} from "./ListingsUpdateModal";
+import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 
 export const ListingsFullDetailsModal = (props) => {
     const {listingsData, postedUserInfo, currentUserListings} = props;
@@ -14,9 +16,17 @@ export const ListingsFullDetailsModal = (props) => {
     const makeCall = async (number) => {
         await Linking.openURL('tel:'+'+88'+number);
     }
+
+    //open update modal
+    const [openListingUpdateModal, setListingUpdateModal] = useState(false);
+
+    const closeListingUpdateModal = () => {
+        setListingUpdateModal(false);
+    }
+
     return (
         <Container>
-            {/*<StatusBar barStyle={'dark-content'} backgroundColor={StatusBarAndTopHeaderBGColor} animated={true} translucent={true}/>*/}
+            <FocusedStatusbar barStyle="dark-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -142,14 +152,23 @@ export const ListingsFullDetailsModal = (props) => {
 
                     </ScrollView>
 
-                    <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)} disabled={currentUserListings}>
-                        <TextComponent bold medium color={currentUserListings ? 'grey' : 'white'}>CONTACT WITH LANDLORD</TextComponent>
-                    </ContactContainer>
+                    { currentUserListings ?
+                        <EditListingButton onPress={() => setListingUpdateModal(true)}>
+                            <TextComponent bold medium color={'white'}>EDIT LISTING</TextComponent>
+                        </EditListingButton>
+                        :
+                        <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
+                            <TextComponent bold medium color={'white'}>CONTACT WITH LANDLORD</TextComponent>
+                        </ContactContainer>
+                    }
 
 
 
                 </ModalView>
             </Modal>
+            <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
+            listingsData={listingsData}
+            />
         </Container>
     );
 };
@@ -187,7 +206,6 @@ const AddressContainer = styled.View`
 const ModalView = styled.View`
 backgroundColor: white;
 borderRadius: 20px;
-alignItems: center;
 shadowColor: #000;
 shadowOpacity: 0.25;
 shadowRadius: 4px;
@@ -271,9 +289,21 @@ position: absolute;
  borderTopLeftRadius: 10px;
  borderTopRightRadius: 10px;
  paddingVertical: 15px;
+  alignSelf: center;
  paddingHorizontal: 20px;
   backgroundColor: red;
 `;
+
+const EditListingButton = styled.TouchableOpacity`
+position: absolute;
+ bottom:0;
+ alignSelf: center;
+ borderTopLeftRadius: 10px;
+ borderTopRightRadius: 10px;
+ paddingVertical: 15px;
+ paddingHorizontal: 20px;
+  backgroundColor: red;
+`
 
 const ContainerFlexRow = styled.View`
 flexDirection: row;
