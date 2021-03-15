@@ -136,13 +136,13 @@ export const ListingsFullDetailsModal = (props) => {
                         <RentAvailableFor>
                             { forFamily ?
                                 <RentType >
-                                    <TextComponent semiLarge bold color={'white'}>FAMILY</TextComponent>
+                                    <TextComponent medium bold color={'white'}>FAMILY</TextComponent>
                                 </RentType> : null
                             }
 
                             { forBachelor ?
                                 <RentType>
-                                    <TextComponent semiLarge bold color={'white'}>BACHELOR</TextComponent>
+                                    <TextComponent medium bold color={'white'}>BACHELOR</TextComponent>
                                 </RentType> : null
                             }
 
@@ -185,8 +185,8 @@ const renderImage= (image) => {
 };
 
 const ListingsImagesContainer = styled.Image`
-height:250px;
-width:250px;
+height: 250px;
+width: 250px;
 borderRadius: 10px;
 
 `;
@@ -219,7 +219,7 @@ backgroundColor: ${StatusBarAndTopHeaderBGColor};
  flexDirection: row;
  width: 100%
  alignItems: center;
- paddingHorizontal: 32px;
+ paddingHorizontal: 20px;
  paddingVertical: 12px;
  justifyContent: space-between;
 
@@ -320,7 +320,7 @@ marginVertical: 20px;
 const RentType = styled.View`
 marginRight: 10px;
 backgroundColor: #9c45c1;
- paddingVertical: 15px;
+ paddingVertical: 10px;
  paddingHorizontal: 20px;
   borderRadius: 30px;
 

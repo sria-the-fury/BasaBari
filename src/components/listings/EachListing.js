@@ -34,8 +34,6 @@ export const EachListing = (props) => {
         } else return moment(postedTime).startOf('minutes').fromNow();
 
 
-
-
     }
 
     useEffect(() => {

@@ -577,7 +577,7 @@ width:100%;
 flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
-paddingHorizontal: 32px;
+paddingHorizontal: 20px;
  paddingVertical: 12px;
 
 `;
