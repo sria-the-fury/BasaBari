@@ -219,7 +219,7 @@ marginHorizontal:10px;
     paddingVertical:10px;
      borderRadius:10px;
      overflow: hidden;
-     elevation: 10;
+     elevation: 5;
          shadowColor: #000;
           shadowOpacity: 1;
                     shadowRadius: 5.32px;

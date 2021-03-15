@@ -228,7 +228,7 @@ export default function ProfileScreen(props) {
                                 borderRadius: isEditableCellNo ? 20 : null, paddingHorizontal: isEditableCellNo ? 10 : null
                             }} keyboardType={'number-pad'}
 
-                            autoFocus={isEditableCellNo} editable={isEditableCellNo} onFocus={() => setEditableCellNo(true)}
+                                       autoFocus={isEditableCellNo} editable={isEditableCellNo} onFocus={() => setEditableCellNo(true)}
                                        onBlur={() => {setEditableCellNo(false);
                                            setUpdatePhone('');
                                        }}
@@ -236,13 +236,13 @@ export default function ProfileScreen(props) {
                             />
 
                             {(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === userInfoFromCollection.phoneNumber) ?
-                            <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>
-                            :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== userInfoFromCollection.phoneNumber) && !phoneLoading ?
-                            <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :
+                                <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>
+                                :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== userInfoFromCollection.phoneNumber) && !phoneLoading ?
+                                    <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :
                                     isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== userInfoFromCollection.phoneNumber) && phoneLoading ?
-                            <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
-                                <Loading/></View>
-                            : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>
+                                        <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
+                                            <Loading/></View>
+                                        : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>
                             }
                         </EachInfoWrapper>
                         : null

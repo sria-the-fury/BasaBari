@@ -188,33 +188,33 @@ export default function AddListingScreen(props) {
 
             </HeaderContainer>
 
-            <BodyView>
+            <FormViewContainer showsVerticalScrollIndicator={false}>
 
-                <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
-                    <View style={{flexDirection: "row", alignItems: "center"}}>
-                        <Icon raised name={'add-photo-alternate'} type={'md'} size={20} onPress={() => pickImage()} disabled={listingImages && listingImages.length === 5}/>
-                        <TextComponent bold color={listingImages.length === 5 ? 'grey': 'black'}>
-                            Select Image: {listingImages ? listingImages.length : 0} of 5 (Min: 3)
-                        </TextComponent>
+                <BodyView>
+
+                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
+                        <View style={{flexDirection: "row", alignItems: "center"}}>
+                            <Icon raised name={'add-photo-alternate'} type={'md'} size={20} onPress={() => pickImage()} disabled={listingImages && listingImages.length === 5}/>
+                            <TextComponent bold color={listingImages.length === 5 ? 'grey': 'black'}>
+                                Select Image: {listingImages ? listingImages.length : 0} of 5 (Min: 3)
+                            </TextComponent>
+                        </View>
+
+
+                        <Icon raised name={'image-not-supported'} type={'material'} color={'red'}
+                              size={20} onPress={() => removeAllImagesOnce()} disabled={listingImages.length === 0}/>
+
                     </View>
 
 
-                    <Icon raised name={'image-not-supported'} type={'material'} color={'red'}
-                          size={20} onPress={() => removeAllImagesOnce()} disabled={listingImages.length === 0}/>
+                    {listingImages.length ? <FlatList data={listingImages} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
+                                                      showsHorizontalScrollIndicator={false}/>
+                        :
+                        <ImagePreviewPlace>
+                            <TextComponent center>No Image selected yet</TextComponent>
+                        </ImagePreviewPlace>}
 
-                </View>
-
-
-                {listingImages.length ? <FlatList data={listingImages} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
-                                                  showsHorizontalScrollIndicator={false}/>
-                    :
-                    <ImagePreviewPlace>
-                        <TextComponent center>No Image selected yet</TextComponent>
-                    </ImagePreviewPlace>}
-
-            </BodyView>
-
-            <FormViewContainer showsVerticalScrollIndicator={false}>
+                </BodyView>
 
 
                 <LabelAndInputWrapper>
@@ -313,7 +313,7 @@ export default function AddListingScreen(props) {
                                 <Icon
                                     name='bed-outline'
                                     type='ionicon'
-                                    color='#1c3787' size={30}
+                                    color='grey' size={30}
                                 />
 
                                 <RoomInput placeholder={'Bed room'} keyboardType={'numeric'} maxLength={1}
@@ -327,7 +327,7 @@ export default function AddListingScreen(props) {
                                 <Icon
                                     name='restaurant-outline'
                                     type='ionicon'
-                                    color='#1c3787' size={30}
+                                    color='grey' size={30}
                                 />
 
                                 <RoomInput placeholder={'Dinning'} keyboardType={'numeric'} maxLength={1}
@@ -341,7 +341,7 @@ export default function AddListingScreen(props) {
                                 <Icon
                                     name='toilet'
                                     type='font-awesome-5'
-                                    color='#1c3787' size={30}
+                                    color='grey' size={30}
                                 />
 
                                 <RoomInput placeholder={'Washroom'} keyboardType={'numeric'} maxLength={1}
@@ -498,16 +498,15 @@ backgroundColor: ${StatusBarAndTopHeaderBGColor};
 
  flexDirection: row;
  alignItems: center;
- paddingHorizontal: 32px;
+ paddingHorizontal: 20px;
   paddingVertical: 12px;
  justifyContent: space-between;
- borderBottomLeftRadius: 50px;
- borderBottomRightRadius: 50px;
 
 `;
 
 const BodyView = styled.View`
 paddingHorizontal : 10px;
+marginBottom: 20px;
 
 
 
@@ -515,7 +514,6 @@ paddingHorizontal : 10px;
 
 const FormViewContainer = styled.ScrollView`
 paddingHorizontal : 10px;
-marginTop: 20px;
 `;
 
 const LabelAndInputWrapper = styled.View`

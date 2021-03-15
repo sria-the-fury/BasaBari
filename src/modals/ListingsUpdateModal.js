@@ -135,7 +135,7 @@ export const ListingsUpdateModal = (props) => {
     const renderImage= (image) => {
 
         return(
-            <ListingImageMainContainer >
+            <ListingImageMainContainer>
 
 
                 <ListingsImagesContainer source={{uri: image.imageUrl}}/>
@@ -160,9 +160,9 @@ export const ListingsUpdateModal = (props) => {
             isSameRoom = _.isEqual(roomNumbers, updateRoomNumbers),
             isSameBachelor = forBachelor === updateForBachelor,
             isSameFamily = forFamily === updateForFamily,
-            isSameRent = rentPerMonth === updateRentPerMonth,
+            isSameRent = rentPerMonth === updateRentPerMonth.trim(),
             isSameNegotiable = isNegotiable === updateIsNegotiable,
-            isSameDesc = moreDetails === updateMoreDetails;
+            isSameDesc = moreDetails === updateMoreDetails.trim();
         // console.log('differenceImages=>', differenceImages);
         // console.log('isAddressSame=>', isAddressSame);
         // console.log('isFacilitiesSame=>', isFacilitiesSame);
@@ -178,7 +178,7 @@ export const ListingsUpdateModal = (props) => {
 
     const disableUpdate = () => {
 
-        return ((updateForBachelor === false && updateForFamily === false) ||  listingImages.length < 3 || (updateRentPerMonth === 0 || updateRentPerMonth ==='') || updateMoreDetails === '' || updateAddress === '' ||
+        return ((updateForBachelor === false && updateForFamily === false) ||  listingImages.length < 3 || (updateRentPerMonth === 0 || updateRentPerMonth.trim() ==='' || updateRentPerMonth.length < 3) || updateMoreDetails === '' || updateAddress === '' ||
             ((updateRoomNumbers.washRoom === 0 || updateRoomNumbers.washRoom === '') || (updateRoomNumbers.dinning === 0 || updateRoomNumbers.dinning === '') || (updateRoomNumbers.bedRoom === 0 || updateRoomNumbers.bedRoom === '')));
     }
 
@@ -206,14 +206,12 @@ export const ListingsUpdateModal = (props) => {
 
             if(isNegotiable !== updateIsNegotiable) await firebase.updateListingRentNegotiable(updateIsNegotiable ,listingId);
 
-            if(moreDetails === updateMoreDetails) await firebase.updateListingMoreDetails(updateMoreDetails ,listingId);
+            if(moreDetails !== updateMoreDetails) await firebase.updateListingMoreDetails(updateMoreDetails ,listingId);
 
         }catch (e) {
 
         } finally {
             setListingImages(images);
-
-            console.log('_isEqual=>', _.isEqual(roomNumbers, updateRoomNumbers));
 
             setImagesAfterRemoved([]);
             setRemovedImageId([]);

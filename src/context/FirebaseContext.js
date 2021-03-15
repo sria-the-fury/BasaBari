@@ -166,7 +166,7 @@ const Firebase = {
                         userId: currentUserUID,
                         roomNumbers: listingData.roomNumbers,
                         facilities: listingData.facilities,
-                        rentPerMonth: listingData.rentPerMonth,
+                        rentPerMonth: listingData.rentPerMonth.replace(/[^0-9]/g, ''),
                         availableForBachelor: listingData.forBachelor,
                         forFamily: listingData.forFamily,
                         moreDetails: listingData.moreDetails,
@@ -423,7 +423,7 @@ const Firebase = {
     updateListingRent: async (updateRentPerMonth, listingId) => {
         try {
             await firestore().collection('listings').doc(listingId).update({
-                rentPerMonth: updateRentPerMonth
+                rentPerMonth: updateRentPerMonth.replace(/[^0-9]/g, '')
             });
 
         } catch (e) {

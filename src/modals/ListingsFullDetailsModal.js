@@ -2,13 +2,13 @@ import React, {useState} from "react";
 import {View, Modal, Pressable, ScrollView, StatusBar, FlatList, Linking, Text, TouchableOpacity} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {Icon} from "react-native-elements";
+import {Divider, Icon} from "react-native-elements";
 import {ListingsUpdateModal} from "./ListingsUpdateModal";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 
 export const ListingsFullDetailsModal = (props) => {
     const {listingsData, postedUserInfo, currentUserListings} = props;
-    const {images, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable} = listingsData;
+    const {images, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails} = listingsData;
     const {modalVisible, modalHide} = props;
 
 
@@ -40,7 +40,7 @@ export const ListingsFullDetailsModal = (props) => {
                         <Icon name={'close-circle'} type={'ionicon'} size={40} color={'white'} onPress={() => modalHide()}/>
                         <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                     </ModalHeader>
-                    <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 20, marginHorizontal: 10, marginBottom: 50}}>
+                    <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 5, marginHorizontal: 10, marginBottom: 50}}>
 
                         <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
                                   showsHorizontalScrollIndicator={false}/>
@@ -149,6 +149,16 @@ export const ListingsFullDetailsModal = (props) => {
 
                         </RentAvailableFor>
 
+                        <MoreDetailsContainer>
+                            <TextComponent semiLarge>More Details</TextComponent>
+                            <Divider backgroundColor={'blue'}/>
+
+                            <ListingDetails>
+                                <TextComponent medium>{moreDetails}</TextComponent>
+                            </ListingDetails>
+
+                        </MoreDetailsContainer>
+
 
                     </ScrollView>
 
@@ -205,11 +215,6 @@ const AddressContainer = styled.View`
 
 const ModalView = styled.View`
 backgroundColor: white;
-borderRadius: 20px;
-shadowColor: #000;
-shadowOpacity: 0.25;
-shadowRadius: 4px;
-elevation: 5;
 height:100%;
 
 `;
@@ -324,6 +329,20 @@ backgroundColor: #9c45c1;
  paddingHorizontal: 20px;
   borderRadius: 30px;
 
+
+`;
+
+const MoreDetailsContainer = styled.View`
+
+
+`
+
+const ListingDetails = styled.View`
+marginTop: 10px;
+backgroundColor: lavender;
+paddingHorizontal: 5px;
+paddingVertical: 5px;
+borderRadius: 5px;
 
 `;
 
