@@ -1,18 +1,30 @@
-import React, {useState, createContext} from 'react';
-import auth from "@react-native-firebase/auth";
+import React, {useState, createContext, useContext} from 'react';
+import {FirebaseContext} from "./FirebaseContext";
 
 
 export const UserContext = createContext([{}, p => {}]);
 
 export const UserProvider =  (props) => {
+    const firebase = useContext(FirebaseContext);
+
+    const currentUser = firebase.getCurrentUser();
+
+    const hasUserWithName = () => {
+        if(currentUser && currentUser.uid && currentUser.photoURL && currentUser.displayName) return true;
+        else if(currentUser && currentUser.uid && !currentUser.photoURL && !currentUser.displayName) return false;
+        else return null;
+    };
+
+
     const [state, setState] = useState({
-        // userName: '',
-        // email: '',
-        // password: '',
-        // uid: '',
-        isLoggedIn: auth().currentUser,
-        // profilePhotoUrl: 'default'
+        isLoggedIn: hasUserWithName() ,
+        profilePhotoUrl: currentUser ? currentUser.photoURL : null,
+        userName: currentUser ? currentUser.displayName : null,
+        userPhoneNumber: null
+
     });
+
+    console.log('state=>', state);
 
     return (<UserContext.Provider value={[state, setState]}>{props.children}</UserContext.Provider>)
 }

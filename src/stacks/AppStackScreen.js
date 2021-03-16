@@ -6,15 +6,19 @@ import AddListingScreen from "../screens/AddListingScreen";
 import {UserContext} from "../context/UserContext";
 
 import MyListingScreenAsModal from "../screens/MyListingsScreenAsModal";
+import InitialUpdateProfile from "../screens/InitialUpdateProfile";
+import LoadingScreen from "../screens/LoadingScreen";
 
 
 export default function AppStackScreen() {
     const AppStack = createStackNavigator();
     const[user] = useContext(UserContext);
 
-    if(user.isLoggedIn){
+    if(user.isLoggedIn === true ){
         return (
             <AppStack.Navigator headerMode="none">
+
+                {}
 
                 <AppStack.Screen name={'Main'} component={MainStackScreen}/>
 
@@ -29,10 +33,30 @@ export default function AppStackScreen() {
             </AppStack.Navigator>
         );
     }
-    return (
-        <AppStack.Navigator headerMode="none">
-            <AppStack.Screen name={'Auth'} component={AuthStackScreen} />
-        </AppStack.Navigator>
+    else if(user.isLoggedIn === false){
+        return (
+            <AppStack.Navigator headerMode="none">
+                <AppStack.Screen name={'InitialProfileUpdate'} component={InitialUpdateProfile}/>
+            </AppStack.Navigator>
+        )
 
-    )
+    }
+    else if(user.isLoggedIn === null){
+        return (
+            <AppStack.Navigator headerMode="none">
+                <AppStack.Screen name={'Auth'} component={AuthStackScreen} />
+            </AppStack.Navigator>
+
+        )
+    }
+
+    // else{
+    //     return (
+    //         <AppStack.Navigator headerMode="none">
+    //             <AppStack.Screen name={'Loading'} component={LoadingScreen} />
+    //         </AppStack.Navigator>
+    //
+    //     )
+    //
+    // }
 }

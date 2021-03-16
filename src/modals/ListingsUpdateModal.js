@@ -613,19 +613,6 @@ elevation: 6;
 `;
 
 
-const HeaderContainer = styled.View`
-backgroundColor: ${StatusBarAndTopHeaderBGColor};
-
- flexDirection: row;
- alignItems: center;
- paddingHorizontal: 32px;
-  paddingVertical: 12px;
- justifyContent: space-between;
- borderBottomLeftRadius: 50px;
- borderBottomRightRadius: 50px;
-
-`;
-
 const BodyView = styled.View`
 
 

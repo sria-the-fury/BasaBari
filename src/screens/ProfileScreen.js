@@ -28,6 +28,8 @@ export default function ProfileScreen(props) {
     const firebase = useContext(FirebaseContext);
     const profileUserInfo = firebase.getCurrentUser() ? firebase.getCurrentUser() : '';
 
+    console.log('profileUserInfo=>', profileUserInfo);
+
 
 
     //openModal
@@ -81,7 +83,7 @@ export default function ProfileScreen(props) {
     const loggedOut = async () => {
         const loggedOut = await firebase.loggedOut();
 
-        if(loggedOut) setUser({isLoggedIn: false});
+        if(loggedOut) setUser({isLoggedIn: null});
     }
 
     useEffect( () => {
@@ -223,7 +225,7 @@ export default function ProfileScreen(props) {
                     {userInfoFromCollection ?
                         <EachInfoWrapper>
                             <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
-                            <TextComponent bold medium numberOfLines={1} >+88</TextComponent>
+
                             <TextInput defaultValue={userInfoFromCollection.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: '#6526a5',  backgroundColor: isEditableCellNo ? 'white' : null,
                                 borderRadius: isEditableCellNo ? 20 : null, paddingHorizontal: isEditableCellNo ? 10 : null
                             }} keyboardType={'number-pad'}
@@ -232,7 +234,7 @@ export default function ProfileScreen(props) {
                                        onBlur={() => {setEditableCellNo(false);
                                            setUpdatePhone('');
                                        }}
-                                       maxLength={11} onChangeText={(updatedPhone) => setUpdatePhone(updatedPhone)}
+                                       maxLength={14} onChangeText={(updatedPhone) => setUpdatePhone(updatedPhone)}
                             />
 
                             {(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === userInfoFromCollection.phoneNumber) ?

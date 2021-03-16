@@ -4,6 +4,7 @@ import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import _ from "lodash";
+import {ToastAndroid} from "react-native";
 
 export const FirebaseContext = createContext(undefined);
 
@@ -14,42 +15,29 @@ const Firebase = {
         return auth().currentUser;
     },
 
-    createUser: async (user) => {
+    createUser: async (userName) => {
 
         try {
-            await auth().createUserWithEmailAndPassword(user.email, user.password);
 
             const uid = Firebase.getCurrentUser().uid;
-
-
-
-            let profilePhotoUrl = 'default';
+            const {displayName, photoURL} = Firebase.getCurrentUser();
+            const phoneNumber = Firebase.getCurrentUser().phoneNumber;
 
 
             await firestore().collection('users').doc(uid).set({
-                userName: user.userName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
+                userName: userName,
+                phoneNumber: phoneNumber,
                 createAt: new Date(),
-                profilePhotoUrl
-            });
+            }, {merge: true});
 
 
             await Firebase.getCurrentUser().updateProfile({
-                displayName: user.userName,
-                photoURL: profilePhotoUrl,
+                displayName: userName
 
             });
 
-            if(user.profileImageUri){
-                profilePhotoUrl = await Firebase.uploadProfilePhoto(user.profileImageUri);
+            return (displayName !== null && photoURL !== null);
 
-            }
-
-
-            delete user.password
-
-            return{...user, profilePhotoUrl, uid}
 
         }catch (error) {
             console.log("Error @createUser : ", error.message);
@@ -71,9 +59,9 @@ const Firebase = {
 
             const url = await  imageRef.getDownloadURL();
 
-            await firestore().collection('users').doc(uid).update({
+            await firestore().collection('users').doc(uid).set({
                 profilePhotoUrl: url
-            });
+            }, {merge: true});
             await Firebase.getCurrentUser().updateProfile({
                 photoURL: url
             })
@@ -144,6 +132,20 @@ const Firebase = {
     signIn: async (email, password) => {
 
         return auth().signInWithEmailAndPassword(email, password);
+
+    },
+
+    //signIn with Phone
+
+    signInWithPhoneNumber: async (phoneNumber) => {
+        try {
+            const confirmation = await auth().signInWithPhoneNumber(phoneNumber,true);
+            return confirmation;
+        } catch (error) {
+            console.log(error.message);
+            ToastAndroid.show(error.message, ToastAndroid.LONG);
+
+        }
 
     },
 
