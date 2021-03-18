@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react'
-import {View, Text, StatusBar, TouchableOpacity, Button, ToastAndroid} from 'react-native'
+import {View, Text, TouchableOpacity, Button, ToastAndroid} from 'react-native'
 import styled from "styled-components";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {TextComponent} from "../components/TextComponent";
@@ -18,19 +18,19 @@ const InitialUpdateProfile = (props) => {
     const [loading, setLoading] = useState(false);
     const [updateLoading, setUpdateLoading] = useState(false);
 
-    useEffect(() => {
-        return () => {
-            if(getCurrentUser.displayName && getCurrentUser.photoURL){
-                setUser({
-                    isLoggedIn: true,
-                    userName: getCurrentUser.displayName,
-                    profileImageUrl: getCurrentUser.photoURL,
-                    userPhoneNumber: getCurrentUser.phoneNumber
-
-                });
-            }
-        };
-    }, [getCurrentUser]);
+    // useEffect(() => {
+    //     return () => {
+    //         if(getCurrentUser.displayName && getCurrentUser.photoURL){
+    //             setUser({
+    //                 isLoggedIn: true,
+    //                 userName: getCurrentUser.displayName,
+    //                 profileImageUrl: getCurrentUser.photoURL,
+    //                 userPhoneNumber: getCurrentUser.phoneNumber
+    //
+    //             });
+    //         }
+    //     };
+    // }, [getCurrentUser]);
 
 
     const chooseProfileImage = () => {

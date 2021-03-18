@@ -18,23 +18,23 @@ export default  function PhoneAuthScreen() {
 
     const currentUser = firebase.getCurrentUser();
 
-    useEffect(() => {
-        return () => {
-            if(currentUser && (currentUser.displayName && currentUser.photoURL)){
-                setUser({
-                    isLoggedIn: true,
-                    userName: currentUser.displayName,
-                    profileImageUrl: currentUser.photoURL,
-                    userPhoneNumber: currentUser.phoneNumber
-
-                });
-            } else{
-                setUser({
-                    isLoggedIn: false
-                });
-            }
-        };
-    }, [currentUser]);
+    // useEffect(() => {
+    //     return () => {
+    //         if(currentUser && (currentUser.displayName && currentUser.photoURL)){
+    //             setUser({
+    //                 isLoggedIn: true,
+    //                 userName: currentUser.displayName,
+    //                 profileImageUrl: currentUser.photoURL,
+    //                 userPhoneNumber: currentUser.phoneNumber
+    //
+    //             });
+    //         } else{
+    //             setUser({
+    //                 isLoggedIn: false
+    //             });
+    //         }
+    //     };
+    // }, [currentUser]);
 
     // Handle the button press
     // async function signInWithPhoneNumber() {
@@ -111,6 +111,27 @@ export default  function PhoneAuthScreen() {
 
     };
 
+    const hasCurrentUser = () => {
+        console.log('inHasUser');
+        if(currentUser && currentUser.displayName && currentUser.photoURL){
+            setUser({
+                isLoggedIn: true,
+                userName: currentUser.displayName,
+                profileImageUrl: currentUser.photoURL,
+                userPhoneNumber: currentUser.phoneNumber
+
+            });
+        }
+
+        if(currentUser && !currentUser.displayName && !currentUser.photoURL){
+            setUser({
+                isLoggedIn: false
+            });
+
+        }
+
+    }
+
     if (!confirm) {
         return (
             <View style={{flex:1, justifyContent: 'center'}}>
@@ -139,7 +160,7 @@ export default  function PhoneAuthScreen() {
 
     return (
         <View style={{flex: 1, justifyContent: "center"}}>
-            <TextInput value={code}
+            <TextInput value={code} onChange={() => hasCurrentUser()}
                        onChangeText={text => setCode(text)}
                        style={{backgroundColor: 'lavender', alignItems: "center"}} keyboardType={'number-pad'}
                        maxLength={6}/>
