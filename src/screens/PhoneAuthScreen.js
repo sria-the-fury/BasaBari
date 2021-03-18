@@ -6,6 +6,7 @@ import {TextComponent} from "../components/TextComponent";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {UserContext} from "../context/UserContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
+import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 
 export default  function PhoneAuthScreen() {
     const [_, setUser] = useContext(UserContext);
@@ -26,6 +27,14 @@ export default  function PhoneAuthScreen() {
     //check input is number
     const isInputHasNumber = /[0-9]+$/g;
     const isNumber = isInputHasNumber.test(number);
+
+    //openModal
+    const [openTermsModal, setTermsModal] = useState(false);
+
+    //functions for closing Modals
+    const closeTermsModal = () => {
+        setTermsModal(false);
+    }
 
 
     useEffect(() => {
@@ -172,7 +181,7 @@ export default  function PhoneAuthScreen() {
                         <Text style={{color: 'white', fontSize: 20, fontFamily: 'JetBrainsMono-Regular'}}>
                             LET'S START.
                         </Text>  :
-                        <Text style={{color: 'white', fontSize: 20, fontFamily: 'JetBrainsMono-Regular', textAlign: 'center'}}>
+                        <Text style={{color: 'white', fontSize: 20, fontFamily: 'JetBrainsMono-Regular'}}>
                             HURRY UP.
                         </Text>
                     }
@@ -194,7 +203,7 @@ export default  function PhoneAuthScreen() {
 
                         </LabelAndInputWrapper>
 
-                        <TouchableOpacity disabled={disableSignIn() || !isNumber || loading} onPress={() => signInWithPhoneNumber()}>
+                        <TouchableOpacity disabled={disableSignIn() || !isNumber || loading} onPress={() => signInWithPhoneNumber()} style={{marginBottom: 20}}>
                             { loading ? <Loading/> :
                                 <View>
                                     <Icon
@@ -214,32 +223,53 @@ export default  function PhoneAuthScreen() {
                     :
                     <View>
 
-                        <OTPLabelAndInputWrapper>
+                            <OTPLabelAndInputWrapper>
+                                <Icon
+                                    name='lock'
+                                    type='md'
+                                    color='#1c3787' size={30}
+                                />
+
+                                <OTPTextInput placeholder={'OTP Code'} keyboardType={'number-pad'} maxLength={6}
+                                              value={code} onChange={() => hasCurrentUser()}
+                                              onChangeText={text => setCode(text)}/>
+
+                                              <View style={{justifyContent: "flex-end"}}>
+                                                  <Button
+                                                      title={isResendDisable ? count.toString()+' seconds' : "RESEND"} onPress={() => resendCode()} disabled={isResendDisable}/>
+
+                                              </View>
+
+
+
+
+                            </OTPLabelAndInputWrapper>
+
+
+                        <BottomButtonContainer onPress={() => confirmCode()} disabled={disableOTPSubmit()}>
                             <Icon
-                                name='lock'
-                                type='md'
-                                color='#1c3787' size={30}
+                                name='home'
+                                color={disableOTPSubmit() ? 'grey' : 'white'}
+                                type='ionicon'
+                                size={50}
                             />
-
-                            <OTPTextInput placeholder={'OTP Code'} keyboardType={'number-pad'} maxLength={6}
-                                          value={code} onChange={() => hasCurrentUser()}
-                                          onChangeText={text => setCode(text)}/>
-
-
-
-                        </OTPLabelAndInputWrapper>
-
-
-                        <BottomButtonContainer>
-                            <Button title={isResendDisable ? count.toString()+' seconds' : "RESEND"} onPress={() => resendCode()} disabled={isResendDisable}/>
-                            <Button title="SIGN IN" onPress={() => confirmCode()} disabled={disableOTPSubmit()}/>
-
+                            <TextComponent center color={disableOTPSubmit() ? 'grey' : 'white'}>SIGN IN</TextComponent>
 
                         </BottomButtonContainer>
 
                     </View>
                 }
+                <TermsAndConditionsTouchArea onPress={() => setTermsModal(true)}>
+                    <TextComponent color={'white'} center>
+                        By creating an account, you agree with
+                    </TextComponent>
+                    <TextComponent color={'white'} center>
+                        Basa Bari's Terms & Conditions
+                    </TextComponent>
+
+                </TermsAndConditionsTouchArea>
             </BodyContainer>
+            <TermsAndConditionsModal modalVisible={openTermsModal} modalHide={closeTermsModal} headerColor={'#320A28'}/>
         </MainContainer>
 
     );
@@ -291,7 +321,8 @@ const OTPLabelAndInputWrapper = styled.View`
 flexDirection: row;
 borderRadius: 10px;
 backgroundColor: lavender;
-alignSelf: center;
+overflow: hidden;
+
 paddingHorizontal: 15px;
 alignItems: center;
 marginBottom: 30px;
@@ -300,14 +331,14 @@ marginBottom: 30px;
 `;
 
 const OTPTextInput = styled.TextInput`
+width: 70%;
 
 
 fontSize: 20px;
 `;
 
-const BottomButtonContainer = styled.View`
-flexDirection: row;
-justifyContent: space-around;
+const BottomButtonContainer = styled.TouchableOpacity`
+marginBottom: 30px;
 `;
 
 const LogoContainer = styled.View`
@@ -323,5 +354,13 @@ const Loading = styled.ActivityIndicator.attrs(props => ({
 
 
 }))``;
+
+const TermsAndConditionsTouchArea = styled.TouchableOpacity`
+position: absolute;
+ bottom: 0;
+  alignSelf: center;
+   paddingVertical: 5px;
+
+`
 
 

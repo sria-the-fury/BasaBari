@@ -5,7 +5,7 @@ import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
 
 export const TermsAndConditionsModal = (props) => {
-   const {modalVisible, modalHide} = props;
+    const {modalVisible, modalHide, headerColor} = props;
     return (
         <Container>
             {/*<StatusBar barStyle={'dark-content'} backgroundColor={StatusBarAndTopHeaderBGColor}/>*/}
@@ -14,15 +14,15 @@ export const TermsAndConditionsModal = (props) => {
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                   modalHide()
+                    modalHide()
                 }}
             >
                 <ModalView>
-                    <ModalHeader>
+                    <ModalHeader style={{backgroundColor: headerColor ? headerColor : StatusBarAndTopHeaderBGColor}}>
                         <Pressable onPress={() => modalHide()}>
-                            <Icon name={'chevron-down-circle'} type={'ionicon'} size={40}/>
+                            <Icon name={'chevron-down-circle'} type={'ionicon'} size={40} color={headerColor ? 'white' : 'black'}/>
                         </Pressable>
-                        <TextComponent bold medium>Terms & Conditions</TextComponent>
+                        <TextComponent bold medium color={headerColor ? 'white' : 'black'}>Terms & Conditions</TextComponent>
                     </ModalHeader>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{paddingHorizontal: 10, paddingVertical: 10}}>
@@ -66,7 +66,6 @@ height:100%;
 `;
 
 const ModalHeader = styled.View`
-backgroundColor: ${StatusBarAndTopHeaderBGColor};
 height:50px;
 width:100%;
 flexDirection: row;
