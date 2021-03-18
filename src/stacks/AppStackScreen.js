@@ -7,7 +7,6 @@ import {UserContext} from "../context/UserContext";
 
 import MyListingScreenAsModal from "../screens/MyListingsScreenAsModal";
 import InitialUpdateProfile from "../screens/InitialUpdateProfile";
-import LoadingScreen from "../screens/LoadingScreen";
 
 
 export default function AppStackScreen() {
@@ -17,8 +16,6 @@ export default function AppStackScreen() {
     if(user.isLoggedIn === true ){
         return (
             <AppStack.Navigator headerMode="none">
-
-                {}
 
                 <AppStack.Screen name={'Main'} component={MainStackScreen}/>
 
@@ -50,13 +47,4 @@ export default function AppStackScreen() {
         )
     }
 
-    // else{
-    //     return (
-    //         <AppStack.Navigator headerMode="none">
-    //             <AppStack.Screen name={'Loading'} component={LoadingScreen} />
-    //         </AppStack.Navigator>
-    //
-    //     )
-    //
-    // }
 }

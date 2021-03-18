@@ -20,7 +20,7 @@ export default function MainStackScreen() {
     const tabBarOptions = {
         showLabel: false,
         style: {
-            backgroundColor: '#d0ff00',
+            backgroundColor: '#320A28',
             paddingBottom: 5,
             paddingTop:5,
             height: 54
@@ -39,10 +39,6 @@ export default function MainStackScreen() {
             switch (route.name) {
                 case 'Home':
                     iconName = 'home';
-                    break;
-
-                case 'Favorite':
-                    iconName = 'chatbox';
                     break;
 
                 case 'Notification':
@@ -75,7 +71,7 @@ export default function MainStackScreen() {
                     <View>
                         {
                             getCurrentUserProfileUrl ?
-                                <Image source={{uri: getCurrentUserProfileUrl}} style={{borderColor: focused ? '#5d00ff' : 'white',
+                                <Image source={{uri: getCurrentUserProfileUrl}} style={{borderColor: focused ? 'white' : '#666666',
                                     height: 32,
                                     width: 32,
                                     borderRadius: 16,
@@ -99,7 +95,7 @@ export default function MainStackScreen() {
 
             }
 
-            return <Icon name={iconName} type='ionicon' size={30} color={focused ? '#5d00ff' :'#666666' }/>;
+            return <Icon name={iconName} type='ionicon' size={30} color={focused ? 'white' :'#666666' }/>;
 
         },
 

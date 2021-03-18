@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import styled from "styled-components";
 import {StatusBar, TextInput, TouchableOpacity, View} from 'react-native';
 import {TextComponent} from "../components/TextComponent";
@@ -6,8 +6,6 @@ import {Icon} from "react-native-elements";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import {UserContext} from "../context/UserContext";
 import {FirebaseContext} from "../context/FirebaseContext";
-import {UpdateEmailOrPasswordModal} from "../modals/UpdateEmailOrPasswordModal";
-import firestore from "@react-native-firebase/firestore";
 import ImagePicker from "react-native-customized-image-picker";
 
 
@@ -19,25 +17,16 @@ export default function ProfileScreen(props) {
     const [updatedName, setUpdateName] = useState('');
     const [updatedPhone, setUpdatePhone] = useState('');
 
-    //this components state
-    const [userInfoFromCollection, setUserInfoFromCollection] = useState(null);
-
 
     // userContext
     const[_,setUser] = useContext(UserContext);
     const firebase = useContext(FirebaseContext);
     const profileUserInfo = firebase.getCurrentUser() ? firebase.getCurrentUser() : '';
 
-    console.log('profileUserInfo=>', profileUserInfo);
-
 
 
     //openModal
     const [openTermsModal, setTermsModal] = useState(false);
-    const [openEmailOrPassWordUpdateModal, setOpenEmailOrPassWordUpdateModal] = useState(false);
-
-    //extra props with modal
-    const [updateType, setUpdateType] = useState('');
 
 
     //useStateFor inLineEdit
@@ -75,25 +64,12 @@ export default function ProfileScreen(props) {
         setTermsModal(false);
     }
 
-    const closeEmailOrPassWordUpdateModal = () => {
-        setOpenEmailOrPassWordUpdateModal(false);
-    }
-
     //log out
     const loggedOut = async () => {
         const loggedOut = await firebase.loggedOut();
 
         if(loggedOut) setUser({isLoggedIn: null});
     }
-
-    useEffect( () => {
-        const subscriber = firestore().collection('users').doc(profileUserInfo.uid).onSnapshot(
-            doc=> {
-                setUserInfoFromCollection(doc.data());
-            });
-
-        return () => subscriber();
-    },[]);
 
 
     //updating functions
@@ -103,13 +79,18 @@ export default function ProfileScreen(props) {
 
         try{
             const isNameUpdated = await firebase.updateUserProfileName(updatedName);
-            if(isNameUpdated) cancelUpdateName();
+            setUser({userName: profileUserInfo.displayName});
+
+            if(isNameUpdated){
+                cancelUpdateName();
+            }
 
         }catch (e) {
             alert(e.message);
 
         }
         finally {
+
             setNameLoading(false);
             cancelUpdateName();
 
@@ -136,13 +117,19 @@ export default function ProfileScreen(props) {
     const uploadUpdateProfileImage = async (path) => {
         try {
             setLoading(true);
-            await firebase.uploadProfilePhoto(path)
+            await firebase.uploadProfilePhoto(path);
+            setUser(prev => ({
+                ...prev,
+                profilePhotoUrl: profileUserInfo.photoURL
+            }));
+
 
         } catch (e) {
             alert(e.message);
         } finally {
             setLoading(false);
             removeTempImages();
+
         }
     }
     const chooseProfileImage = () => {
@@ -222,33 +209,31 @@ export default function ProfileScreen(props) {
 
                 <UserInfo>
 
-                    {userInfoFromCollection ?
-                        <EachInfoWrapper>
-                            <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
+                    <EachInfoWrapper>
+                        <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
 
-                            <TextInput defaultValue={userInfoFromCollection.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: '#6526a5',  backgroundColor: isEditableCellNo ? 'white' : null,
-                                borderRadius: isEditableCellNo ? 20 : null, paddingHorizontal: isEditableCellNo ? 10 : null
-                            }} keyboardType={'number-pad'}
+                        <TextInput defaultValue={profileUserInfo.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: '#6526a5',  backgroundColor: isEditableCellNo ? 'white' : null,
+                            borderRadius: isEditableCellNo ? 20 : null, paddingHorizontal: isEditableCellNo ? 10 : null
+                        }} keyboardType={'number-pad'}
 
-                                       autoFocus={isEditableCellNo} editable={isEditableCellNo} onFocus={() => setEditableCellNo(true)}
-                                       onBlur={() => {setEditableCellNo(false);
-                                           setUpdatePhone('');
-                                       }}
-                                       maxLength={14} onChangeText={(updatedPhone) => setUpdatePhone(updatedPhone)}
-                            />
+                                   autoFocus={isEditableCellNo} editable={isEditableCellNo} onFocus={() => setEditableCellNo(true)}
+                                   onBlur={() => {setEditableCellNo(false);
+                                       setUpdatePhone('');
+                                   }}
+                                   maxLength={14} onChangeText={(updatedPhone) => setUpdatePhone(updatedPhone)}
+                        />
 
-                            {(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === userInfoFromCollection.phoneNumber) ?
-                                <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>
-                                :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== userInfoFromCollection.phoneNumber) && !phoneLoading ?
-                                    <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :
-                                    isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== userInfoFromCollection.phoneNumber) && phoneLoading ?
-                                        <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
-                                            <Loading/></View>
-                                        : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>
-                            }
-                        </EachInfoWrapper>
-                        : null
-                    }
+                        {(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === profileUserInfo.phoneNumber) ?
+                            <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>
+                            :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && !phoneLoading ?
+                                <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :
+                                isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && phoneLoading ?
+                                    <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
+                                        <Loading/></View>
+                                    : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>
+                        }
+                    </EachInfoWrapper>
+
 
 
                 </UserInfo>
@@ -266,18 +251,18 @@ export default function ProfileScreen(props) {
                         <TextComponent bold medium>Set your Location</TextComponent>
                     </SettingsCardContainer>
 
-                    <UpdatePassWordAndEmailContainerCard>
-                        <UpdateSettingsCardLeft onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('email')}}>
-                            <Icon name={'email'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>
-                            <TextComponent bold medium>Update Email </TextComponent>
-                        </UpdateSettingsCardLeft>
+                    {/*<UpdatePassWordAndEmailContainerCard>*/}
+                    {/*    <UpdateSettingsCardLeft onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('email')}}>*/}
+                    {/*        <Icon name={'email'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>*/}
+                    {/*        <TextComponent bold medium>Update Email </TextComponent>*/}
+                    {/*    </UpdateSettingsCardLeft>*/}
 
-                        <UpdateSettingsCardRight onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('password')}}>
-                            <Icon name={'lock'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>
-                            <TextComponent bold medium>Update Password</TextComponent>
-                        </UpdateSettingsCardRight>
+                    {/*    <UpdateSettingsCardRight onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('password')}}>*/}
+                    {/*        <Icon name={'lock'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>*/}
+                    {/*        <TextComponent bold medium>Update Password</TextComponent>*/}
+                    {/*    </UpdateSettingsCardRight>*/}
 
-                    </UpdatePassWordAndEmailContainerCard>
+                    {/*</UpdatePassWordAndEmailContainerCard>*/}
 
                     <SettingsCardContainer>
                         <Icon name={'report-problem'} type={'material'} size={30} color={'orange'} style={{marginRight: 10}}/>
@@ -303,8 +288,6 @@ export default function ProfileScreen(props) {
             </BottomContainer>
 
             <TermsAndConditionsModal modalVisible={openTermsModal} modalHide={closeTermsModal}/>
-            <UpdateEmailOrPasswordModal modalVisible={openEmailOrPassWordUpdateModal} updateType={updateType} email={profileUserInfo.email}
-                                        modalHide={closeEmailOrPassWordUpdateModal}/>
 
             {/*<MyListingsModal modalVisible={openMyListingsModal} modalHide={closeMyListingsModal} />*/}
 

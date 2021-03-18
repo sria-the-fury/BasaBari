@@ -1,10 +1,11 @@
-import React, {useContext, useState, useEffect} from 'react';
-import {Button, ToastAndroid, View} from 'react-native';
+import React, {useContext, useState,useEffect} from 'react';
+import {Button, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
 import styled from "styled-components";
 import {Icon} from "react-native-elements";
 import {TextComponent} from "../components/TextComponent";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {UserContext} from "../context/UserContext";
+import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 
 export default  function PhoneAuthScreen() {
     const [_, setUser] = useContext(UserContext);
@@ -14,56 +15,66 @@ export default  function PhoneAuthScreen() {
 
     const [code, setCode] = useState('');
     const [number, setNumber] = useState('');
-    // const number = '+8801759040757';
+
+    //loading after submit
+    const [loading, setLoading] = useState(false);
+
+    //resend button
+    const [isResendDisable, setResendDisable] = useState(true);
+    const [count, setCount] = useState(0);
+
+    //check input is number
+    const isInputHasNumber = /[0-9]+$/g;
+    const isNumber = isInputHasNumber.test(number);
+
+
+    useEffect(() => {
+
+
+        let interval = setInterval(() => {
+            setCount(prev => {
+                if (prev === 0) {
+                    clearInterval(interval);
+                    setResendDisable(false);
+
+                }
+                if(prev >= 0) return prev - 1;
+            })
+        },1000)
+        // interval cleanup on component unmount
+        return () => clearInterval(interval);
+    }, [isResendDisable]);
 
     const currentUser = firebase.getCurrentUser();
 
-    // useEffect(() => {
-    //     return () => {
-    //         if(currentUser && (currentUser.displayName && currentUser.photoURL)){
-    //             setUser({
-    //                 isLoggedIn: true,
-    //                 userName: currentUser.displayName,
-    //                 profileImageUrl: currentUser.photoURL,
-    //                 userPhoneNumber: currentUser.phoneNumber
-    //
-    //             });
-    //         } else{
-    //             setUser({
-    //                 isLoggedIn: false
-    //             });
-    //         }
-    //     };
-    // }, [currentUser]);
-
-    // Handle the button press
-    // async function signInWithPhoneNumber() {
-    //     const confirmation = await auth().signInWithPhoneNumber(number, true);
-    //
-    //     if(confirmation) setConfirm(confirmation);
-    // }
 
     const signInWithPhoneNumber = async () => {
+        setLoading(true)
 
         try {
             const phoneNumber = '+88'+number;
             const confirmation = await firebase.signInWithPhoneNumber(phoneNumber);
             console.log('confirmation => ', confirmation);
-            if(confirmation) setConfirm(confirmation);
+            if(confirmation) {
+                ToastAndroid.show('OTP has been sent', ToastAndroid.SHORT);
+                setResendDisable(true);
+                setCount(60);
+                setConfirm(confirmation);
+            }
 
         } catch (error){
             ToastAndroid.show(error.message, ToastAndroid.LONG);
             console.log('error in SignIn => ' + error.message);
+        } finally {
+            setLoading(false);
         }
 
     };
 
-    async function confirmCode() {
+    const  confirmCode = async () => {
         try{
             let data = await confirm.confirm(code);
-            console.log('data.additionalUserInfo.isNewUser=>', data.additionalUserInfo.isNewUser);
-            console.log('data.user.displayName=>', data.user.displayName);
-            console.log('data.user.photoURL=>', data.user.photoURL);
+
             if(data.user.displayName && data.user.photoURL){
                 setUser({
                     isLoggedIn: true,
@@ -89,17 +100,19 @@ export default  function PhoneAuthScreen() {
 
     };
 
-    // async function confirmCode() {
-    //     try {
-    //         let data = await confirm.confirm(code);
-    //         console.log("Data=>", data);
-    //     } catch (error) {
-    //         console.log(error.message);
-    //     }
-    // }
-    // // console.log('code => ', code);
-    // console.log('confirm => ', confirm);
-    console.log('currentUser => ', currentUser);
+    const resendCode = async () => {
+        setCount(60);
+        setResendDisable(true);
+
+        try{
+            await signInWithPhoneNumber();
+        } catch (e) {
+            ToastAndroid.show(e.message, ToastAndroid.SHORT);
+
+        }
+
+    }
+
 
     const disableSignIn = () => {
         return (number === '' || number.length !==11);
@@ -130,49 +143,133 @@ export default  function PhoneAuthScreen() {
 
         }
 
-    }
-
-    if (!confirm) {
-        return (
-            <View style={{flex:1, justifyContent: 'center'}}>
-                <LabelAndInputWrapper>
-                    <Icon
-                        name='phone'
-                        type='md'
-                        color='#1c3787' size={30}
-                    />
-
-                    <TextComponent semiLarge>+88</TextComponent>
-
-                    <TextInput placeholder={'Phone Number'} keyboardType={'number-pad'} maxLength={11}
-                               onChangeText={(number) => setNumber(number)}/>
-
-                </LabelAndInputWrapper>
-                {/*<TextInput onChangeText={number => setNumber(number)} style={{backgroundColor: 'lavender', alignItems: "center"}} keyboardType={'number-pad'}/>*/}
-                <Button
-                    title="SIGN IN" disabled={disableSignIn()}
-                    onPress={() => signInWithPhoneNumber()}
-                />
-            </View>
-
-        );
-    }
+    };
 
     return (
-        <View style={{flex: 1, justifyContent: "center"}}>
-            <TextInput value={code} onChange={() => hasCurrentUser()}
-                       onChangeText={text => setCode(text)}
-                       style={{backgroundColor: 'lavender', alignItems: "center"}} keyboardType={'number-pad'}
-                       maxLength={6}/>
-            <Button title="Confirm Code" onPress={() => confirmCode()} disabled={disableOTPSubmit()}/>
-        </View>
+        <MainContainer>
+            <FocusedStatusbar barStyle="dark-content" backgroundColor={'#320A28'}/>
+            <View style={{marginTop: 50, alignItems: "center", flexDirection: "row", justifyContent: "space-between"}}>
+                <View style={{height: 10, width:30, backgroundColor: 'white'}}/>
+
+                <View style={{alignItems: "center"}}>
+                    <Text style={{color: 'white', fontSize: 30, fontFamily: 'JetBrainsMono-Regular'}}>
+                        FIND YOUR HOME
+
+                    </Text>
+                    <Text style={{color: 'white', fontSize: 20, fontFamily: 'JetBrainsMono-Light'}}>
+                        Across the cities.
+                    </Text>
+
+                </View>
+                <View style={{height: 10, width:30, backgroundColor: 'white'}}/>
+
+            </View>
+
+
+            <BodyContainer>
+                <View>
+                    { !confirm ?
+                        <Text style={{color: 'white', fontSize: 20, fontFamily: 'JetBrainsMono-Regular'}}>
+                            LET'S START.
+                        </Text>  :
+                        <Text style={{color: 'white', fontSize: 20, fontFamily: 'JetBrainsMono-Regular', textAlign: 'center'}}>
+                            HURRY UP.
+                        </Text>
+                    }
+                </View>
+
+                { !confirm ?
+                    <View>
+                        <LabelAndInputWrapper>
+                            <Icon
+                                name='phone'
+                                type='md'
+                                color='#1c3787' size={30}
+                            />
+
+                            <TextComponent semiLarge>+88</TextComponent>
+
+                            <TextInput placeholder={'Phone Number'} keyboardType={'number-pad'} maxLength={11}
+                                       onChangeText={(number) => setNumber(number)}/>
+
+                        </LabelAndInputWrapper>
+
+                        <TouchableOpacity disabled={disableSignIn() || !isNumber || loading} onPress={() => signInWithPhoneNumber()}>
+                            { loading ? <Loading/> :
+                                <View>
+                                    <Icon
+                                        name='finger-print'
+                                        color={disableSignIn() || !isNumber ? 'grey' : 'white'}
+                                        type='ionicon'
+                                        size={50}
+                                    />
+                                    <TextComponent center color={disableSignIn() || !isNumber ? 'grey' : 'white'}>GET OTP</TextComponent>
+
+                                </View>
+                            }
+
+                        </TouchableOpacity>
+
+                    </View>
+                    :
+                    <View>
+
+                        <OTPLabelAndInputWrapper>
+                            <Icon
+                                name='lock'
+                                type='md'
+                                color='#1c3787' size={30}
+                            />
+
+                            <OTPTextInput placeholder={'OTP Code'} keyboardType={'number-pad'} maxLength={6}
+                                          value={code} onChange={() => hasCurrentUser()}
+                                          onChangeText={text => setCode(text)}/>
+
+
+
+                        </OTPLabelAndInputWrapper>
+
+
+                        <BottomButtonContainer>
+                            <Button title={isResendDisable ? count.toString()+' seconds' : "RESEND"} onPress={() => resendCode()} disabled={isResendDisable}/>
+                            <Button title="SIGN IN" onPress={() => confirmCode()} disabled={disableOTPSubmit()}/>
+
+
+                        </BottomButtonContainer>
+
+                    </View>
+                }
+            </BodyContainer>
+        </MainContainer>
+
     );
 }
 
-const NumberInputContainer = styled.View`
 
+
+const MainContainer = styled.SafeAreaView`
+flex: 1;
+
+backgroundColor: #320A28;
 
 `;
+
+const BodyContainer = styled.View`
+position: absolute;
+bottom: 0;
+width: 100%;
+flex: 1;
+
+justifyContent: center;
+backgroundColor: #512945;
+paddingVertical: 40px;
+paddingHorizontal: 20px;
+alignSelf: center;
+borderTopRightRadius: 20px;
+borderTopLeftRadius: 20px;
+
+`;
+
 
 
 const LabelAndInputWrapper = styled.View`
@@ -190,3 +287,41 @@ const TextInput = styled.TextInput`
 
 fontSize: 20px;
 `;
+const OTPLabelAndInputWrapper = styled.View`
+flexDirection: row;
+borderRadius: 10px;
+backgroundColor: lavender;
+alignSelf: center;
+paddingHorizontal: 15px;
+alignItems: center;
+marginBottom: 30px;
+
+
+`;
+
+const OTPTextInput = styled.TextInput`
+
+
+fontSize: 20px;
+`;
+
+const BottomButtonContainer = styled.View`
+flexDirection: row;
+justifyContent: space-around;
+`;
+
+const LogoContainer = styled.View`
+position: absolute;
+top: -30px;
+alignSelf: center;
+
+`;
+
+const Loading = styled.ActivityIndicator.attrs(props => ({
+    color: 'white',
+    size: 'large',
+
+
+}))``;
+
+

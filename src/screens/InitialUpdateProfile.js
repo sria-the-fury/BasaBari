@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react'
+import React, {useContext, useState} from 'react'
 import {View, Text, TouchableOpacity, Button, ToastAndroid} from 'react-native'
 import styled from "styled-components";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
@@ -18,19 +18,6 @@ const InitialUpdateProfile = (props) => {
     const [loading, setLoading] = useState(false);
     const [updateLoading, setUpdateLoading] = useState(false);
 
-    // useEffect(() => {
-    //     return () => {
-    //         if(getCurrentUser.displayName && getCurrentUser.photoURL){
-    //             setUser({
-    //                 isLoggedIn: true,
-    //                 userName: getCurrentUser.displayName,
-    //                 profileImageUrl: getCurrentUser.photoURL,
-    //                 userPhoneNumber: getCurrentUser.phoneNumber
-    //
-    //             });
-    //         }
-    //     };
-    // }, [getCurrentUser]);
 
 
     const chooseProfileImage = () => {
@@ -158,7 +145,7 @@ const InitialUpdateProfile = (props) => {
 
                 </LabelAndInputWrapper>
 
-                <Button title={updateLoading ? "Updating.." : 'UPDATE PROFILE'} onPress={() => updateProfile()} disabled={disableSubmit()}/>
+                <Button title={updateLoading ? "Updating.." : 'UPDATE PROFILE'} onPress={() => updateProfile()} disabled={disableSubmit() || loading}/>
 
             </InputContainer>
         </Container>

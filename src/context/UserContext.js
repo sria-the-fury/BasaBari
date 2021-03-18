@@ -24,7 +24,6 @@ export const UserProvider =  (props) => {
 
     });
 
-    console.log('state=>', state);
 
     return (<UserContext.Provider value={[state, setState]}>{props.children}</UserContext.Provider>)
 }
