@@ -8,6 +8,7 @@ import {UserContext} from "../context/UserContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import LottieView from "lottie-react-native";
+import {CircularProgress} from "../components/circular-progress/CircularProgress";
 
 export default  function PhoneAuthScreen() {
     const [_, setUser] = useContext(UserContext);
@@ -48,7 +49,7 @@ export default  function PhoneAuthScreen() {
                     setResendDisable(false);
 
                 }
-                if(prev >= 0) return prev - 1;
+                if(prev > 0) return prev - 1;
             })
         },1000)
         // interval cleanup on component unmount
@@ -159,13 +160,13 @@ export default  function PhoneAuthScreen() {
         <MainContainer>
             <FocusedStatusbar barStyle="dark-content" backgroundColor={'#320A28'}/>
 
-            <View  style={{marginTop: 50, alignItems: "center"}}>
+            <View  style={{marginTop: 30, alignItems: "center"}}>
 
                 <LottieView source={require('../../assets/home.json')} autoPlay loop style={{width: 120}} />
             </View>
 
 
-            <View style={{marginTop: 50, alignItems: "center", flexDirection: "row", justifyContent: "space-between"}}>
+            <View style={{marginTop: 30, alignItems: "center", flexDirection: "row", justifyContent: "space-between"}}>
                 <View style={{height: 10, width:30, backgroundColor: 'white'}}/>
 
                 <View style={{alignItems: "center"}}>
@@ -185,7 +186,7 @@ export default  function PhoneAuthScreen() {
 
             <BodyContainer>
                 <View style={{position: "absolute", top: -10, alignSelf: 'center', backgroundColor: '#320A28', paddingHorizontal: 10, borderRadius: 10}}>
-                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 30}}>BASA BARI</Text>
+                    <Text style={{color: 'white', fontSize: 30, fontFamily: 'JetBrainsMono-Regular'}}>BASA BARI</Text>
                 </View>
 
                 <View>
@@ -246,19 +247,28 @@ export default  function PhoneAuthScreen() {
                                           value={code} onChange={() => hasCurrentUser()}
                                           onChangeText={text => setCode(text)}/>
 
-                            <View style={{justifyContent: "flex-end"}}>
-                                <Button
-                                    title={isResendDisable ? count.toString()+' seconds' : "RESEND"} onPress={() => resendCode()} disabled={isResendDisable}/>
+                            <OTPAndCircularProgressContainer onPress={() => resendCode()} disabled={isResendDisable}>
 
-                            </View>
+                                <CircularProgress fillRatio={count} percentage={60} size={40}/>
+                                <ResendOTPButton>
+                                    <Icon
+                                          name='phonelink-lock'
+                                          color={isResendDisable ? 'grey' : 'black'}
+                                          type='md'
+                                          size={25}
+                                    />
+
+                                </ResendOTPButton>
 
 
+                            </OTPAndCircularProgressContainer>
 
 
                         </OTPLabelAndInputWrapper>
 
 
                         <BottomButtonContainer onPress={() => confirmCode()} disabled={disableOTPSubmit()}>
+
                             <Icon
                                 name='home'
                                 color={disableOTPSubmit() ? 'grey' : 'white'}
@@ -343,7 +353,7 @@ marginBottom: 30px;
 `;
 
 const OTPTextInput = styled.TextInput`
-width: 70%;
+width: 80%;
 
 
 fontSize: 20px;
@@ -373,6 +383,23 @@ position: absolute;
   alignSelf: center;
    paddingVertical: 5px;
 
+`;
+
+const ResendOTPButton = styled.View`
+ height: 30px;
+  width :30px;
+  position: absolute;
+  alignItems: center;
+   justifyContent: center;
+    borderRadius: 20px;
+  
+`;
+
+
+
+const OTPAndCircularProgressContainer = styled.TouchableOpacity`
+alignItems: center;
+justifyContent: center;
 `
 
 
