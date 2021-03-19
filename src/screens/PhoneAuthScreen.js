@@ -7,6 +7,7 @@ import {FirebaseContext} from "../context/FirebaseContext";
 import {UserContext} from "../context/UserContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
+import LottieView from "lottie-react-native";
 
 export default  function PhoneAuthScreen() {
     const [_, setUser] = useContext(UserContext);
@@ -157,6 +158,13 @@ export default  function PhoneAuthScreen() {
     return (
         <MainContainer>
             <FocusedStatusbar barStyle="dark-content" backgroundColor={'#320A28'}/>
+
+            <View  style={{marginTop: 50, alignItems: "center"}}>
+
+                <LottieView source={require('../../assets/home.json')} autoPlay loop style={{width: 120}} />
+            </View>
+
+
             <View style={{marginTop: 50, alignItems: "center", flexDirection: "row", justifyContent: "space-between"}}>
                 <View style={{height: 10, width:30, backgroundColor: 'white'}}/>
 
@@ -176,6 +184,10 @@ export default  function PhoneAuthScreen() {
 
 
             <BodyContainer>
+                <View style={{position: "absolute", top: -10, alignSelf: 'center', backgroundColor: '#320A28', paddingHorizontal: 10, borderRadius: 10}}>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 30}}>BASA BARI</Text>
+                </View>
+
                 <View>
                     { !confirm ?
                         <Text style={{color: 'white', fontSize: 20, fontFamily: 'JetBrainsMono-Regular'}}>
@@ -223,27 +235,27 @@ export default  function PhoneAuthScreen() {
                     :
                     <View>
 
-                            <OTPLabelAndInputWrapper>
-                                <Icon
-                                    name='lock'
-                                    type='md'
-                                    color='#1c3787' size={30}
-                                />
+                        <OTPLabelAndInputWrapper>
+                            <Icon
+                                name='lock'
+                                type='md'
+                                color='#1c3787' size={30}
+                            />
 
-                                <OTPTextInput placeholder={'OTP Code'} keyboardType={'number-pad'} maxLength={6}
-                                              value={code} onChange={() => hasCurrentUser()}
-                                              onChangeText={text => setCode(text)}/>
+                            <OTPTextInput placeholder={'OTP Code'} keyboardType={'number-pad'} maxLength={6}
+                                          value={code} onChange={() => hasCurrentUser()}
+                                          onChangeText={text => setCode(text)}/>
 
-                                              <View style={{justifyContent: "flex-end"}}>
-                                                  <Button
-                                                      title={isResendDisable ? count.toString()+' seconds' : "RESEND"} onPress={() => resendCode()} disabled={isResendDisable}/>
+                            <View style={{justifyContent: "flex-end"}}>
+                                <Button
+                                    title={isResendDisable ? count.toString()+' seconds' : "RESEND"} onPress={() => resendCode()} disabled={isResendDisable}/>
 
-                                              </View>
-
-
+                            </View>
 
 
-                            </OTPLabelAndInputWrapper>
+
+
+                        </OTPLabelAndInputWrapper>
 
 
                         <BottomButtonContainer onPress={() => confirmCode()} disabled={disableOTPSubmit()}>

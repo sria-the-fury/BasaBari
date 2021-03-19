@@ -26,7 +26,7 @@ export const TermsAndConditionsModal = (props) => {
                     </ModalHeader>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{paddingHorizontal: 10, paddingVertical: 10}}>
-                            <TextComponent medium justify>Here are a few examples:
+                            <TextComponent medium justify multiline={true}>Here are a few examples:
 
                                 The Intellectual Property disclosure will inform users that the contents, logo and other visual media you created is your property and is protected by copyright laws.
                                 A Termination clause will inform that users' accounts on your website and mobile app or users' access to your website and mobile (if users can't have an account with you) can be terminated in case of abuses or at your sole discretion.
