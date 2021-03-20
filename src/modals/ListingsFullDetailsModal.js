@@ -14,7 +14,7 @@ export const ListingsFullDetailsModal = (props) => {
 
 
     const makeCall = async (number) => {
-        await Linking.openURL('tel:'+'+88'+number);
+        await Linking.openURL('tel:'+number);
     }
 
     //open update modal

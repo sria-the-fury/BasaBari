@@ -79,7 +79,6 @@ export default function ProfileScreen(props) {
 
         try{
             const isNameUpdated = await firebase.updateUserProfileName(updatedName);
-            setUser({userName: profileUserInfo.displayName});
 
             if(isNameUpdated){
                 cancelUpdateName();

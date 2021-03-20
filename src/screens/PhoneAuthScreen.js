@@ -22,6 +22,9 @@ export default  function PhoneAuthScreen() {
     //loading after submit
     const [loading, setLoading] = useState(false);
 
+    //sign in loading
+    const [signInLoading,setSignInLoading] = useState(false);
+
     //resend button
     const [isResendDisable, setResendDisable] = useState(true);
     const [count, setCount] = useState(0);
@@ -83,6 +86,7 @@ export default  function PhoneAuthScreen() {
     };
 
     const  confirmCode = async () => {
+        setSignInLoading(true);
         try{
             let data = await confirm.confirm(code);
 
@@ -97,6 +101,7 @@ export default  function PhoneAuthScreen() {
             }
 
             else{
+                setSignInLoading(false)
                 setUser({
                     isLoggedIn: false
                 });
@@ -136,7 +141,7 @@ export default  function PhoneAuthScreen() {
     };
 
     const hasCurrentUser = () => {
-        console.log('inHasUser');
+
         if(currentUser && currentUser.displayName && currentUser.photoURL){
             setUser({
                 isLoggedIn: true,
@@ -158,12 +163,12 @@ export default  function PhoneAuthScreen() {
 
     return (
         <MainContainer>
-            <FocusedStatusbar barStyle="dark-content" backgroundColor={'#320A28'}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={'#320A28'}/>
 
-            <View  style={{marginTop: 30, alignItems: "center"}}>
+            <LogoContainer>
 
-                <LottieView source={require('../../assets/home.json')} autoPlay loop style={{width: 120}} />
-            </View>
+                <LottieView source={require('../../assets/lottie-animations/home.json')} autoPlay loop style={{width: 120}} />
+            </LogoContainer>
 
 
             <View style={{marginTop: 30, alignItems: "center", flexDirection: "row", justifyContent: "space-between"}}>
@@ -217,7 +222,11 @@ export default  function PhoneAuthScreen() {
                         </LabelAndInputWrapper>
 
                         <TouchableOpacity disabled={disableSignIn() || !isNumber || loading} onPress={() => signInWithPhoneNumber()} style={{marginBottom: 20}}>
-                            { loading ? <Loading/> :
+                            { loading ?
+                                <LoadingView>
+                                    <LottieView source={require('../../assets/lottie-animations/sending-otp.json')} autoPlay loop style={{width: 72}} />
+                                </LoadingView>
+                                :
                                 <View>
                                     <Icon
                                         name='finger-print'
@@ -252,10 +261,10 @@ export default  function PhoneAuthScreen() {
                                 <CircularProgress fillRatio={count} percentage={60} size={40}/>
                                 <ResendOTPButton>
                                     <Icon
-                                          name='phonelink-lock'
-                                          color={isResendDisable ? 'grey' : 'black'}
-                                          type='md'
-                                          size={25}
+                                        name='phonelink-lock'
+                                        color={'lavender'}
+                                        type='md'
+                                        size={25}
                                     />
 
                                 </ResendOTPButton>
@@ -267,15 +276,23 @@ export default  function PhoneAuthScreen() {
                         </OTPLabelAndInputWrapper>
 
 
-                        <BottomButtonContainer onPress={() => confirmCode()} disabled={disableOTPSubmit()}>
+                        <BottomButtonContainer onPress={() => confirmCode()} disabled={disableOTPSubmit() || signInLoading}>
 
-                            <Icon
-                                name='home'
-                                color={disableOTPSubmit() ? 'grey' : 'white'}
-                                type='ionicon'
-                                size={50}
-                            />
-                            <TextComponent center color={disableOTPSubmit() ? 'grey' : 'white'}>SIGN IN</TextComponent>
+                            { signInLoading ?
+                                <LoadingView>
+                                    <LottieView source={require('../../assets/lottie-animations/entering.json')} autoPlay loop style={{width: 72}} />
+                                </LoadingView> :
+                                <View>
+                                    <Icon
+                                        name='home'
+                                        color={disableOTPSubmit() ? 'grey' : 'white'}
+                                        type='ionicon'
+                                        size={50}
+                                    />
+                                    <TextComponent center color={disableOTPSubmit() ? 'grey' : 'white'}>SIGN IN</TextComponent>
+
+                                </View>
+                            }
 
                         </BottomButtonContainer>
 
@@ -364,9 +381,8 @@ marginBottom: 30px;
 `;
 
 const LogoContainer = styled.View`
-position: absolute;
-top: -30px;
-alignSelf: center;
+marginTop: 30px;
+ alignItems: center;
 
 `;
 
@@ -400,6 +416,11 @@ const ResendOTPButton = styled.View`
 const OTPAndCircularProgressContainer = styled.TouchableOpacity`
 alignItems: center;
 justifyContent: center;
-`
+`;
+
+const LoadingView = styled.View`
+alignItems: center;
+justifyContent: center;
+`;
 
 
