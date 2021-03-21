@@ -32,11 +32,11 @@ const InitialUpdateProfile = (props) => {
             imageLoader: 'UNIVERSAL'
         }).then(image => {
             setProfileImageUri(image[0].path);
-            // if(image.length){
-            //     updateProfileImage(image[0].path).then(() => {
-            //         setLoading(false);
-            //     });
-            // }
+            if(image.length){
+                updateProfileImage(image[0].path).then(() => {
+                    setLoading(false);
+                });
+            }
         });
 
     };
@@ -85,6 +85,7 @@ const InitialUpdateProfile = (props) => {
 
 
         } catch (e) {
+            setUpdateLoading(false);
             console.log(e.message + '@updateProfile');
 
         } finally {

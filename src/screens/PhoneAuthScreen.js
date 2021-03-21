@@ -109,6 +109,7 @@ export default  function PhoneAuthScreen() {
 
 
         } catch (e) {
+            setSignInLoading(false);
             console.log('error @submitCode'+e.message);
             ToastAndroid.show(e.message, ToastAndroid.LONG);
 

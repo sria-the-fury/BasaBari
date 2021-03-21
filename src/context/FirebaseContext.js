@@ -25,7 +25,7 @@ const Firebase = {
 
 
             await firestore().collection('users').doc(uid).set({
-                userName: userName,
+                userName: userName.trim(),
                 phoneNumber: phoneNumber,
                 createAt: new Date(),
             }, {merge: true});

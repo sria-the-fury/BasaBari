@@ -62,7 +62,6 @@ export const EachListing = (props) => {
     };
 
 
-
     //add favorite
 
     const addRemoveFavorite = async (listingId) => {
