@@ -1,5 +1,6 @@
 import React, {useContext, useState} from 'react'
-import {View, Text, TouchableOpacity, Button, ToastAndroid, TouchableHighlight} from 'react-native'
+import {View, Text, TouchableOpacity, ToastAndroid, ActivityIndicator} from 'react-native'
+import {Image} from "react-native-elements";
 import styled from "styled-components";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {TextComponent} from "../components/TextComponent";
@@ -17,7 +18,7 @@ const InitialUpdateProfile = (props) => {
     const [profileImageUri, setProfileImageUri] = useState(null);
     const [userName, setUserName] = useState('');
     const [loading, setLoading] = useState(false);
-    const [updateLoading, setUpdateLoading] = useState(true);
+    const [updateLoading, setUpdateLoading] = useState(false);
 
 
 
@@ -180,9 +181,16 @@ const InitialUpdateProfile = (props) => {
                     </LoadingView>
                     :
                     <TouchableOpacity disabled={disableSubmit() || loading || updateLoading} onPress={() => updateProfile()}
-                                      style={{flexDirection: 'row', alignItems: 'center', alignSelf: "center", backgroundColor: 'white', padding: 6, borderRadius: 5}}>
-                        <Icon name={'person'} type={'md'} color={disableSubmit() ? 'grey' : 'black'}/>
-                        <TextComponent semiLarge bold color={disableSubmit() ? 'grey' : 'black'}>SET PROFILE</TextComponent>
+                                      style={{flexDirection: 'row', alignItems: 'center', alignSelf: "center", backgroundColor: disableSubmit() ?  'white' : '#31bae0', padding: 6, borderRadius: 5}}>
+                        { getCurrentUser && getCurrentUser.photoURL ?
+                            <Image  PlaceholderContent={<ActivityIndicator style={{color: 'blue'}}/>}
+                                source={{uri: getCurrentUser.photoURL}} style={{height: 25, width: 25, borderRadius:50, marginRight: 5}}/>
+
+                            :
+
+                            <Icon name={'person'} type={'md'} color={disableSubmit() ? 'grey' : 'white'} size={25} style={{ marginRight: 5}}/>
+                        }
+                        <TextComponent semiLarge bold color={disableSubmit() ? 'grey' : 'white'}>SET PROFILE</TextComponent>
 
                     </TouchableOpacity>
                 }
@@ -191,7 +199,7 @@ const InitialUpdateProfile = (props) => {
             </BodyContainer>
         </Container>
     )
-}
+};
 
 export default InitialUpdateProfile;
 

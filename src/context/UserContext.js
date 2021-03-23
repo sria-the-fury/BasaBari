@@ -11,7 +11,7 @@ export const UserProvider =  (props) => {
 
     const hasUserWithName = () => {
         if(currentUser && currentUser.uid && currentUser.photoURL && currentUser.displayName) return true;
-        else if(currentUser && currentUser.uid && !currentUser.photoURL && !currentUser.displayName) return false;
+        else if(currentUser && currentUser.uid && (!currentUser.photoURL || !currentUser.displayName)) return false;
         else return null;
     };
 

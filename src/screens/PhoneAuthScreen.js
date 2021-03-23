@@ -1,5 +1,5 @@
-import React, {useContext, useState,useEffect} from 'react';
-import {Button, Text, ToastAndroid, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useState, useEffect, useRef} from 'react';
+import { Text, ToastAndroid, TouchableOpacity, View, Keyboard} from 'react-native';
 import styled from "styled-components";
 import {Icon} from "react-native-elements";
 import {TextComponent} from "../components/TextComponent";
@@ -9,15 +9,36 @@ import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar"
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import LottieView from "lottie-react-native";
 import {CircularProgress} from "../components/circular-progress/CircularProgress";
+import {Colors} from "../components/utilities/Colors";
 
 export default  function PhoneAuthScreen() {
-    const [_, setUser] = useContext(UserContext);
+    const [_,setUser] = useContext(UserContext);
     const firebase = useContext(FirebaseContext);
     // If null, no SMS has been sent
     const [confirm, setConfirm] = useState(null);
 
-    const [code, setCode] = useState('');
     const [number, setNumber] = useState('');
+
+    //all otp
+    const [OTP, setOTP] = useState({
+        otp1: '',
+        otp2: '',
+        otp3: '',
+        otp4: '',
+        otp5: '',
+        otp6: '',
+    });
+
+
+    const inputRefs = {
+        otp1: useRef(),
+        otp2: useRef(),
+        otp3: useRef(),
+        otp4: useRef(),
+        otp5: useRef(),
+        otp6: useRef(),
+    };
+
 
     //loading after submit
     const [loading, setLoading] = useState(false);
@@ -30,7 +51,7 @@ export default  function PhoneAuthScreen() {
     const [count, setCount] = useState(0);
 
     //check input is number
-    const isInputHasNumber = /[0-9]+$/g;
+    const isInputHasNumber = /^0\d+[1-9]+$/g;
     const isNumber = isInputHasNumber.test(number);
 
     //openModal
@@ -59,16 +80,21 @@ export default  function PhoneAuthScreen() {
         return () => clearInterval(interval);
     }, [isResendDisable]);
 
+    useEffect(() => {
+        return () => inputRefs.otp1.current.focus();
+    }, [confirm]);
+
     const currentUser = firebase.getCurrentUser();
 
 
     const signInWithPhoneNumber = async () => {
+        Keyboard.dismiss();
         setLoading(true)
 
         try {
+
             const phoneNumber = '+88'+number;
             const confirmation = await firebase.signInWithPhoneNumber(phoneNumber);
-            console.log('confirmation => ', confirmation);
             if(confirmation) {
                 ToastAndroid.show('OTP has been sent', ToastAndroid.SHORT);
                 setResendDisable(true);
@@ -86,8 +112,10 @@ export default  function PhoneAuthScreen() {
     };
 
     const  confirmCode = async () => {
+        Keyboard.dismiss();
         setSignInLoading(true);
         try{
+            let code = OTP.otp1+OTP.otp2+OTP.otp3+OTP.otp4+OTP.otp5+OTP.otp6;
             let data = await confirm.confirm(code);
 
             if(data.user.displayName && data.user.photoURL){
@@ -137,7 +165,8 @@ export default  function PhoneAuthScreen() {
     };
 
     const disableOTPSubmit = () => {
-        return (code.length !== 6)
+        const {otp1, otp2, otp3, otp4, otp5, otp6} = OTP;
+        return (otp1 === '' || otp2 === '' || otp3 === '' || otp4 === '' || otp5 === '' || otp6 === '' );
 
     };
 
@@ -153,7 +182,7 @@ export default  function PhoneAuthScreen() {
             });
         }
 
-        if(currentUser && !currentUser.displayName && !currentUser.photoURL){
+        if(currentUser && (!currentUser.displayName || !currentUser.photoURL)){
             setUser({
                 isLoggedIn: false
             });
@@ -162,9 +191,11 @@ export default  function PhoneAuthScreen() {
 
     };
 
+
+
     return (
         <MainContainer>
-            <FocusedStatusbar barStyle="light-content" backgroundColor={'#320A28'}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryBody}/>
 
             <LogoContainer>
 
@@ -217,7 +248,7 @@ export default  function PhoneAuthScreen() {
 
                             <TextComponent semiLarge>+88</TextComponent>
 
-                            <TextInput placeholder={'Phone Number'} keyboardType={'number-pad'} maxLength={11}
+                            <TextInput placeholder={'Phone Number'} keyboardType={'phone-pad'} maxLength={11}
                                        onChangeText={(number) => setNumber(number)}/>
 
                         </LabelAndInputWrapper>
@@ -245,17 +276,85 @@ export default  function PhoneAuthScreen() {
                     </View>
                     :
                     <View>
+                        <OTPInputsContainer style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 10}}>
+                            <OTPTextInput
+                                onChange={() => {hasCurrentUser();
+                                    if(OTP.otp1 === ''){
+                                        inputRefs.otp2.current.focus();
+                                    }
 
-                        <OTPLabelAndInputWrapper>
-                            <Icon
-                                name='lock'
-                                type='md'
-                                color='#1c3787' size={30}
-                            />
+                                }}
+                                ref={inputRefs.otp1}
 
-                            <OTPTextInput placeholder={'OTP Code'} keyboardType={'number-pad'} maxLength={6}
-                                          value={code} onChange={() => hasCurrentUser()}
-                                          onChangeText={text => setCode(text)}/>
+                                onChangeText={(otp1) => {
+                                    setOTP((otp) => ({...otp, otp1: otp1}));
+
+                                }}
+                                keyboardType={'number-pad'} maxLength={1}/>
+
+                            <OTPTextInput
+                                onChange={() =>
+                                {hasCurrentUser();
+                                    if(OTP.otp2 === '') inputRefs.otp3.current.focus();
+                                    else inputRefs.otp1.current.focus();
+
+                                }}
+                                ref={inputRefs.otp2}
+
+                                onChangeText={(otp2) => {
+                                    setOTP((otp)=>({...otp, otp2: otp2}));
+
+                                }}
+                                keyboardType={'number-pad'} maxLength={1}/>
+
+                            <OTPTextInput autoFocus={false}
+                                          onChange={() =>
+                                          {hasCurrentUser();
+                                              if(OTP.otp3 === '') inputRefs.otp4.current.focus();
+                                              else if(OTP.otp3 !== '') inputRefs.otp2.current.focus();
+
+                                          }}
+                                          ref={inputRefs.otp3}
+                                          onChangeText={(otp3) => {
+                                              setOTP((otp)=>({...otp, otp3: otp3}));
+                                          }} keyboardType={'number-pad'} maxLength={1}/>
+
+                            <OTPTextInput autoFocus={false}
+                                          onChange={() =>
+                                          {hasCurrentUser();
+                                              if(OTP.otp4 === '') inputRefs.otp5.current.focus();
+                                              else inputRefs.otp3.current.focus();
+
+                                          }}
+                                          ref={inputRefs.otp4}
+
+                                          onChangeText={(otp4) => {
+                                              setOTP((otp)=>({...otp, otp4: otp4}));
+                                          }} keyboardType={'number-pad'} maxLength={1}/>
+
+                            <OTPTextInput autoFocus={false}
+                                          onChange={() =>
+                                          {hasCurrentUser();
+                                              if(OTP.otp5 === '') inputRefs.otp6.current.focus();
+                                              else inputRefs.otp4.current.focus();
+
+                                          }}
+                                          ref={inputRefs.otp5}
+
+                                          onChangeText={(otp5) => {
+                                              setOTP((otp)=>({...otp, otp5: otp5}));
+                                          }} keyboardType={'number-pad'} maxLength={1}/>
+
+                            <OTPTextInput autoFocus={false}
+                                          onChange={() =>
+                                          {hasCurrentUser();
+                                              if(OTP.otp6 !== '') inputRefs.otp5.current.focus();
+
+                                          }}
+                                          ref={inputRefs.otp6}
+                                          onChangeText={(otp6) => {
+                                              setOTP((otp)=>({...otp, otp6: otp6}));
+                                          }} keyboardType={'number-pad'} maxLength={1}/>
 
                             <OTPAndCircularProgressContainer onPress={() => resendCode()} disabled={isResendDisable}>
 
@@ -273,8 +372,8 @@ export default  function PhoneAuthScreen() {
 
                             </OTPAndCircularProgressContainer>
 
+                        </OTPInputsContainer>
 
-                        </OTPLabelAndInputWrapper>
 
 
                         <BottomButtonContainer onPress={() => confirmCode()} disabled={disableOTPSubmit() || signInLoading}>
@@ -316,11 +415,10 @@ export default  function PhoneAuthScreen() {
 }
 
 
-
 const MainContainer = styled.SafeAreaView`
 flex: 1;
 
-backgroundColor: #320A28;
+backgroundColor: ${Colors.primaryBody};
 
 `;
 
@@ -331,7 +429,7 @@ width: 100%;
 flex: 1;
 
 justifyContent: center;
-backgroundColor: #512945;
+backgroundColor: ${Colors.primaryBodyLight};
 paddingVertical: 40px;
 paddingHorizontal: 20px;
 alignSelf: center;
@@ -357,25 +455,7 @@ const TextInput = styled.TextInput`
 
 fontSize: 20px;
 `;
-const OTPLabelAndInputWrapper = styled.View`
-flexDirection: row;
-borderRadius: 10px;
-backgroundColor: lavender;
-overflow: hidden;
 
-paddingHorizontal: 15px;
-alignItems: center;
-marginBottom: 30px;
-
-
-`;
-
-const OTPTextInput = styled.TextInput`
-width: 80%;
-
-
-fontSize: 20px;
-`;
 
 const BottomButtonContainer = styled.TouchableOpacity`
 marginBottom: 30px;
@@ -387,12 +467,6 @@ marginTop: 30px;
 
 `;
 
-const Loading = styled.ActivityIndicator.attrs(props => ({
-    color: 'white',
-    size: 'large',
-
-
-}))``;
 
 const TermsAndConditionsTouchArea = styled.TouchableOpacity`
 position: absolute;
@@ -425,3 +499,20 @@ justifyContent: center;
 `;
 
 
+const OTPTextInput = styled.TextInput`
+padding: 10px;
+backgroundColor: ${Colors.primaryBody};
+marginHorizontal: 5px;
+textAlign: center;
+borderRadius: 5px;
+color: white;
+fontSize: 20px;
+borderColor: white;
+borderWidth:1px;
+
+
+`;
+
+const OTPInputsContainer = styled.View`
+
+    `;
