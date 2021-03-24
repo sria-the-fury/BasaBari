@@ -80,9 +80,6 @@ export default  function PhoneAuthScreen() {
         return () => clearInterval(interval);
     }, [isResendDisable]);
 
-    useEffect(() => {
-        return () => inputRefs.otp1.current.focus();
-    }, [confirm]);
 
     const currentUser = firebase.getCurrentUser();
 
