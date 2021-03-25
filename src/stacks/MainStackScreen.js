@@ -4,7 +4,7 @@ import {Icon, Image} from "react-native-elements";
 import { Text, View} from "react-native";
 
 import HomeScreen from "../screens/HomeScreen";
-import MessageScreen from "../screens/MessageScreen";
+import FavoriteListingsScreen from "../screens/FavoriteListingsScreen";
 import AddListingScreen from "../screens/AddListingScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import ProfileScreen from "../screens/ProfileScreen";
@@ -106,7 +106,7 @@ export default function MainStackScreen() {
     return (
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions} >
             <MainStack.Screen name={'Home'} component={HomeScreen}/>
-            <MainStack.Screen name={'Favorite'} component={MessageScreen}/>
+            <MainStack.Screen name={'Favorite'} component={FavoriteListingsScreen}/>
             <MainStack.Screen name={'Listing'} component={AddListingScreen}
                               listeners={({navigation}) => ({
                                   tabPress: event => {

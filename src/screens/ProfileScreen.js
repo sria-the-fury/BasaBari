@@ -7,6 +7,8 @@ import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import {UserContext} from "../context/UserContext";
 import {FirebaseContext} from "../context/FirebaseContext";
 import ImagePicker from "react-native-customized-image-picker";
+import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
+import {Colors} from "../components/utilities/Colors";
 
 
 export default function ProfileScreen(props) {
@@ -31,7 +33,6 @@ export default function ProfileScreen(props) {
 
     //useStateFor inLineEdit
     const[isEditable, setEditable] = useState(false);
-    const[isEditableCellNo, setEditableCellNo] = useState(false);
 
     const editName = () => {
         setEditable(true);
@@ -167,7 +168,7 @@ export default function ProfileScreen(props) {
     return (
 
         <Container>
-            <StatusBar barStyle={'dark-content'} backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
             <HeaderTop>
                 <View style={{alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginBottom: 3}}>
                     { (isEditable && updatedName === '') || (updatedName.trim() === profileUserInfo.displayName) ?
@@ -179,8 +180,8 @@ export default function ProfileScreen(props) {
                                     <Loading/></View>
                                 : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editName()}/>
                     }
-                    <TextInput defaultValue={profileUserInfo.displayName} style={{fontWeight: "bold", fontSize: 20, color: '#6526a5',  backgroundColor: isEditable ? 'white' : null,
-                        borderRadius: isEditable ? 20 : null, paddingHorizontal: isEditable ? 10 : null
+                    <TextInput defaultValue={profileUserInfo.displayName} style={{fontWeight: "bold", fontSize: 20, color: 'white',  backgroundColor: isEditable ? Colors.primaryBodyLight : null,
+                        borderRadius: isEditable ? 20 : null, paddingHorizontal: isEditable ? 10 : null,
                     }}
                                autoCapitalize={'words'} autoFocus={isEditable} editable={isEditable} onFocus={() => setEditable(true)}
                                onBlur={() => {setEditable(false);
@@ -212,26 +213,22 @@ export default function ProfileScreen(props) {
                     <EachInfoWrapper>
                         <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
 
-                        <TextInput defaultValue={profileUserInfo.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: '#6526a5',  backgroundColor: isEditableCellNo ? 'white' : null,
-                            borderRadius: isEditableCellNo ? 20 : null, paddingHorizontal: isEditableCellNo ? 10 : null
+                        <TextInput defaultValue={profileUserInfo.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: 'white'
                         }} keyboardType={'number-pad'}
 
-                                   autoFocus={isEditableCellNo} editable={isEditableCellNo} onFocus={() => setEditableCellNo(true)}
-                                   onBlur={() => {setEditableCellNo(false);
-                                       setUpdatePhone('');
-                                   }}
-                                   maxLength={14} onChangeText={(updatedPhone) => setUpdatePhone(updatedPhone)}
+                                   editable={false}
+                                   maxLength={14}
                         />
 
-                        {(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === profileUserInfo.phoneNumber) ?
-                            <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>
-                            :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && !phoneLoading ?
-                                <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :
-                                isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && phoneLoading ?
-                                    <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
-                                        <Loading/></View>
-                                    : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>
-                        }
+                        {/*{(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === profileUserInfo.phoneNumber) ?*/}
+                        {/*    <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>*/}
+                        {/*    :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && !phoneLoading ?*/}
+                        {/*        <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :*/}
+                        {/*        isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && phoneLoading ?*/}
+                        {/*            <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>*/}
+                        {/*                <Loading/></View>*/}
+                        {/*            : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>*/}
+                        {/*}*/}
                     </EachInfoWrapper>
 
 
@@ -297,11 +294,11 @@ export default function ProfileScreen(props) {
 
 
 const StatusBarAndTopHeaderBGColor = '#d0ff00';
-const profileIconsColor = '#5e0059';
+const profileIconsColor = 'white';
 const Container = styled.SafeAreaView`
 
 flex:1;
-backgroundColor: #39345b;
+backgroundColor: ${Colors.primaryBodyLight};
 
 
 `;
@@ -309,7 +306,7 @@ backgroundColor: #39345b;
 const HeaderTop = styled.View`
 height: 240px;
 width:100%;
-backgroundColor: ${StatusBarAndTopHeaderBGColor};
+backgroundColor: ${Colors.primaryStatusbarColor};
 paddingHorizontal: 10px;
 paddingVertical: 10px;
 
@@ -369,7 +366,7 @@ marginTop: 50px;
 `;
 
 const ScrollViewContainer = styled.ScrollView`
-backgroundColor: #39345b;
+backgroundColor: ${Colors.primaryBodyLight};
 width:100%;
 overflow:hidden;
 marginBottom: 60px;
@@ -397,8 +394,8 @@ backgroundColor: red;
 paddingHorizontal: 20px;
 paddingVertical: 15px;
 borderRadius: 30px;
-borderWidth:6px;
-borderColor: #39345b;
+borderWidth:7px;
+borderColor: ${Colors.primaryBodyLight};
 
 
 `;

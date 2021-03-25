@@ -5,6 +5,7 @@ import {TextComponent} from "../components/TextComponent";
 import {Divider, Icon} from "react-native-elements";
 import {ListingsUpdateModal} from "./ListingsUpdateModal";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
+import {Colors} from "../components/utilities/Colors";
 
 export const ListingsFullDetailsModal = (props) => {
     const {listingsData, postedUserInfo, currentUserListings} = props;
@@ -26,7 +27,7 @@ export const ListingsFullDetailsModal = (props) => {
 
     return (
         <Container>
-            <FocusedStatusbar barStyle="dark-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -201,7 +202,7 @@ borderRadius: 10px;
 
 `;
 
-const StatusBarAndTopHeaderBGColor = 'red';
+const StatusBarAndTopHeaderBGColor = Colors.primaryStatusbarColor;
 const Container = styled.SafeAreaView`
 
 `;

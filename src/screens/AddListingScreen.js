@@ -11,6 +11,8 @@ import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import {CustomCheckbox} from "../components/custom-checkbox/CustomCheckbox";
 import {FirebaseContext} from "../context/FirebaseContext";
+import {Colors} from "../components/utilities/Colors";
+import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 
 
 export default function AddListingScreen(props) {
@@ -170,7 +172,7 @@ export default function AddListingScreen(props) {
 
     return (
         <Container>
-            <StatusBar backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
 
@@ -485,7 +487,7 @@ elevation: 6;
 `;
 
 
-const StatusBarAndTopHeaderBGColor = '#d0ff00';
+const StatusBarAndTopHeaderBGColor = Colors.addListingTop;
 
 
 const Container = styled.View`

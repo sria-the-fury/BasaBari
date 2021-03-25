@@ -8,6 +8,7 @@ import {EachListing} from "../components/listings/EachListing";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
+import {Colors} from "../components/utilities/Colors";
 
 export default function  HomeScreen () {
 
@@ -55,7 +56,7 @@ export default function  HomeScreen () {
 
     return (
         <Container>
-            <FocusedStatusbar barStyle="dark-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
             {/*<HeaderContainer>*/}
             {/*    <TouchableOpacity onPress={() => props.navigation.goBack()}>*/}
 
@@ -78,16 +79,13 @@ export default function  HomeScreen () {
 }
 
 
-const StatusBarAndTopHeaderBGColor = 'red';
-
-
 const Container = styled.SafeAreaView`
 flex:1;
 
 `;
 
 const HeaderContainer = styled.View`
-backgroundColor: ${StatusBarAndTopHeaderBGColor};
+backgroundColor: ${Colors.primaryStatusbarColor};
 
  flexDirection: row;
  alignItems: center;

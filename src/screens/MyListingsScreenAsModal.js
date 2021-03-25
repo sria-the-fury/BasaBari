@@ -68,7 +68,7 @@ export default function MyListingScreenAsModal(props) {
                 <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
 
             </HeaderContainer>
-            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
+            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
         </Container>
     )
 }
