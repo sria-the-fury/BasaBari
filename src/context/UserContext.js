@@ -17,7 +17,7 @@ export const UserProvider =  (props) => {
 
 
     const [state, setState] = useState({
-        isLoggedIn: false,
+        isLoggedIn: hasUserWithName(),
         profilePhotoUrl: currentUser ? currentUser.photoURL : null,
         userName: currentUser ? currentUser.displayName : null,
         userPhoneNumber: currentUser ? currentUser.phoneNumber : null
