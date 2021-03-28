@@ -84,8 +84,6 @@ const InitialUpdateProfile = (props) => {
 
             });
 
-            console.log('isUserCreated => ', isUserCreated);
-
 
         } catch (e) {
             setUpdateLoading(false);
