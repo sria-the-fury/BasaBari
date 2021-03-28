@@ -238,12 +238,13 @@ export default  function PhoneAuthScreen() {
                 { !confirm ?
                     <View>
 
-                        <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginBottom: 30}}
+                        <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginBottom: 30, color: 'white'}}
                                    mode={'outlined'}
                                    label="Phone Number"
                                    keyboardType={'phone-pad'}
                                    maxLength={11}
                                    onChangeText={(number) => setNumber(number)}
+                                   theme={{ colors: { placeholder: 'lavender', text: 'lavender', primary: 'lavender', underlineColor:'transparent'}}}
 
                                    left={
                                            <TextInput.Icon

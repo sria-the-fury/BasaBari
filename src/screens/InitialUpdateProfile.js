@@ -168,6 +168,7 @@ const InitialUpdateProfile = (props) => {
                            label="Your Name"
                            autoCompleteType={'name'} maxLength={23} autoCapitalize={'words'}
                            onChangeText={(name) => setUserName(name)}
+                           theme={{ colors: { placeholder: 'lavender', text: 'lavender', primary: 'lavender', underlineColor:'transparent'}}}
 
                            left={
                                <TextInput.Icon
