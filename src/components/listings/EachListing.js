@@ -7,6 +7,7 @@ import {ListingsFullDetailsModal} from "../../modals/ListingsFullDetailsModal";
 import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
+import {ListingActionsModal} from "../../modals/ListingActionsModal";
 
 
 
@@ -18,9 +19,25 @@ export const EachListing = (props) => {
     const currentUserId = firebase.getCurrentUser().uid;
 
 
-    const [openMyListingsModal, setMyListingsModal] = useState(false);
-    const closeMyListingsModal  = () => {
-        setMyListingsModal(false);
+    //for modals
+    const [openListingDetailsModal, setListingDetailsModal] = useState(false);
+    const closeListingDetailsModal  = () => {
+        setListingDetailsModal(false);
+    }
+
+    // listingActions Modal
+    const [openListingActionModal, setListingActionModal] = useState(false);
+    const closeListingActionsModal = () => {
+        setListingActionModal(false);
+        setListingData(null);
+    }
+
+    const [listingData, setListingData] = useState(null);
+
+    const ListingActions = (listing) => {
+        setListingActionModal(true);
+        setListingData(listing);
+
     }
 
     const postedTime = () => {
@@ -81,16 +98,7 @@ export const EachListing = (props) => {
         }
     }
 
-    //remove listing
 
-    const removeListing = async (listingId) => {
-        try {
-            await firebase.removeListing(listingId, images);
-        } catch (error){
-            alert(error.message);
-        }
-
-    }
     const isCurrentUserFavList = usersInFav ? usersInFav.includes(currentUserId) : false;
 
 
@@ -119,8 +127,12 @@ export const EachListing = (props) => {
                 </View>
 
                 { currentUserListings() ?
-                    <Icon name={'trash'} type={'ionicon'} size={20}
-                          style={{marginRight: 5}} color={'red'} onPress={() => removeListing(item.id)}/> :
+                    <Icon name={'more-vert'} type={'md'} size={20}
+                          style={{marginRight: 5}} color={'grey'} onPress={() => ListingActions(item)}/>
+                    // <Icon name={'trash'} type={'ionicon'} size={20}
+                    //       style={{marginRight: 5}} color={'red'} onPress={() => removeListing(item.id)}/>
+                    :
+
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
                         <PostedUserAvatar source={{uri: postedUser.profilePhotoUrl}} style={{marginRight: 2}}/>
                         <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
@@ -132,10 +144,11 @@ export const EachListing = (props) => {
             </TimeContainer>
 
 
-            { images && images.length !== 0 ?
+            { images?.length !== 0 ?
                 <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
                           showsHorizontalScrollIndicator={false}/> :
                 <View style={{flexDirection: 'row'}}>
+                    <ListingsImagesContainer/>
                     <ListingsImagesContainer/>
                     <ListingsImagesContainer/>
                 </View>
@@ -177,12 +190,14 @@ export const EachListing = (props) => {
                     }
                 </RentType>
 
-                <Icon raised name={'reader-outline'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} onPress={() => setMyListingsModal(true)}/>
+                <Icon raised name={'reader-outline'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} onPress={() => setListingDetailsModal(true)}/>
 
             </HomeItemsNumbersContainer>
 
-            <ListingsFullDetailsModal modalVisible={openMyListingsModal} modalHide={closeMyListingsModal} listingsData={item} postedUserInfo={postedUser}
+
+            <ListingsFullDetailsModal modalVisible={openListingDetailsModal} modalHide={closeListingDetailsModal} listingsData={item} postedUserInfo={postedUser}
                                       currentUserListings={currentUserListings()}/>
+            <ListingActionsModal modalVisible={openListingActionModal} modalHide={closeListingActionsModal} listingInfo={listingData}/>
         </CardsContainer>
 
     )

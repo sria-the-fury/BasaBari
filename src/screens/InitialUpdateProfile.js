@@ -9,6 +9,8 @@ import ImagePicker from "react-native-customized-image-picker";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {UserContext} from "../context/UserContext";
 import LottieView from "lottie-react-native";
+import {Colors} from "../components/utilities/Colors";
+import {TextInput} from "react-native-paper";
 
 const InitialUpdateProfile = (props) => {
     const [_, setUser] = useContext(UserContext);
@@ -33,7 +35,7 @@ const InitialUpdateProfile = (props) => {
             imageLoader: 'UNIVERSAL'
         }).then(image => {
             setProfileImageUri(image[0].path);
-            if(image.length){
+            if(image.length && getCurrentUser){
                 updateProfileImage(image[0].path).then(() => {
                     setLoading(false);
                 });
@@ -97,7 +99,7 @@ const InitialUpdateProfile = (props) => {
     };
 
     const disableSubmit = () => {
-        return ( userName.length < 3 || (profileImageUri === null && getCurrentUser.photoURL === null))
+        return ( userName.length < 3 || (profileImageUri === null && getCurrentUser?.photoURL === null))
     }
     return (
         <Container>
@@ -138,7 +140,7 @@ const InitialUpdateProfile = (props) => {
                     <TouchableOpacity onPress={() => chooseProfileImage()} style={{height: 120, width: 120, alignItems: 'center', justifyContent: 'center'}}>
 
                         <View>
-                            { getCurrentUser && getCurrentUser.photoURL ?
+                            { getCurrentUser?.photoURL ?
                                 <ProfileImageView source={{uri: getCurrentUser.photoURL }}/> :
                                 profileImageUri ?
                                     <ProfileImageView source={{uri: profileImageUri}}/> :  <Icon
@@ -163,18 +165,26 @@ const InitialUpdateProfile = (props) => {
 
                 </ProfilePhotoContainer>
 
+                <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginBottom: 30, marginTop: 60}}
+                           mode={'outlined'}
+                           label="Your Name"
+                           autoCompleteType={'name'} maxLength={23} autoCapitalize={'words'}
+                           onChangeText={(name) => setUserName(name)}
 
-                <LabelAndInputWrapper>
-                    <Icon
-                        name='person'
-                        type='md'
-                        color='#1c3787' size={30}
-                    />
+                           left={
+                               <TextInput.Icon
+                                   name={()=>
 
-                    <TextInput placeholder={'Your Name'} autoCompleteType={'name'} maxLength={23} autoCapitalize={'words'}
-                               onChangeText={(name) => setUserName(name)}/>
+                                       <Icon
+                                           name='person'
+                                           type='md'
+                                           color='white' size={25}/>
+                                   }
+                               />
+                           }
+                />
 
-                </LabelAndInputWrapper>
+
                 { updateLoading ?
                     <LoadingView>
                         <LottieView source={require('../../assets/lottie-animations/loading.json')} autoPlay loop style={{width: 45}} />
@@ -184,7 +194,7 @@ const InitialUpdateProfile = (props) => {
                                       style={{flexDirection: 'row', alignItems: 'center', alignSelf: "center", backgroundColor: disableSubmit() ?  'white' : '#31bae0', padding: 6, borderRadius: 5}}>
                         { getCurrentUser && getCurrentUser.photoURL ?
                             <Image  PlaceholderContent={<ActivityIndicator style={{color: 'blue'}}/>}
-                                source={{uri: getCurrentUser.photoURL}} style={{height: 25, width: 25, borderRadius:50, marginRight: 5}}/>
+                                    source={{uri: getCurrentUser.photoURL}} style={{height: 25, width: 25, borderRadius:50, marginRight: 5}}/>
 
                             :
 
@@ -251,9 +261,6 @@ marginBottom: 30px;
 
 `;
 
-const TextInput = styled.TextInput`
-fontSize: 20px;
-`;
 
 const Loading = styled.ActivityIndicator.attrs(() => ({
     color: 'white',

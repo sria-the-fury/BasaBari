@@ -1,11 +1,12 @@
 import React, {useState} from "react";
-import {View, Modal, Pressable, ScrollView, StatusBar, FlatList, Linking, Text, TouchableOpacity} from "react-native";
+import {View, Modal, Pressable, ScrollView, StatusBar, FlatList, Linking, Text, TouchableOpacity, StyleSheet} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Divider, Icon} from "react-native-elements";
 import {ListingsUpdateModal} from "./ListingsUpdateModal";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
+import {FAB} from "react-native-paper";
 
 export const ListingsFullDetailsModal = (props) => {
     const {listingsData, postedUserInfo, currentUserListings} = props;
@@ -41,7 +42,10 @@ export const ListingsFullDetailsModal = (props) => {
                         <Icon name={'close-circle'} type={'ionicon'} size={40} color={'white'} onPress={() => modalHide()}/>
                         <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                     </ModalHeader>
-                    <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 5, marginHorizontal: 10, marginBottom: 50}}>
+
+
+
+                    <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 5, marginBottom: 50}}>
 
                         <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
                                   showsHorizontalScrollIndicator={false}/>
@@ -155,7 +159,7 @@ export const ListingsFullDetailsModal = (props) => {
                             <Divider backgroundColor={'blue'}/>
 
                             <ListingDetails>
-                                <TextComponent medium>{moreDetails}</TextComponent>
+                                <TextComponent medium selectable={true}>{moreDetails}</TextComponent>
                             </ListingDetails>
 
                         </MoreDetailsContainer>
@@ -165,10 +169,12 @@ export const ListingsFullDetailsModal = (props) => {
 
                     { currentUserListings ?
                         <EditListingButton onPress={() => setListingUpdateModal(true)}>
+                            <Icon name={'mode-edit'} type={'md'} size={25} style={{marginRight: 5}} color={'white'}/>
                             <TextComponent bold medium color={'white'}>EDIT LISTING</TextComponent>
                         </EditListingButton>
                         :
                         <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
+                            <Icon name={'call'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}/>
                             <TextComponent bold medium color={'white'}>CONTACT WITH LANDLORD</TextComponent>
                         </ContactContainer>
                     }
@@ -178,7 +184,7 @@ export const ListingsFullDetailsModal = (props) => {
                 </ModalView>
             </Modal>
             <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
-            listingsData={listingsData}
+                                 listingsData={listingsData}
             />
         </Container>
     );
@@ -207,10 +213,12 @@ const Container = styled.SafeAreaView`
 
 `;
 
+
 const AddressContainer = styled.View`
  paddingVertical: 10px;
   flexDirection: row;
    alignItems: center;
+   marginHorizontal: 10px;
 
 `
 
@@ -235,6 +243,7 @@ const RoomsContainer = styled.View`
 alignItems: center;
 justifyContent: space-between;
 flexDirection: row;
+marginHorizontal: 10px;
 
 `
 
@@ -252,6 +261,7 @@ borderRadius: 50px;
 const FacilitiesContainer = styled.ScrollView`
 marginVertical: 30px;
 flexDirection: row;
+marginHorizontal: 10px;
 
 `;
 
@@ -266,6 +276,7 @@ marginHorizontal: 5px;
 `;
 
 const RentAndNegotiableContainer = styled.View`
+marginHorizontal: 10px;
 flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
@@ -292,10 +303,13 @@ borderWidth: 2px;
 const ContactContainer = styled.TouchableOpacity`
 position: absolute;
  bottom:0;
+ flexDirection: row;
+ alignItems: center;
  borderTopLeftRadius: 10px;
  borderTopRightRadius: 10px;
  paddingVertical: 15px;
-  alignSelf: center;
+ width:100%;
+ justifyContent: center;
  paddingHorizontal: 20px;
   backgroundColor: red;
 `;
@@ -307,6 +321,10 @@ position: absolute;
  borderTopLeftRadius: 10px;
  borderTopRightRadius: 10px;
  paddingVertical: 15px;
+  width:100%;
+ justifyContent: center;
+  flexDirection: row;
+  alignItems: center;
  paddingHorizontal: 20px;
   backgroundColor: red;
 `
@@ -348,3 +366,14 @@ borderRadius: 5px;
 `;
 
 
+// create style
+
+const styles = StyleSheet.create({
+    fab:{
+        position: 'absolute',
+        right: 0,
+        left: 0,
+        bottom: 0,
+
+    }
+})

@@ -10,6 +10,7 @@ import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import LottieView from "lottie-react-native";
 import {CircularProgress} from "../components/circular-progress/CircularProgress";
 import {Colors} from "../components/utilities/Colors";
+import {TextInput,} from "react-native-paper";
 
 export default  function PhoneAuthScreen() {
     const [_,setUser] = useContext(UserContext);
@@ -236,19 +237,27 @@ export default  function PhoneAuthScreen() {
 
                 { !confirm ?
                     <View>
-                        <LabelAndInputWrapper>
-                            <Icon
-                                name='phone'
-                                type='md'
-                                color='#1c3787' size={30}
-                            />
 
-                            <TextComponent semiLarge>+88</TextComponent>
+                        <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginBottom: 30}}
+                                   mode={'outlined'}
+                                   label="Phone Number"
+                                   keyboardType={'phone-pad'}
+                                   maxLength={11}
+                                   onChangeText={(number) => setNumber(number)}
 
-                            <TextInput placeholder={'Phone Number'} keyboardType={'phone-pad'} maxLength={11}
-                                       onChangeText={(number) => setNumber(number)}/>
+                                   left={
+                                           <TextInput.Icon
+                                               name={()=>
 
-                        </LabelAndInputWrapper>
+                                                   <Icon
+                                                       name='phone'
+                                                       type='md'
+                                                       color='white' size={25}/>
+                                               }
+                                           />
+                                   }
+                        />
+
 
                         <TouchableOpacity disabled={disableSignIn() || !isNumber || loading} onPress={() => signInWithPhoneNumber()} style={{marginBottom: 20}}>
                             { loading ?
@@ -448,11 +457,15 @@ marginBottom: 30px;
 
 `;
 
-const TextInput = styled.TextInput`
+// const TextInput = styled.TextInput`
+//
+// fontSize: 20px;
+// `;
 
-fontSize: 20px;
-`;
+const IconAndCountryCode = styled.View`
+flexDirection: row;
 
+`
 
 const BottomButtonContainer = styled.TouchableOpacity`
 marginBottom: 30px;
@@ -460,27 +473,27 @@ marginBottom: 30px;
 
 const LogoContainer = styled.View`
 marginTop: 30px;
- alignItems: center;
+alignItems: center;
 
 `;
 
 
 const TermsAndConditionsTouchArea = styled.TouchableOpacity`
 position: absolute;
- bottom: 0;
-  alignSelf: center;
-   paddingVertical: 5px;
+bottom: 0;
+alignSelf: center;
+paddingVertical: 5px;
 
 `;
 
 const ResendOTPButton = styled.View`
- height: 30px;
-  width :30px;
-  position: absolute;
-  alignItems: center;
-   justifyContent: center;
-    borderRadius: 20px;
-  
+height: 30px;
+width :30px;
+position: absolute;
+alignItems: center;
+justifyContent: center;
+borderRadius: 20px;
+
 `;
 
 
@@ -512,4 +525,4 @@ borderWidth:1px;
 
 const OTPInputsContainer = styled.View`
 
-    `;
+`;
