@@ -7,7 +7,6 @@ import {ListingsFullDetailsModal} from "../../modals/ListingsFullDetailsModal";
 import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
-import {ListingActionsModal} from "../../modals/ListingActionsModal";
 
 
 
@@ -25,20 +24,6 @@ export const EachListing = (props) => {
         setListingDetailsModal(false);
     }
 
-    // listingActions Modal
-    const [openListingActionModal, setListingActionModal] = useState(false);
-    const closeListingActionsModal = () => {
-        setListingActionModal(false);
-        setListingData(null);
-    }
-
-    const [listingData, setListingData] = useState(null);
-
-    const ListingActions = (listing) => {
-        setListingActionModal(true);
-        setListingData(listing);
-
-    }
 
     const postedTime = () => {
         const postedTime = new Date(item.postedTime.seconds * 1000),
@@ -78,6 +63,16 @@ export const EachListing = (props) => {
 
     };
 
+    //remove listing
+    const removeListing = async (id, images) => {
+        // console.log('ok remove');
+        try {
+            await firebase.removeListing(id, images);
+        } catch (error){
+            alert(error.message);
+        }
+
+    };
 
     //add favorite
 
@@ -111,7 +106,7 @@ export const EachListing = (props) => {
                 { currentUserListings() ?
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
-                        <PostedUserAvatar source={{uri: postedUser.profilePhotoUrl}} style={{marginRight: 2}}/>
+                        <PostedUserAvatar source={{uri: postedUser?.profilePhotoUrl}} style={{marginRight: 2}}/>
                         <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                     :
@@ -127,10 +122,11 @@ export const EachListing = (props) => {
                 </View>
 
                 { currentUserListings() ?
-                    <Icon name={'more-vert'} type={'md'} size={20}
-                          style={{marginRight: 5}} color={'grey'} onPress={() => ListingActions(item)}/>
-                    // <Icon name={'trash'} type={'ionicon'} size={20}
-                    //       style={{marginRight: 5}} color={'red'} onPress={() => removeListing(item.id)}/>
+                    // <Icon name={'more-vert'} type={'md'} size={20}
+                    //       style={{marginRight: 5}} color={'grey'} onPress={() => ListingActions(item)}/>
+                    <Icon name={'trash'} type={'ionicon'} size={20}
+                          style={{marginRight: 5}} color={'red'} onPress={() => removeListing(item.id, images)}/>
+
                     :
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
@@ -171,7 +167,7 @@ export const EachListing = (props) => {
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>
-                    <Icon name={'bathtub'} type={'material'} size={20} style={{marginRight: 5}} color={'grey'} />
+                    <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
                     <TextComponent>{roomNumbers.washRoom}</TextComponent>
                 </HomeItemsNumbers>
 
@@ -197,7 +193,6 @@ export const EachListing = (props) => {
 
             <ListingsFullDetailsModal modalVisible={openListingDetailsModal} modalHide={closeListingDetailsModal} listingsData={item} postedUserInfo={postedUser}
                                       currentUserListings={currentUserListings()}/>
-            <ListingActionsModal modalVisible={openListingActionModal} modalHide={closeListingActionsModal} listingInfo={listingData}/>
         </CardsContainer>
 
     )

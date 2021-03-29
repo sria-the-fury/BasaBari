@@ -6,6 +6,8 @@ import {Icon} from "react-native-elements";
 import {FirebaseContext} from "../context/FirebaseContext";
 import firestore from "@react-native-firebase/firestore";
 import {EachListing} from "../components/listings/EachListing";
+import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
+import {Colors} from "../components/utilities/Colors";
 
 export default function MyListingScreenAsModal(props) {
     const firebase =  useContext(FirebaseContext);
@@ -35,7 +37,9 @@ export default function MyListingScreenAsModal(props) {
                             forBachelor: doc.data().availableForBachelor,
                             forFamily: doc.data().forFamily,
                             rentPerMonth: doc.data().rentPerMonth,
-                            isNegotiable: doc.data().isNegotiable
+                            isNegotiable: doc.data().isNegotiable,
+                            usersInFav: doc.data().usersInFav,
+                            moreDetails: doc.data().moreDetails
                         });
 
                     });
@@ -53,7 +57,7 @@ export default function MyListingScreenAsModal(props) {
 
     return (
         <Container>
-            <StatusBar backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
 
@@ -72,10 +76,10 @@ export default function MyListingScreenAsModal(props) {
         </Container>
     )
 }
-const StatusBarAndTopHeaderBGColor = 'red';
+const StatusBarAndTopHeaderBGColor = Colors.primaryStatusbarColor;
 
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
 flex:1;
 
 `;
