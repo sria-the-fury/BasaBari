@@ -399,7 +399,7 @@ export default function AddListingScreen(props) {
                     <Divider style={{backgroundColor: 'blue'}}/>
                     <RentContainer>
                         <RentTextInputAndIconWrapper>
-                            <Image source={require('../../assets/icons/BDTaka.png')} style={{height: 20, width: 20, borderRadius:10}}/>
+                           <TextComponent bold medium color={'black'}>TK.</TextComponent>
 
                             <RentTextInput placeholder={'10000TK'} keyboardType={'numeric'} maxLength={5} onChangeText={(rent) => setRentPerMonth(rent)}
                                            autoCorrect={false} />

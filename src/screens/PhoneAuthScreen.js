@@ -69,12 +69,12 @@ export default  function PhoneAuthScreen() {
 
         let interval = setInterval(() => {
             setCount(prev => {
-                if (prev === 0) {
+                if (prev === 60) {
                     clearInterval(interval);
                     setResendDisable(false);
 
                 }
-                if(prev > 0) return prev - 1;
+                if(prev < 60) return prev + 1;
             })
         },1000)
         // interval cleanup on component unmount
@@ -96,7 +96,7 @@ export default  function PhoneAuthScreen() {
             if(confirmation) {
                 ToastAndroid.show('OTP has been sent', ToastAndroid.SHORT);
                 setResendDisable(true);
-                setCount(60);
+                setCount(0);
                 setConfirm(confirmation);
             }
 
@@ -144,7 +144,7 @@ export default  function PhoneAuthScreen() {
     };
 
     const resendCode = async () => {
-        setCount(60);
+        setCount(0);
         setResendDisable(true);
 
         try{

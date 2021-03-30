@@ -15,9 +15,11 @@ export const CircularProgress = (props) => {
         <View>
             <Svg width={size} height={size}>
                 <G rotation={'-90'} origin={center}>
+
                     <Circle stroke={"lavender"} cx={center} cy={center} r={radius} strokeWidth={strokeWidth}/>
                     <Circle stroke={"#320A28"} cx={center} cy={center}
-                            r={radius} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={circumference + (circumference * fillRatio)/percentage}/>
+                            r={radius} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={circumference - (circumference * fillRatio)/percentage}/>
+
                 </G>
 
             </Svg>

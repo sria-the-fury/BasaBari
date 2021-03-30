@@ -71,7 +71,7 @@ export default function FavoriteListingsScreen() {
                 <Icon name={'heart'} type={'ionicon'} size={25}
                       style={{marginRight: 5}} color={Colors.favorite}
                 />
-                <TextComponent color={'white'} bold semiLarge>FAVORITE LISTINGS</TextComponent>
+                <TextComponent color={'white'} bold medium>FAVORITE LISTINGS</TextComponent>
             </HeaderContainer>
             { ListingsData && ListingsData.length !== 0 ?
                 <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
