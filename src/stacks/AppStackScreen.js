@@ -7,6 +7,7 @@ import {UserContext} from "../context/UserContext";
 
 import MyListingScreenAsModal from "../screens/MyListingsScreenAsModal";
 import InitialUpdateProfile from "../screens/InitialUpdateProfile";
+import {ListingDetailsScreen} from "../screens/ListingDetailsScreen";
 
 
 export default function AppStackScreen() {
@@ -17,13 +18,20 @@ export default function AppStackScreen() {
         return (
             <AppStack.Navigator headerMode="none">
 
-                <AppStack.Screen name={'Main'} component={MainStackScreen}/>
+                <AppStack.Screen name={'Main'} component={MainStackScreen}
+                                 options={{
+                                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
+                                 }}/>
 
                 <AppStack.Screen name={'AddListingModalScreen'} component={AddListingScreen} options={{
                     ...TransitionPresets.ModalSlideFromBottomIOS
                 }}/>
                 <AppStack.Screen name={'MyListingsAsModal'} component={MyListingScreenAsModal} options={{
-                    ...TransitionPresets.ModalSlideFromBottomIOS
+                    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical'
+                }}/>
+
+                <AppStack.Screen name={'ListingDetails'} component={ListingDetailsScreen} options={{
+                    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                 }}/>
 
 
@@ -33,7 +41,10 @@ export default function AppStackScreen() {
     else if(user.isLoggedIn === false){
         return (
             <AppStack.Navigator headerMode="none">
-                <AppStack.Screen name={'InitialProfileUpdate'} component={InitialUpdateProfile}/>
+                <AppStack.Screen name={'InitialProfileUpdate'} component={InitialUpdateProfile}
+                                 options={{
+                                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
+                                 }}/>/>
             </AppStack.Navigator>
         )
 

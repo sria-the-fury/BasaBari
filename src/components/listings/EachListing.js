@@ -3,7 +3,6 @@ import {ActivityIndicator, FlatList, View} from 'react-native';
 import {Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
-import {ListingsFullDetailsModal} from "../../modals/ListingsFullDetailsModal";
 import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
@@ -186,13 +185,15 @@ export const EachListing = (props) => {
                     }
                 </RentType>
 
-                <Icon raised name={'reader-outline'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} onPress={() => setListingDetailsModal(true)}/>
+                <Icon name={'chevron-forward-circle'} type={'ionicon'} size={35} style={{marginRight: 5}} color={'grey'}
+                      onPress={() => props.navigation.navigate('ListingDetails', {
+                          listingsData: item,
+                          postedUserInfo: postedUser,
+                          currentUserListings: currentUserListings()
+                      })}/>
 
             </HomeItemsNumbersContainer>
 
-
-            <ListingsFullDetailsModal modalVisible={openListingDetailsModal} modalHide={closeListingDetailsModal} listingsData={item} postedUserInfo={postedUser}
-                                      currentUserListings={currentUserListings()}/>
         </CardsContainer>
 
     )

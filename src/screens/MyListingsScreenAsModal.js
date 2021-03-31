@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {Text, TouchableOpacity, StatusBar, FlatList, Image} from 'react-native';
+import { TouchableOpacity, FlatList} from 'react-native';
 import {Icon} from "react-native-elements";
 import {FirebaseContext} from "../context/FirebaseContext";
 import firestore from "@react-native-firebase/firestore";
@@ -62,7 +62,7 @@ export default function MyListingScreenAsModal(props) {
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
 
                     <Icon
-                        name={'chevron-down-circle'}
+                        name={'chevron-forward-circle'}
                         type='ionicon'
                         color={'white'} size={40}
                     />

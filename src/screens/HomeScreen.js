@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {TempData} from "../TempData";
 import {View, TouchableOpacity, StatusBar, FlatList, Image} from 'react-native';
 import {Icon} from "react-native-elements";
 import {EachListing} from "../components/listings/EachListing";
@@ -10,7 +9,7 @@ import {FirebaseContext} from "../context/FirebaseContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
 
-export default function  HomeScreen () {
+export default function  HomeScreen (props) {
 
     const [ListingsData, setListingsData] = useState(null);
 
@@ -71,7 +70,7 @@ export default function  HomeScreen () {
             {/*    <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>*/}
 
             {/*</HeaderContainer>*/}
-            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
+            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
 
         </Container>
     )

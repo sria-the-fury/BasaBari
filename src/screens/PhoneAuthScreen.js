@@ -221,6 +221,7 @@ export default  function PhoneAuthScreen() {
 
             <BodyContainer>
                 <View style={{position: "absolute", top: -10, alignSelf: 'center', backgroundColor: '#320A28', paddingHorizontal: 10, borderRadius: 10}}>
+                    {/*<LottieView source={require('../../assets/lottie-animations/basabari.json')} autoPlay loop style={{height: 40, alignItems: 'center', justifyContent: 'center'}} />*/}
                     <Text style={{color: 'white', fontSize: 30, fontFamily: 'JetBrainsMono-Regular'}}>BASA BARI</Text>
                 </View>
 
