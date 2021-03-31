@@ -1,5 +1,5 @@
 import React, {useContext, useState} from "react";
-import {View, Modal, ScrollView, FlatList, Image} from "react-native";
+import {View, Modal, ScrollView, FlatList, ToastAndroid} from "react-native";
 import {Divider} from "react-native-elements";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
@@ -9,6 +9,8 @@ import ImagePicker from "react-native-customized-image-picker";
 import {v4 as uuidv4} from "uuid";
 import _ from "lodash";
 import {CustomCheckbox} from "../components/custom-checkbox/CustomCheckbox";
+import {Colors} from "../components/utilities/Colors";
+import {TextInput} from "react-native-paper";
 
 export const ListingsUpdateModal = (props) => {
     const {modalVisible, modalHide, listingsData} = props;
@@ -155,7 +157,7 @@ export const ListingsUpdateModal = (props) => {
 
     const disableUpdateIfSameValue = () => {
         const differenceImages = _.isEqual(listingImages, images);
-        const isAddressSame = address === updateAddress,
+        const isAddressSame = address === updateAddress.trim(),
             isFacilitiesSame = _.isEqual(facilities, updateFacilities),
             isSameRoom = _.isEqual(roomNumbers, updateRoomNumbers),
             isSameBachelor = forBachelor === updateForBachelor,
@@ -163,14 +165,6 @@ export const ListingsUpdateModal = (props) => {
             isSameRent = rentPerMonth === updateRentPerMonth.trim(),
             isSameNegotiable = isNegotiable === updateIsNegotiable,
             isSameDesc = moreDetails === updateMoreDetails.trim();
-        // console.log('differenceImages=>', differenceImages);
-        // console.log('isAddressSame=>', isAddressSame);
-        // console.log('isFacilitiesSame=>', isFacilitiesSame);
-        // console.log('isSameRoom=>', isSameRoom);
-        // console.log('roomNumbers=>', roomNumbers);
-        // console.log('updateRoomNumbers=>', updateRoomNumbers);
-        // console.log('isSameBachelor=>', isSameBachelor);
-
 
         return (differenceImages && isAddressSame && isFacilitiesSame && isSameBachelor && isSameDesc && isSameFamily && isSameRent && isSameNegotiable && isSameRoom);
 
@@ -209,6 +203,7 @@ export const ListingsUpdateModal = (props) => {
             if(moreDetails !== updateMoreDetails) await firebase.updateListingMoreDetails(updateMoreDetails ,listingId);
 
         }catch (e) {
+            ToastAndroid.show(e.message, ToastAndroid.LONG);
 
         } finally {
             setListingImages(images);
@@ -311,19 +306,26 @@ export const ListingsUpdateModal = (props) => {
 
                         <FormViewContainer showsVerticalScrollIndicator={false}>
 
+                            <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary}}
+                                       mode={'outlined'}
+                                       label="Address"
+                                       autoCorrect={false}
+                                       placeholder={address} autoCapitalize={'words'} dataDetectorTypes={'address'}
+                                       multiline={true} onChangeText={(address) => setUpdateAddress(address)} defaultValue={address}
+                                       theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
-                            <LabelAndInputWrapper>
-                                <Icon
-                                    name='location-outline'
-                                    type='ionicon'
-                                    color='#1c3787' size={30}
-                                />
+                                       left={
+                                           <TextInput.Icon
+                                               name={()=>
 
-                                <TextInput placeholder={'Shyamoli Block A, Road #5, Habiganj'} autoCapitalize={'words'} dataDetectorTypes={'address'}
-                                           multiline={true} onChangeText={(address) => setUpdateAddress(address)} defaultValue={address}
-                                           autoCorrect={false} />
-
-                            </LabelAndInputWrapper>
+                                                   <Icon
+                                                       name='location-outline'
+                                                       type='ionicon'
+                                                       color={Colors.buttonPrimary} size={25}/>
+                                               }
+                                           />
+                                       }
+                            />
 
 
 
@@ -404,46 +406,78 @@ export const ListingsUpdateModal = (props) => {
 
                                     <RoomInputWrapper>
 
-                                        <RoomLabelAndInputWrapper>
-                                            <Icon
-                                                name='bed-outline'
-                                                type='ionicon'
-                                                color='#1c3787' size={30}
-                                            />
+                                        <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150}}
+                                                   mode={'outlined'}
+                                                   label={"Bed Room"}
+                                                   autoCorrect={false}
+                                                   autoCompleteType={'off'}
+                                                   defaultValue={roomNumbers.bedRoom}
+                                                   placeholder={'1'} keyboardType={'numeric'} maxLength={1}
+                                                   onChangeText={(bedRoom) => setUpdateRoomNumbers(prev => ({...prev, bedRoom: bedRoom}))}
+                                                   theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
-                                            <RoomInput placeholder={'Bed room'} keyboardType={'numeric'} maxLength={1} defaultValue={roomNumbers.bedRoom}
-                                                       onChangeText={(bedRoom) => setUpdateRoomNumbers(prev => ({...prev, bedRoom: bedRoom}))}
-                                                       autoCorrect={false} autoComplete={false}/>
+                                                   left={
+                                                       <TextInput.Icon
+                                                           name={()=>
 
-                                        </RoomLabelAndInputWrapper>
-
-
-                                        <RoomLabelAndInputWrapper>
-                                            <Icon
-                                                name='restaurant-outline'
-                                                type='ionicon'
-                                                color='#1c3787' size={30}
-                                            />
-
-                                            <RoomInput placeholder={'Dinning'} keyboardType={'numeric'} maxLength={1} defaultValue={roomNumbers.dinning}
-                                                       onChangeText={(dinning) => setUpdateRoomNumbers(prev => ({...prev, dinning: dinning}))}
-                                                       autoCorrect={false} />
-
-                                        </RoomLabelAndInputWrapper>
+                                                               <Icon
+                                                                   name='bed-outline'
+                                                                   type='ionicon'
+                                                                   color={Colors.buttonPrimary} size={25}/>
+                                                           }
+                                                       />
+                                                   }
+                                        />
 
 
-                                        <RoomLabelAndInputWrapper>
-                                            <Icon
-                                                name='toilet'
-                                                type='font-awesome-5'
-                                                color='#1c3787' size={30}
-                                            />
 
-                                            <RoomInput placeholder={'Washroom'} keyboardType={'numeric'} maxLength={1} defaultValue={roomNumbers.washRoom}
-                                                       onChangeText={(washRoom) => setUpdateRoomNumbers(prev => ({...prev, washRoom: washRoom}))}
-                                                       autoCorrect={false} />
+                                        <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
+                                                   mode={'outlined'}
+                                                   label="Dinning"
+                                                   autoCorrect={false}
+                                                   autoCompleteType={'off'}
+                                                   defaultValue={roomNumbers.dinning}
+                                                   placeholder={'1'} keyboardType={'numeric'} maxLength={1}
+                                                   onChangeText={(dinning) => setUpdateRoomNumbers(prev => ({...prev, dinning: dinning}))}
+                                                   theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
-                                        </RoomLabelAndInputWrapper>
+                                                   left={
+                                                       <TextInput.Icon
+                                                           name={()=>
+
+                                                               <Icon
+                                                                   name='restaurant-outline'
+                                                                   type='ionicon'
+                                                                   color={Colors.buttonPrimary} size={25}/>
+                                                           }
+                                                       />
+                                                   }
+                                        />
+
+
+                                        <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
+                                                   mode={'outlined'}
+                                                   label="Washroom"
+                                                   autoCorrect={false}
+                                                   autoCompleteType={'off'}
+                                                   defaultValue={roomNumbers.washRoom}
+                                                   placeholder={'1'} keyboardType={'numeric'} maxLength={1}
+                                                   onChangeText={(washRoom) => setUpdateRoomNumbers(prev => ({...prev, washRoom: washRoom}))}
+                                                   theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
+
+                                                   left={
+                                                       <TextInput.Icon
+                                                           name={()=>
+
+                                                               <Icon
+                                                                   name='toilet'
+                                                                   type='font-awesome-5'
+                                                                   color={Colors.buttonPrimary} size={25}/>
+                                                           }
+                                                       />
+                                                   }
+                                        />
+
 
                                     </RoomInputWrapper>
 
@@ -491,13 +525,25 @@ export const ListingsUpdateModal = (props) => {
                                 <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
                                 <Divider style={{backgroundColor: 'blue'}}/>
                                 <RentContainer>
-                                    <RentTextInputAndIconWrapper>
-                                        <TextComponent bold medium color={'black'}>TK.</TextComponent>
 
-                                        <RentTextInput placeholder={'10000TK'} keyboardType={'numeric'} maxLength={5} onChangeText={(rent) => setUpdateRentPerMonth(rent)}
-                                                       autoCorrect={false} defaultValue={rentPerMonth}/>
+                                    <TextInput style={{backgroundColor: 'rgba(1,65, 114, 1)', fontSize: 20, marginBottom: 10, width: 150, overflow: 'hidden'}}
+                                               mode={'outlined'}
+                                               label="Rent"
+                                               autoCorrect={false}
+                                               autoCompleteType={'off'}
+                                               placeholder={rentPerMonth} keyboardType={'numeric'} maxLength={5}
+                                               defaultValue={rentPerMonth}
+                                               onChangeText={(rent) => setUpdateRentPerMonth(rent)}
+                                               theme={{ colors: { placeholder: 'rgba(255,255,255,0.5)', text: 'white', primary: 'white', underlineColor:'transparent'}}}
 
-                                    </RentTextInputAndIconWrapper>
+                                               left={
+                                                   <TextInput.Icon name={ () =>
+                                                       <TextComponent bold semiLarge color={'white'}>TK.</TextComponent>
+                                                   }
+                                                   />
+
+                                               }
+                                    />
 
                                     <IsNegotiable>
 
@@ -623,24 +669,7 @@ const FormViewContainer = styled.ScrollView`
 marginTop: 20px;
 `;
 
-const LabelAndInputWrapper = styled.View`
-                        flexDirection: row;
-                        borderRadius: 10px;
-                        backgroundColor: #eddefc;
-                        paddingHorizontal: 5px;
-                        alignItems: center;
-                        marginBottom: 10px;
 
-
-                        `;
-
-const TextInput = styled.TextInput`
-
-paddingRight: 10px;
-fontSize: 18px;
-               
-
-                        `;
 
 const CheckBoxWrapper = styled.View`
 
@@ -680,28 +709,6 @@ marginTop: 15px;
 `
 
 
-const RoomLabelAndInputWrapper = styled.View`
-                        flexDirection: row;
-                        borderRadius: 10px;
-                        backgroundColor: white;
-                        paddingHorizontal: 5px;
-                        alignItems: center;
-                        marginVertical: 5px;
-                        alignSelf: flex-start;
-                     
-
-
-                        `;
-
-const RoomInput = styled.TextInput`
-
-paddingRight: 10px;
-
-fontSize: 18px;
-               
-
-                        `;
-
 const MainContainerForRent = styled.View`
 marginTop: 20px;
 `;
@@ -716,23 +723,6 @@ flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
 
-`;
-
-
-
-const RentTextInputAndIconWrapper= styled.View`
-  flexDirection: row;
-                        borderRadius: 10px;
-                        backgroundColor: white;
-                        paddingHorizontal: 5px;
-                        alignItems: center;
-                        marginVertical: 5px;
-                        alignSelf: flex-start;
-`;
-
-const RentTextInput = styled.TextInput`
-paddingRight: 10px;
-fontSize: 18px;
 `;
 
 
@@ -777,7 +767,7 @@ fontSize: 18px;
 `
 
 const UpdateListingButton = styled.TouchableOpacity`
-backgroundColor: #1c3787;
+backgroundColor: ${Colors.buttonPrimary};
 paddingHorizontal: 10px;
 paddingVertical: 10px;
 borderRadius: 10px;

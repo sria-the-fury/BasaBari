@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 
-import {View, Text, TouchableOpacity, StatusBar, Image, FlatList} from 'react-native';
+import {View, TouchableOpacity, FlatList} from 'react-native';
 import { Divider } from 'react-native-elements';
 import {Icon} from "react-native-elements";
 import ImagePicker from "react-native-customized-image-picker";
@@ -13,6 +13,7 @@ import {CustomCheckbox} from "../components/custom-checkbox/CustomCheckbox";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {Colors} from "../components/utilities/Colors";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
+import {TextInput} from "react-native-paper";
 
 
 export default function AddListingScreen(props) {
@@ -219,18 +220,26 @@ export default function AddListingScreen(props) {
                 </BodyView>
 
 
-                <LabelAndInputWrapper>
-                    <Icon
-                        name='location-outline'
-                        type='ionicon'
-                        color='#1c3787' size={30}
-                    />
+                <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary}}
+                           mode={'outlined'}
+                           label="Address"
+                           autoCorrect={false}
+                           placeholder={'Shyamoli Block A, Road #5, Habiganj'} autoCapitalize={'words'} dataDetectorTypes={'address'}
+                           onChangeText={(address) => setAddress(address)}
+                           theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
-                    <TextInput placeholder={'Shyamoli Block A, Road #5, Habiganj'} autoCapitalize={'words'} dataDetectorTypes={'address'}
-                               multiline={true} onChangeText={(address) => setAddress(address)}
-                               autoCorrect={false} />
+                           left={
+                               <TextInput.Icon
+                                   name={()=>
 
-                </LabelAndInputWrapper>
+                                       <Icon
+                                           name='location-outline'
+                                           type='ionicon'
+                                           color={Colors.buttonPrimary} size={25}/>
+                                   }
+                               />
+                           }
+                />
 
 
 
@@ -311,46 +320,75 @@ export default function AddListingScreen(props) {
 
                         <RoomInputWrapper>
 
-                            <RoomLabelAndInputWrapper>
-                                <Icon
-                                    name='bed-outline'
-                                    type='ionicon'
-                                    color='grey' size={30}
-                                />
+                            <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150}}
+                                       mode={'outlined'}
+                                       label="Bed Room"
+                                       autoCorrect={false}
+                                       autoCompleteType={'off'}
+                                       placeholder={'1'} keyboardType={'numeric'} maxLength={1}
+                                       onChangeText={(bedRoom) => setRoomNumbers(prev => ({...prev, bedRoom: bedRoom}))}
+                                       theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
-                                <RoomInput placeholder={'Bed room'} keyboardType={'numeric'} maxLength={1}
-                                           onChangeText={(bedRoom) => setRoomNumbers(prev => ({...prev, bedRoom: bedRoom}))}
-                                           autoCorrect={false} autoComplete={false}/>
+                                       left={
+                                           <TextInput.Icon
+                                               name={()=>
 
-                            </RoomLabelAndInputWrapper>
-
-
-                            <RoomLabelAndInputWrapper>
-                                <Icon
-                                    name='restaurant-outline'
-                                    type='ionicon'
-                                    color='grey' size={30}
-                                />
-
-                                <RoomInput placeholder={'Dinning'} keyboardType={'numeric'} maxLength={1}
-                                           onChangeText={(dinning) => setRoomNumbers(prev => ({...prev, dinning: dinning}))}
-                                           autoCorrect={false} />
-
-                            </RoomLabelAndInputWrapper>
+                                                   <Icon
+                                                       name='bed-outline'
+                                                       type='ionicon'
+                                                       color={Colors.buttonPrimary} size={25}/>
+                                               }
+                                           />
+                                       }
+                            />
 
 
-                            <RoomLabelAndInputWrapper>
-                                <Icon
-                                    name='toilet'
-                                    type='font-awesome-5'
-                                    color='grey' size={30}
-                                />
 
-                                <RoomInput placeholder={'Washroom'} keyboardType={'numeric'} maxLength={1}
-                                           onChangeText={(washRoom) => setRoomNumbers(prev => ({...prev, washRoom: washRoom}))}
-                                           autoCorrect={false} />
+                            <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
+                                       mode={'outlined'}
+                                       label="Dinning"
+                                       autoCorrect={false}
+                                       autoCompleteType={'off'}
+                                       placeholder={'1'} keyboardType={'numeric'} maxLength={1}
+                                       onChangeText={(dinning) => setRoomNumbers(prev => ({...prev, dinning: dinning}))}
+                                       theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
-                            </RoomLabelAndInputWrapper>
+                                       left={
+                                           <TextInput.Icon
+                                               name={()=>
+
+                                                   <Icon
+                                                       name='restaurant-outline'
+                                                       type='ionicon'
+                                                       color={Colors.buttonPrimary} size={25}/>
+                                               }
+                                           />
+                                       }
+                            />
+
+
+                            <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
+                                       mode={'outlined'}
+                                       label="Washroom"
+                                       autoCorrect={false}
+                                       autoCompleteType={'off'}
+                                       placeholder={'1'} keyboardType={'numeric'} maxLength={1}
+                                       onChangeText={(washRoom) => setRoomNumbers(prev => ({...prev, washRoom: washRoom}))}
+                                       theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
+
+                                       left={
+                                           <TextInput.Icon
+                                               name={()=>
+
+                                                   <Icon
+                                                       name='toilet'
+                                                       type='font-awesome-5'
+                                                       color={Colors.buttonPrimary} size={25}/>
+                                               }
+                                           />
+                                       }
+                            />
+
 
                         </RoomInputWrapper>
 
@@ -398,13 +436,24 @@ export default function AddListingScreen(props) {
                     <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
                     <Divider style={{backgroundColor: 'blue'}}/>
                     <RentContainer>
-                        <RentTextInputAndIconWrapper>
-                           <TextComponent bold medium color={'black'}>TK.</TextComponent>
 
-                            <RentTextInput placeholder={'10000TK'} keyboardType={'numeric'} maxLength={5} onChangeText={(rent) => setRentPerMonth(rent)}
-                                           autoCorrect={false} />
+                        <TextInput style={{backgroundColor: 'rgba(1,65, 114, 1)', fontSize: 20, marginBottom: 10, width: 150, overflow: 'hidden'}}
+                                   mode={'outlined'}
+                                   label="Rent"
+                                   autoCorrect={false}
+                                   autoCompleteType={'off'}
+                                   placeholder={'10000'} keyboardType={'numeric'} maxLength={5}
+                                   onChangeText={(rent) => setRentPerMonth(rent)}
+                                   theme={{ colors: { placeholder: 'rgba(255,255,255,0.5)', text: 'white', primary: 'white', underlineColor:'transparent'}}}
 
-                        </RentTextInputAndIconWrapper>
+                                   left={
+                                       <TextInput.Icon name={ () =>
+                                           <TextComponent bold semiLarge color={'white'}>TK.</TextComponent>
+                                       }
+                                       />
+
+                                   }
+                        />
 
                         <IsNegotiable>
 
@@ -529,13 +578,13 @@ const LabelAndInputWrapper = styled.View`
 
                         `;
 
-const TextInput = styled.TextInput`
-
-paddingRight: 10px;
-fontSize: 18px;
-               
-
-                        `;
+// const TextInput = styled.TextInput`
+//
+// paddingRight: 10px;
+// fontSize: 18px;
+//
+//
+//                         `;
 
 const CheckBoxWrapper = styled.View`
 
@@ -588,14 +637,6 @@ const RoomLabelAndInputWrapper = styled.View`
 
                         `;
 
-const RoomInput = styled.TextInput`
-
-paddingRight: 10px;
-
-fontSize: 18px;
-               
-
-                        `;
 
 const MainContainerForRent = styled.View`
 marginTop: 20px;
@@ -613,22 +654,6 @@ justifyContent: space-between;
 
 `;
 
-
-
-const RentTextInputAndIconWrapper= styled.View`
-  flexDirection: row;
-                        borderRadius: 10px;
-                        backgroundColor: white;
-                        paddingHorizontal: 5px;
-                        alignItems: center;
-                        marginVertical: 5px;
-                        alignSelf: flex-start;
-`;
-
-const RentTextInput = styled.TextInput`
-paddingRight: 10px;
-fontSize: 18px;
-`;
 
 
 const BachelorOrFamilyContainer = styled.View`
