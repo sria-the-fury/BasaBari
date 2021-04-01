@@ -8,10 +8,20 @@ import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
+import {SearchListingsModal} from "../modals/SearchListingsModal";
+import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 
 export default function  HomeScreen (props) {
 
     const [ListingsData, setListingsData] = useState(null);
+
+    //open search Modal
+
+    const [openSearchModal, setSearchModal] = useState(false);
+
+    const closeSearchModal = () => {
+        setSearchModal(false);
+    }
 
 
 
@@ -56,21 +66,23 @@ export default function  HomeScreen (props) {
     return (
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
-            {/*<HeaderContainer>*/}
-            {/*    <TouchableOpacity onPress={() => props.navigation.goBack()}>*/}
+            <HeaderContainer>
+                <TouchableOpacity  style={{backgroundColor: Colors.primaryBodyLight,borderWidth: 1,
+                    borderColor: 'grey', borderRadius: 50, width: '80%', height: 50, alignItems: 'center', flexDirection: 'row', paddingHorizontal: 10 }}
+                onPress={() => setSearchModal(true)}
+                >
+                    <Icon name={'search-outline'} color={'grey'} type={'ionicon'} size={25}/>
+                    <TextComponent bold color={'grey'} medium>Search By Place...</TextComponent>
 
-            {/*        <Icon*/}
-            {/*            name={'chevron-down-circle'}*/}
-            {/*            type='ionicon'*/}
-            {/*            color={'white'} size={40}*/}
-            {/*        />*/}
 
-            {/*    </TouchableOpacity>*/}
 
-            {/*    <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>*/}
+                </TouchableOpacity>
 
-            {/*</HeaderContainer>*/}
+                <TextComponent medium bold color={'white'}>SEARCH</TextComponent>
+
+            </HeaderContainer>
             <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
+            <SearchListingsModal modalVisible={openSearchModal} modalHide={closeSearchModal}/>
 
         </Container>
     )

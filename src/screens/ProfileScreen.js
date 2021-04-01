@@ -1,8 +1,8 @@
 import React, {useContext, useState} from 'react';
 import styled from "styled-components";
-import {StatusBar, TextInput, TouchableOpacity, View} from 'react-native';
+import {Linking, TextInput, TouchableOpacity, View} from 'react-native';
 import {TextComponent} from "../components/TextComponent";
-import {Icon} from "react-native-elements";
+import {Divider, Icon} from "react-native-elements";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import {UserContext} from "../context/UserContext";
 import {FirebaseContext} from "../context/FirebaseContext";
@@ -15,9 +15,7 @@ export default function ProfileScreen(props) {
 
     const [loading, setLoading] = useState(false);
     const [nameLoading, setNameLoading] = useState(false);
-    const [phoneLoading, setPhoneLoading] = useState(false);
     const [updatedName, setUpdateName] = useState('');
-    const [updatedPhone, setUpdatePhone] = useState('');
 
 
     // userContext
@@ -44,20 +42,6 @@ export default function ProfileScreen(props) {
         setUpdateName('');
 
     }
-
-    //cell update
-
-    const editCellNo = () => {
-        setEditableCellNo(true)
-
-    }
-
-    const cancelUpdatePhone = () => {
-        setEditableCellNo(false)
-        setUpdatePhone('');
-
-    }
-
 
 
 //functions for closing Modals
@@ -162,113 +146,98 @@ export default function ProfileScreen(props) {
                 console.log(e);
             });
 
-    }
+    };
+
+
+    const mailTo = async () => {
+        await Linking.openURL('mailto: jakariamsria@gmail.com');
+    };
 
 
     return (
 
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
-            <HeaderTop>
-                <View style={{alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginBottom: 3}}>
-                    { (isEditable && updatedName === '') || (updatedName.trim() === profileUserInfo.displayName) ?
-                        <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdateName()}/>
-                        :  isEditable && (updatedName !== '') &&  (updatedName.trim() !== profileUserInfo.displayName) && !nameLoading ?
-                            <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updateUserName()} disabled={updatedName.length<3}/> :
-                            isEditable && (updatedName !== '') &&  (updatedName.trim() !== profileUserInfo.displayName) && nameLoading ?
-                                <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
-                                    <Loading/></View>
-                                : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editName()}/>
-                    }
-                    <TextInput defaultValue={profileUserInfo.displayName} style={{fontWeight: "bold", fontSize: 20, color: 'white',  backgroundColor: isEditable ? Colors.primaryBodyLight : null,
-                        borderRadius: isEditable ? 20 : null, paddingHorizontal: isEditable ? 10 : null,
-                    }}
-                               autoCapitalize={'words'} autoFocus={isEditable} editable={isEditable} onFocus={() => setEditable(true)}
-                               onBlur={() => {setEditable(false);
-                                   setUpdateName('');
-                               } }
-                               maxLength={23} onChangeText={(updateName) => setUpdateName(updateName)}
-                    />
-                    {/*<TextComponent bold large  color={'#6526a5'} numberOfLines={1}>{profileUserInfo.displayName}</TextComponent>*/}
-                    <Icon name={'log-out'} type={'ionicon'} size={25} color={'red'} onPress={() => loggedOut()}/>
-                </View>
 
-                <ProfileImageContainer style={{elevation: 10,
-                    shadowColor: '#000', shadowOpacity: 1,
-                    shadowRadius: 5.32,}}>
 
-                    <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/afjal.jpg')}/>
-                    <TouchableOpacity style={{position: "absolute", top: 5, left:6, backgroundColor: 'white',borderColor: 'white', borderWidth: 4, borderRadius:50}}
-                                      onPress={() => chooseProfileImage()} disabled={loading}>
-                        { loading ? <Loading/> :
-                            <Icon name={'add-photo-alternate'} type={'md'} size={24} color={'red'}
-                            />
+            <ScrollViewContainer showsVerticalScrollIndicator={false}>
+                <HeaderTop>
+                    <View style={{alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginBottom: 3}}>
+                        { (isEditable && updatedName === '') || (updatedName.trim() === profileUserInfo.displayName) ?
+                            <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdateName()}/>
+                            :  isEditable && (updatedName !== '') &&  (updatedName.trim() !== profileUserInfo.displayName) && !nameLoading ?
+                                <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updateUserName()} disabled={updatedName.length<3}/> :
+                                isEditable && (updatedName !== '') &&  (updatedName.trim() !== profileUserInfo.displayName) && nameLoading ?
+                                    <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
+                                        <Loading/></View>
+                                    : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editName()}/>
                         }
-                    </TouchableOpacity>
-                </ProfileImageContainer>
-
-
-                <UserInfo>
-
-                    <EachInfoWrapper>
-                        <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
-
-                        <TextInput defaultValue={profileUserInfo.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: 'white'
-                        }} keyboardType={'number-pad'}
-
-                                   editable={false}
-                                   maxLength={14}
+                        <TextInput defaultValue={profileUserInfo.displayName} style={{fontWeight: "bold", fontSize: 20, color: 'white',  backgroundColor: isEditable ? Colors.primaryBodyLight : null,
+                            borderRadius: isEditable ? 10 : null, paddingHorizontal: isEditable ? 10 : null,
+                        }}
+                                   autoCapitalize={'words'} autoFocus={isEditable} editable={isEditable} onFocus={() => setEditable(true)}
+                                   onBlur={() => {setEditable(false);
+                                       setUpdateName('');
+                                   }}
+                                   maxLength={23} onChangeText={(updateName) => setUpdateName(updateName)}
                         />
 
-                        {/*{(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === profileUserInfo.phoneNumber) ?*/}
-                        {/*    <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>*/}
-                        {/*    :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && !phoneLoading ?*/}
-                        {/*        <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :*/}
-                        {/*        isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && phoneLoading ?*/}
-                        {/*            <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>*/}
-                        {/*                <Loading/></View>*/}
-                        {/*            : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>*/}
-                        {/*}*/}
-                    </EachInfoWrapper>
+                        <Icon name={'log-out'} type={'ionicon'} size={25} color={'red'} onPress={() => loggedOut()}/>
+                    </View>
+
+                    <ProfileImageContainer style={{elevation: 10,
+                        shadowColor: '#000', shadowOpacity: 1,
+                        shadowRadius: 5.32,}}>
+
+                        <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/default-profile-image.png')}/>
+                        <TouchableOpacity style={{position: "absolute", top: 5, left:6, backgroundColor: 'white',borderColor: 'white', borderWidth: 4, borderRadius:50}}
+                                          onPress={() => chooseProfileImage()} disabled={loading}>
+                            { loading ? <Loading/> :
+                                <Icon name={'add-photo-alternate'} type={'md'} size={24} color={'red'}
+                                />
+                            }
+                        </TouchableOpacity>
+                    </ProfileImageContainer>
+
+
+                    <UserInfo>
+
+                        <EachInfoWrapper>
+                            <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
+
+                            <TextInput defaultValue={profileUserInfo.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: 'white'
+                            }} keyboardType={'number-pad'}
+
+                                       editable={false}
+                                       maxLength={14}
+                            />
+                        </EachInfoWrapper>
+
+                    </UserInfo>
 
 
 
-                </UserInfo>
+                </HeaderTop>
 
-
-
-            </HeaderTop>
-
-
-            <ScrollViewContainer showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
                 <BodyContainer>
 
                     <SettingsCardContainer>
-                        <Icon name={'add-location'} type={'material'} size={30} color={'black'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium>Set your Location</TextComponent>
+                        <Icon name={'add-location'} type={'material'} size={30} color={'white'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'white'}>Set your Location</TextComponent>
                     </SettingsCardContainer>
+                    <Divider backrgoundColor={'white'}/>
 
-                    {/*<UpdatePassWordAndEmailContainerCard>*/}
-                    {/*    <UpdateSettingsCardLeft onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('email')}}>*/}
-                    {/*        <Icon name={'email'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>*/}
-                    {/*        <TextComponent bold medium>Update Email </TextComponent>*/}
-                    {/*    </UpdateSettingsCardLeft>*/}
-
-                    {/*    <UpdateSettingsCardRight onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('password')}}>*/}
-                    {/*        <Icon name={'lock'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>*/}
-                    {/*        <TextComponent bold medium>Update Password</TextComponent>*/}
-                    {/*    </UpdateSettingsCardRight>*/}
-
-                    {/*</UpdatePassWordAndEmailContainerCard>*/}
-
-                    <SettingsCardContainer>
-                        <Icon name={'report-problem'} type={'material'} size={30} color={'orange'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium>Facing problem? Email US</TextComponent>
-                    </SettingsCardContainer>
 
                     <SettingsCardContainer onPress={() => setTermsModal(true)}>
-                        <Icon name={'article'} type={'material'} size={30} color={'black'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium>Terms & Conditions</TextComponent>
+                        <Icon name={'article'} type={'material'} size={30} color={'white'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'white'}>Terms & Conditions</TextComponent>
+                    </SettingsCardContainer>
+
+                    <Divider backrgoundColor={'white'}/>
+
+                    <SettingsCardContainer onPress={() => mailTo()}>
+                        <Icon name={'report-problem'} type={'material'} size={30} color={'orange'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'white'}>Facing problem? Email US</TextComponent>
                     </SettingsCardContainer>
 
                 </BodyContainer>
@@ -361,7 +330,7 @@ const BodyContainer = styled.View`
 width:100%;
 paddingVertical: 15px;
 marginBottom: 50px;
-marginTop: 50px;
+
 
 `;
 
@@ -401,41 +370,12 @@ borderColor: ${Colors.primaryBodyLight};
 `;
 
 const SettingsCardContainer = styled.TouchableOpacity`
-backgroundColor: white;
 borderRadius: 15px;
-paddingHorizontal:20px;
-flexDirection: row
-paddingVertical: 15px;
-alignItems: center;
-marginVertical: 10px;
-`;
-
-const UpdatePassWordAndEmailContainerCard = styled.View`
-borderRadius: 15px;
-flexDirection: row
-paddingVertical: 20px;
-alignItems: center;
-justifyContent: space-between;
-`;
-
-const UpdateSettingsCardLeft = styled.TouchableOpacity`
-backgroundColor: white;
-paddingVertical: 10px;
-flexDirection: row;
-paddingHorizontal:20px;
-borderBottomRightRadius: 15px;
-borderTopRightRadius: 15px;
-alignItems: center;
-`;
-
-const UpdateSettingsCardRight = styled.TouchableOpacity`
-backgroundColor: white;
-borderBottomLeftRadius: 15px;
-borderTopLeftRadius: 15px;
 paddingHorizontal:20px;
 flexDirection: row
 paddingVertical: 10px;
 alignItems: center;
+
 `;
 
 
