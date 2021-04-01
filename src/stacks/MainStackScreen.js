@@ -111,7 +111,7 @@ export default function MainStackScreen() {
                               listeners={({navigation}) => ({
                                   tabPress: event => {
                                       event.preventDefault();
-                                      navigation.navigate("AddListingModalScreen");
+                                      navigation.navigate("AddListing");
 
                                   }
                               })}
