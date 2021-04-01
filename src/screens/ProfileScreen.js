@@ -277,7 +277,7 @@ export default function ProfileScreen(props) {
 
 
             <BottomContainer>
-                <MyListingsButton onPress={() => props.navigation.navigate('MyListingsAsModal')}>
+                <MyListingsButton onPress={() => props.navigation.navigate('MyListings')}>
 
                     <TextComponent center bold color={'white'}>MY LISTINGS</TextComponent>
                 </MyListingsButton>

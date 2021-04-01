@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, Text} from 'react-native';
+import {FlatList} from 'react-native';
 import styled from "styled-components";
 import {Colors} from "../components/utilities/Colors";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
@@ -10,7 +10,7 @@ import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../context/FirebaseContext";
 import _ from 'lodash';
 
-export default function FavoriteListingsScreen() {
+export default function FavoriteListingsScreen(props) {
     const firebase = useContext(FirebaseContext)
     const currentUserId = firebase.getCurrentUser().uid;
 
@@ -74,7 +74,7 @@ export default function FavoriteListingsScreen() {
                 <TextComponent color={'white'} bold medium>FAVORITE LISTINGS</TextComponent>
             </HeaderContainer>
             { ListingsData && ListingsData.length !== 0 ?
-                <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
+                <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
                 :
                 <NoListingContainer>
                     <TextComponent bold medium>You don't have any favorite Listing</TextComponent>

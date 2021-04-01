@@ -5,7 +5,7 @@ import MainStackScreen from "./MainStackScreen";
 import AddListingScreen from "../screens/AddListingScreen";
 import {UserContext} from "../context/UserContext";
 
-import MyListingScreenAsModal from "../screens/MyListingsScreenAsModal";
+import MyListingScreen from "../screens/MyListingsScreen";
 import InitialUpdateProfile from "../screens/InitialUpdateProfile";
 import {ListingDetailsScreen} from "../screens/ListingDetailsScreen";
 
@@ -23,10 +23,10 @@ export default function AppStackScreen() {
                                      ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                                  }}/>
 
-                <AppStack.Screen name={'AddListingModalScreen'} component={AddListingScreen} options={{
+                <AppStack.Screen name={'AddListing'} component={AddListingScreen} options={{
                     ...TransitionPresets.ModalSlideFromBottomIOS
                 }}/>
-                <AppStack.Screen name={'MyListingsAsModal'} component={MyListingScreenAsModal} options={{
+                <AppStack.Screen name={'MyListings'} component={MyListingScreen} options={{
                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical'
                 }}/>
 

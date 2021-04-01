@@ -9,7 +9,7 @@ import {EachListing} from "../components/listings/EachListing";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
 
-export default function MyListingScreenAsModal(props) {
+export default function MyListingScreen(props) {
     const firebase =  useContext(FirebaseContext);
     const currentUserId = firebase.getCurrentUser().uid;
 
@@ -72,7 +72,7 @@ export default function MyListingScreenAsModal(props) {
                 <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
 
             </HeaderContainer>
-            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
+            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
         </Container>
     )
 }
