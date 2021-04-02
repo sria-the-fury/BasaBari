@@ -9,6 +9,7 @@ import AddListingScreen from "../screens/AddListingScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {FirebaseContext} from "../context/FirebaseContext";
+import { Avatar } from 'react-native-paper';
 
 
 export default function MainStackScreen() {
@@ -68,16 +69,11 @@ export default function MainStackScreen() {
             if(route.name === 'Profile'){
                 return(
 
-                    <View>
+                    <View style={{borderWidth: 2, borderColor: focused ? 'white' : null, borderRadius: 16}}>
                         {
                             getCurrentUserProfileUrl ?
-                                <Image source={{uri: getCurrentUserProfileUrl}} style={{borderColor: focused ? 'white' : '#666666',
-                                    height: 32,
-                                    width: 32,
-                                    borderRadius: 16,
-                                    shadowColor: '#000',
-                                    shadowOpacity: 5,
-                                    borderWidth: 2}}/>
+
+                                <Avatar.Image size={30} source={{uri: getCurrentUserProfileUrl}}/>
                                 :
                                 <Icon name={'person-circle'} type='ionicon' size={30} color={focused ? '#5d00ff' :'#666666' }/>
 

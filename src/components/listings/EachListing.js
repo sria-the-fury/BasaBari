@@ -6,6 +6,7 @@ import styled from "styled-components";
 import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
+import {Avatar} from "react-native-paper";
 
 
 
@@ -105,8 +106,9 @@ export const EachListing = (props) => {
                 { currentUserListings() ?
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
-                        <PostedUserAvatar source={{uri: postedUser?.profilePhotoUrl}} style={{marginRight: 2}}/>
-                        <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
+                        <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+
+                        <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                     :
                     <Icon name={'heart'} type={'ionicon'} size={25}
@@ -115,7 +117,7 @@ export const EachListing = (props) => {
                 }
 
                 <View style={{alignItems: "center", flexDirection: 'row'}}>
-                    <Icon name={'time-outline'} type={'ionicon'} size={15} style={{marginRight: 5}}/>
+                    <Icon name={'time-outline'} type={'ionicon'} size={15} style={{marginRight: 1}}/>
                     <TextComponent small>{postedTime()}</TextComponent>
 
                 </View>
@@ -129,8 +131,8 @@ export const EachListing = (props) => {
                     :
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
-                        <PostedUserAvatar source={{uri: postedUser.profilePhotoUrl}} style={{marginRight: 2}}/>
-                        <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
+                        <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+                        <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                 }
 

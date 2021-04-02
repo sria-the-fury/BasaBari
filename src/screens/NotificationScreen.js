@@ -1,19 +1,39 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import React, { useState, useRef } from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Alert,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Image, Button,
+} from 'react-native';
+
+
 
 export default function NotificationScreen() {
-  return (
-    <View style={styles.container}>
-      <Text>Hello, NotificationScreen </Text>
-    </View>
-  )
+    return (
+
+        <View>
+            <Text>Hello</Text>
+
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+        backgroundColor: 'black'
 
+    },
+    rowBack: {
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        display: 'flex',
+        flexDirection: 'row'
     }
 });
+
+
+

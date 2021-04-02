@@ -1,7 +1,7 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {View, TouchableOpacity, StatusBar, FlatList, Image} from 'react-native';
+import {TouchableOpacity, FlatList} from 'react-native';
 import {Icon} from "react-native-elements";
 import {EachListing} from "../components/listings/EachListing";
 import firestore from "@react-native-firebase/firestore";
@@ -9,7 +9,6 @@ import {FirebaseContext} from "../context/FirebaseContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
 import {SearchListingsModal} from "../modals/SearchListingsModal";
-import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 
 export default function  HomeScreen (props) {
 
