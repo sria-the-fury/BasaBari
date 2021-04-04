@@ -13,7 +13,7 @@ export const ListingDetailsScreen = (props) => {
     const {params} = route;
 
     const {listingsData, postedUserInfo, currentUserListings} = params;
-    const {images, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails} = listingsData;
+    const {images, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, location} = listingsData;
 
 
 
@@ -36,7 +36,7 @@ export const ListingDetailsScreen = (props) => {
 
             <ModalView>
                 <ModalHeader>
-                    <Icon name={'chevron-back-outline'} type={'ionicon'} size={40} color={'white'} onPress={() => navigation.goBack()}/>
+                    <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => navigation.goBack()}/>
                     <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                 </ModalHeader>
 
@@ -48,12 +48,21 @@ export const ListingDetailsScreen = (props) => {
                               showsHorizontalScrollIndicator={false}/>
 
                     <AddressContainer>
-                        <Icon name={'navigate'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'blue'}/>
+                        <Icon name={'home'} type={'ionicon'} size={25} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                         <TextComponent semiLarge bold style={{ flex:1,
                             flexWrap: 'wrap'}}>
                             {listingsData.address}
                         </TextComponent>
                     </AddressContainer>
+
+                    <LocationContainer>
+                        <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
+                        <TextComponent color={'rgba(0,0,0, 0.9)'}>
+                            {location.city === location.county ? location.city : `${location.city}, ${location.county}`},
+                            <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location.state}, {location.country}</TextComponent>
+                        </TextComponent>
+
+                    </LocationContainer>
 
                     <RoomsContainer>
 
@@ -211,11 +220,18 @@ const Container = styled.SafeAreaView`
 
 
 const AddressContainer = styled.View`
- paddingVertical: 10px;
+marginTop: 10px;
   flexDirection: row;
    alignItems: center;
    marginHorizontal: 10px;
 
+`;
+
+const LocationContainer = styled.View`
+flexDirection: row;
+   alignItems: center;
+   marginHorizontal: 10px;
+   marginBottom: 20px;
 `
 
 const ModalView = styled.View`

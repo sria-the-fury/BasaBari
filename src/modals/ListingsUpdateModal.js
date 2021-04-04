@@ -269,7 +269,7 @@ export const ListingsUpdateModal = (props) => {
             >
                 <ModalView>
                     <ModalHeader>
-                        <Icon name={'chevron-down-outline'} type={'ionicon'} size={40} color={'white'} onPress={() => closeModalAndUpdateState()}/>
+                        <Icon name={'chevron-down-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => closeModalAndUpdateState()}/>
 
                         <UpdateListingButton disabled={disableUpdateIfSameValue() || disableUpdate() || loading} onPress={() => updateListing(id)}>
                             { loading ? <Loading/> :

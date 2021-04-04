@@ -39,13 +39,14 @@ export default function FavoriteListingsScreen(props) {
                             rentPerMonth: doc.data().rentPerMonth,
                             isNegotiable: doc.data().isNegotiable,
                             usersInFav: doc.data().usersInFav,
-                            moreDetails: doc.data().moreDetails
+                            moreDetails: doc.data().moreDetails,
+                            location: doc.data().location
                         });
 
                     });
                     if(data.length>0){
                         const favListings = _.filter( data, (singleData) => {
-                            return singleData.usersInFav.includes(currentUserId);
+                            return singleData?.usersInFav?.includes(currentUserId);
                         });
 
                         setListingsData(favListings);

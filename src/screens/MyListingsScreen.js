@@ -39,7 +39,8 @@ export default function MyListingScreen(props) {
                             rentPerMonth: doc.data().rentPerMonth,
                             isNegotiable: doc.data().isNegotiable,
                             usersInFav: doc.data().usersInFav,
-                            moreDetails: doc.data().moreDetails
+                            moreDetails: doc.data().moreDetails,
+                            location: doc.data().location
                         });
 
                     });
@@ -59,14 +60,13 @@ export default function MyListingScreen(props) {
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
+                <Icon
+                    name={'chevron-back-outline'}
+                    type='ionicon'
+                    color={'white'} size={35}
+                    onPress={() => props.navigation.goBack()}
+                />
                 <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
-
-                    <Icon
-                        name={'chevron-forward-outline'}
-                        type='ionicon'
-                        color={'white'} size={40}
-                        onPress={() => props.navigation.goBack()}
-                    />
 
             </HeaderContainer>
             <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>

@@ -103,8 +103,6 @@ const Firebase = {
         try {
             const user = await firestore().collection('users').doc(uid).get();
 
-
-
             if(user.exists){
 
                 return user.data();
@@ -139,8 +137,8 @@ const Firebase = {
 
     signInWithPhoneNumber: async (phoneNumber) => {
         try {
-            const confirmation = await auth().signInWithPhoneNumber(phoneNumber,true);
-            return confirmation;
+            return await auth().signInWithPhoneNumber(phoneNumber,true);
+
         } catch (error) {
             console.log(error.message);
             ToastAndroid.show(error.message, ToastAndroid.LONG);
@@ -174,7 +172,8 @@ const Firebase = {
                         moreDetails: listingData.moreDetails,
                         listingId: listingId,
                         isNegotiable: listingData.isNegotiable,
-                        images: []
+                        images: [],
+                        location: listingData.location
 
 
                     }
@@ -222,8 +221,6 @@ const Firebase = {
             return true;
 
 
-
-
         } catch (e) {
             console.log(e.message+'@uploading Listing Images');
 
@@ -233,40 +230,6 @@ const Firebase = {
     },
 
     //update related functions
-    updateEmail: async (email) => {
-        try {
-            const currentUser = Firebase.getCurrentUser();
-
-            await currentUser.updateEmail(email);
-            await firestore().collection('users').doc(currentUser.uid).update({
-                email: email
-            });
-
-
-            return true;
-
-
-        } catch (e) {
-            console.log(e.message);
-
-        }
-
-        return false;
-
-    },
-
-    updatePassword: async (password) => {
-
-        try {
-            await Firebase.getCurrentUser().updatePassword(password);
-
-            return true;
-        } catch (error) {
-            console.log(error.message+'@updatePassWord');
-
-        }
-        return false;
-    },
 
     updateUserProfileName: async (userName) => {
         try {
@@ -291,18 +254,6 @@ const Firebase = {
         }
     },
 
-    updateProfilePhoneNumber: async (phoneNumber) => {
-        try {
-            const uid = Firebase.getCurrentUser().uid;
-            await firestore().collection('users').doc(uid).update({
-                phoneNumber: phoneNumber,
-            });
-
-        }catch (e) {
-            console.log(e.message+'@updateProfilePhoneNumber');
-
-        }
-    },
 
     updateFavoriteListing: async (listingId, favoriteUserId, updateType) => {
         try{
@@ -363,8 +314,6 @@ const Firebase = {
                 });
 
             }
-
-
 
 
         } catch (e) {

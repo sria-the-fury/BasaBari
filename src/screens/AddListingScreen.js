@@ -14,6 +14,7 @@ import {FirebaseContext} from "../context/FirebaseContext";
 import {Colors} from "../components/utilities/Colors";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {TextInput} from "react-native-paper";
+import {SearchPlacesModal} from "../modals/SearchPlacesModal";
 
 
 export default function AddListingScreen(props) {
@@ -151,7 +152,8 @@ export default function AddListingScreen(props) {
     const addListing = async () => {
         setLoading(true);
         try {
-            const listingData =  {facilities, roomNumbers, forBachelor, moreDetails, address, rentPerMonth, listingImages, isNegotiable, forFamily}
+            const location = getSelectPlaceName;
+            const listingData =  {facilities, roomNumbers, forBachelor, moreDetails, address, rentPerMonth, listingImages, isNegotiable, forFamily, location}
             const isListingAdded = await firebase.addListing(listingData);
             if(isListingAdded) props.navigation.goBack();
         } catch (error) {
@@ -167,8 +169,19 @@ export default function AddListingScreen(props) {
 
     const disableSubmit = () => {
 
-        return ((forBachelor === false && forFamily === false) || listingImages.length < 3 || rentPerMonth === 0 || moreDetails === '' || address === '' || (roomNumbers.washRoom === 0 || roomNumbers.dinning === 0 || roomNumbers.bedRoom === 0))
+        return ((forBachelor === false && forFamily === false) || listingImages.length < 3 || getSelectPlaceName === '' || rentPerMonth === 0 || moreDetails === '' || address === '' || (roomNumbers.washRoom === 0 || roomNumbers.dinning === 0 || roomNumbers.bedRoom === 0))
     }
+
+
+    //open search Modal
+
+    const [openPlaceSearchModal, setPlaceSearchModal] = useState(false);
+
+    const closePlaceSearchModal = () => {
+        setPlaceSearchModal(false);
+    }
+
+    const [getSelectPlaceName, setSelectPlaceName] = useState('');
 
 
     return (
@@ -178,7 +191,7 @@ export default function AddListingScreen(props) {
                 <TouchableOpacity onPress={() => props.navigation.goBack()}>
 
                     <Icon
-                        name={'chevron-down-circle'}
+                        name={'chevron-down-outline'}
                         type='ionicon'
                         color={'black'} size={40}
                     />
@@ -219,13 +232,50 @@ export default function AddListingScreen(props) {
 
                 </BodyView>
 
+                <SelectPlacesContainer>
+
+
+                    <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', width: getSelectPlaceName === '' ? '100%' : '80%'}}
+                                      onPress={() => setPlaceSearchModal(true)}>
+                        <Icon
+                            name='location'
+                            type='ionicon'
+                            color={Colors.buttonPrimary} size={25}/>
+                        { getSelectPlaceName !== '' ?
+                            <View>
+                                <TextComponent semiLarge color={Colors.buttonPrimary}>
+                                    {getSelectPlaceName.city}, {getSelectPlaceName.county}
+                                </TextComponent>
+                                <TextComponent color={'rgba(0,0,0,0.5)'}>
+                                    {getSelectPlaceName.state}, {getSelectPlaceName.country}
+                                </TextComponent>
+
+                            </View>
+
+                            :  <TextComponent semiLarge color={'rgba(0,0,0,0.5)'}>Select City or Place</TextComponent>
+
+                        }
+
+
+                    </TouchableOpacity>
+
+                    { getSelectPlaceName !== '' ?
+                        <Icon
+                            name='close'
+                            type='ionicon'
+                            color={'rgba(0,0,0, 0.5)'} size={25} onPress={() => setSelectPlaceName('')}/> : null
+                    }
+
+                </SelectPlacesContainer>
+
 
                 <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary}}
                            mode={'outlined'}
-                           label="Address"
+                           label="Write specific address"
                            autoCorrect={false}
-                           placeholder={'Shyamoli Block A, Road #5, Habiganj'} autoCapitalize={'words'} dataDetectorTypes={'address'}
+                           placeholder={'House No., Block No., Road No.'} autoCapitalize={'words'} dataDetectorTypes={'address'}
                            onChangeText={(address) => setAddress(address)}
+                           multiline={true}
                            theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
                            left={
@@ -233,7 +283,7 @@ export default function AddListingScreen(props) {
                                    name={()=>
 
                                        <Icon
-                                           name='location-outline'
+                                           name='home'
                                            type='ionicon'
                                            color={Colors.buttonPrimary} size={25}/>
                                    }
@@ -498,7 +548,7 @@ export default function AddListingScreen(props) {
 
             </FormViewContainer>
 
-
+            <SearchPlacesModal modalVisible={openPlaceSearchModal} modalHide={closePlaceSearchModal} updateQuery={setSelectPlaceName}/>
         </Container>
     );
 };
@@ -701,6 +751,21 @@ backgroundColor: #1c3787;
 paddingHorizontal: 10px;
 paddingVertical: 10px;
 borderRadius: 10px;
+`;
+
+const SelectPlacesContainer = styled.View`
+backgroundColor: lavender;
+ paddingVertical: 13px;
+  borderRadius:10px;
+   paddingHorizontal: 10px;
+    display: flex;
+     flexDirection: row;
+      marginBottom: 10px;
+      alignItems: center;
+      justifyContent: space-between;
+      height: 65px;
+                      
+
 `
 
 

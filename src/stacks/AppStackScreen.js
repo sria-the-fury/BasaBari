@@ -27,7 +27,7 @@ export default function AppStackScreen() {
                     ...TransitionPresets.ModalSlideFromBottomIOS
                 }}/>
                 <AppStack.Screen name={'MyListings'} component={MyListingScreen} options={{
-                    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical'
+                    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                 }}/>
 
                 <AppStack.Screen name={'ListingDetails'} component={ListingDetailsScreen} options={{

@@ -7,13 +7,14 @@ import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
 import {Avatar} from "react-native-paper";
+import {Colors} from "../utilities/Colors";
 
 
 
 export const EachListing = (props) => {
     const firebase = useContext(FirebaseContext);
     const {item} = props;
-    const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails} = item;
+    const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth} = item;
     const [postedUser, setPostedUser] = useState('');
     const currentUserId = firebase.getCurrentUser().uid;
 
@@ -41,7 +42,7 @@ export const EachListing = (props) => {
     useEffect(() => {
         const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
-                setPostedUser(doc.data());
+                if(doc) setPostedUser(doc.data());
             });
 
         return () => subscriber();
@@ -152,13 +153,30 @@ export const EachListing = (props) => {
 
             }
 
-
-            <LocationContainer>
-                <Icon name={'navigate'} type={'ionicon'} size={18} style={{marginRight: 5}} color={'blue'}/>
+            <AddressContainer>
+                <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                 <TextComponent style={{ flex:1,
                     flexWrap: 'wrap'}} semiLarge ellipsizeMode={'tail'}>{item.address}</TextComponent>
 
-            </LocationContainer>
+            </AddressContainer>
+
+
+            <LocationAndRentContainer>
+                <Location>
+                    <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
+                    <TextComponent color={'rgba(0,0,0, 0.9)'}>
+                        {location.city === location.county ? location.city : `${location.city}, ${location.county}`},
+                        <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location.state}, {location.country}</TextComponent>
+                    </TextComponent>
+
+                </Location>
+                <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50}}>
+                    <TextComponent color={'white'} bold>TK. {rentPerMonth}</TextComponent>
+
+                </View>
+
+
+            </LocationAndRentContainer>
 
 
             <HomeItemsNumbersContainer>
@@ -249,7 +267,23 @@ justifyContent: space-between;
 `;
 
 
-const LocationContainer = styled.View`
+const LocationAndRentContainer = styled.View`
+flexDirection : row;
+alignItems: center;
+justifyContent: space-between;
+marginRight: 10px;
+overflow: hidden;
+
+`;
+
+const Location = styled.View`
+flexDirection: row;
+ alignItems: center;
+ width: 70%;
+
+`;
+
+const AddressContainer = styled.View`
 flexDirection : row;
 alignItems: center;
 marginRight: 10px;

@@ -8,19 +8,11 @@ import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
-import {SearchListingsModal} from "../modals/SearchListingsModal";
 
 export default function  HomeScreen (props) {
 
     const [ListingsData, setListingsData] = useState(null);
 
-    //open search Modal
-
-    const [openSearchModal, setSearchModal] = useState(false);
-
-    const closeSearchModal = () => {
-        setSearchModal(false);
-    }
 
 
 
@@ -45,7 +37,8 @@ export default function  HomeScreen (props) {
                             rentPerMonth: doc.data().rentPerMonth,
                             isNegotiable: doc.data().isNegotiable,
                             usersInFav: doc.data().usersInFav,
-                            moreDetails: doc.data().moreDetails
+                            moreDetails: doc.data().moreDetails,
+                            location: doc.data().location
                         });
 
                     });
@@ -65,23 +58,22 @@ export default function  HomeScreen (props) {
     return (
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
-            <HeaderContainer>
-                <TouchableOpacity  style={{backgroundColor: Colors.primaryBodyLight,borderWidth: 1,
-                    borderColor: 'grey', borderRadius: 50, width: '80%', height: 50, alignItems: 'center', flexDirection: 'row', paddingHorizontal: 10 }}
-                onPress={() => setSearchModal(true)}
-                >
-                    <Icon name={'search-outline'} color={'grey'} type={'ionicon'} size={25}/>
-                    <TextComponent bold color={'grey'} medium>Search By Place...</TextComponent>
+            {/*<HeaderContainer>*/}
+            {/*    <TouchableOpacity  style={{backgroundColor: Colors.primaryBodyLight,borderWidth: 1,*/}
+            {/*        borderColor: 'grey', borderRadius: 50, width: '80%', height: 50, alignItems: 'center', flexDirection: 'row', paddingHorizontal: 10 }}*/}
+            {/*    onPress={() => setSearchModal(true)}*/}
+            {/*    >*/}
+            {/*        <Icon name={'search-outline'} color={'grey'} type={'ionicon'} size={25}/>*/}
+            {/*        <TextComponent bold color={'grey'} medium>Search By Place...</TextComponent>*/}
 
 
 
-                </TouchableOpacity>
+            {/*    </TouchableOpacity>*/}
 
-                <TextComponent medium bold color={'white'}>SEARCH</TextComponent>
+            {/*    <TextComponent medium bold color={'white'}>SEARCH</TextComponent>*/}
 
-            </HeaderContainer>
+            {/*</HeaderContainer>*/}
             <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
-            <SearchListingsModal modalVisible={openSearchModal} modalHide={closeSearchModal}/>
 
         </Container>
     )
