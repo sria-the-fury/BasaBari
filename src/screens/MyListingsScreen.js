@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import { TouchableOpacity, FlatList} from 'react-native';
+import { FlatList} from 'react-native';
 import {Icon} from "react-native-elements";
 import {FirebaseContext} from "../context/FirebaseContext";
 import firestore from "@react-native-firebase/firestore";
@@ -59,17 +59,14 @@ export default function MyListingScreen(props) {
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
+                <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
 
                     <Icon
-                        name={'chevron-forward-circle'}
+                        name={'chevron-forward-outline'}
                         type='ionicon'
                         color={'white'} size={40}
+                        onPress={() => props.navigation.goBack()}
                     />
-
-                </TouchableOpacity>
-
-                <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
 
             </HeaderContainer>
             <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>

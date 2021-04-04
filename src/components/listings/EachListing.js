@@ -205,7 +205,8 @@ const renderImage= (image) => {
 
     return(
         <View style={{marginHorizontal:10}}>
-            <Image source={{uri: image.imageUrl}} style={{ height: 150, width: 150, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator style={{color: 'blue'}}/>}/>
+            <Image source={{uri: image.imageUrl}} style={{ height: 150, width: 150, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator/>}
+                   placeholderStyle={{color: 'cyan', alignSelf: 'center'}}/>
 
         </View>
     )

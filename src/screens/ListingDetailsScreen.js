@@ -36,7 +36,7 @@ export const ListingDetailsScreen = (props) => {
 
             <ModalView>
                 <ModalHeader>
-                    <Icon name={'chevron-back-circle'} type={'ionicon'} size={40} color={'white'} onPress={() => navigation.goBack()}/>
+                    <Icon name={'chevron-back-outline'} type={'ionicon'} size={40} color={'white'} onPress={() => navigation.goBack()}/>
                     <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                 </ModalHeader>
 
