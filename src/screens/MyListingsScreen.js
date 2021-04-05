@@ -24,7 +24,7 @@ export default function MyListingScreen(props) {
         const subscriber = firestore().collection('listings').where('userId', '==', currentUserId).onSnapshot(
             docs=> {
                 let data=[];
-                if(!docs.empty) {
+                if(docs) {
                     docs.forEach(doc => {
                         data.push({
                             id: doc.id,
@@ -86,7 +86,7 @@ backgroundColor: ${StatusBarAndTopHeaderBGColor};
 
  flexDirection: row;
  alignItems: center;
- paddingHorizontal: 32px;
+ paddingHorizontal: 20px;
  paddingVertical: 12px;
  justifyContent: space-between;
 

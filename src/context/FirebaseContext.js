@@ -359,11 +359,12 @@ const Firebase = {
     },
 
     updateListingRentType: async (updateForBachelor, updateForFamily ,listingId) => {
+
         try {
             await firestore().collection('listings').doc(listingId).update({
-                availableForBachelor: updateForFamily,
+                availableForBachelor: updateForBachelor,
                 forFamily: updateForFamily
-            } );
+            });
 
         } catch (e) {
             console.log(e.message+'@updateListingRentType');

@@ -186,20 +186,20 @@ export const EachListing = (props) => {
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>
-                    <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.washRoom}</TextComponent>
+                    <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
+                    <TextComponent>{roomNumbers.dinning}</TextComponent>
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>
-                    <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.dinning}</TextComponent>
+                    <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
+                    <TextComponent>{roomNumbers.washRoom}</TextComponent>
                 </HomeItemsNumbers>
 
                 <RentType>
                     {
                         forFamily && forBachelor ? <TextComponent color={'white'} bold tiny>Bachelor/Family</TextComponent>
                             : forBachelor ? <TextComponent color={'white'} tiny bold>BACHELOR</TextComponent>
-                            : <TextComponent color={'white'} bold tiny>FAMILY</TextComponent>
+                            : forFamily ? <TextComponent color={'white'} bold tiny>FAMILY</TextComponent> : null
 
 
                     }

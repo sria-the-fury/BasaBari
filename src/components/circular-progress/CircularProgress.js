@@ -1,6 +1,7 @@
 import React from 'react'
 import {View, Text, TouchableOpacity} from 'react-native'
 import Svg, {G, Circle} from "react-native-svg";
+import {Colors} from "../utilities/Colors";
 
 export const CircularProgress = (props) => {
 
@@ -16,8 +17,8 @@ export const CircularProgress = (props) => {
             <Svg width={size} height={size}>
                 <G rotation={'-90'} origin={center}>
 
-                    <Circle stroke={"lavender"} cx={center} cy={center} r={radius} strokeWidth={strokeWidth}/>
-                    <Circle stroke={"#320A28"} cx={center} cy={center}
+                    <Circle stroke={Colors.primaryBodyLight} cx={center} cy={center} r={radius} strokeWidth={strokeWidth}/>
+                    <Circle stroke={Colors.primaryBody} cx={center} cy={center}
                             r={radius} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={circumference - (circumference * fillRatio)/percentage}/>
 
                 </G>

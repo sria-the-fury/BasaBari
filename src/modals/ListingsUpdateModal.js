@@ -194,7 +194,7 @@ export const ListingsUpdateModal = (props) => {
 
             if(!(_.isEqual(roomNumbers, updateRoomNumbers))) await firebase.updateListingRoomNumbers(updateRoomNumbers,listingId);
 
-            if((forBachelor !== updateForBachelor) || (forFamily !== updateForFamily)) await firebase.updateListingRentType(updateForBachelor, updateForFamily ,listingId);
+            if(forBachelor !== updateForBachelor || forFamily !== updateForFamily) await firebase.updateListingRentType(updateForBachelor, updateForFamily ,listingId);
 
             if(rentPerMonth !== updateRentPerMonth) await firebase.updateListingRent(updateRentPerMonth ,listingId);
 
@@ -215,7 +215,7 @@ export const ListingsUpdateModal = (props) => {
 
 
             setLoading(false);
-            modalHide();
+            closeModalAndUpdateState();
 
 
         }

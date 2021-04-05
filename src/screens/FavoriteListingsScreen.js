@@ -99,7 +99,6 @@ flex:1
 
 const HeaderContainer = styled.View`
 backgroundColor: ${StatusBarAndTopHeaderBGColor};
-
  flexDirection: row;
  alignItems: center;
  paddingHorizontal: 20px;

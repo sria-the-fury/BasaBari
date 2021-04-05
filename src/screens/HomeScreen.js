@@ -22,7 +22,7 @@ export default function  HomeScreen (props) {
         const subscriber = firestore().collection('listings').orderBy('postedTime', 'desc').onSnapshot(
             docs=> {
                 let data=[];
-                if(!docs.empty) {
+                if(docs) {
                     docs.forEach(doc => {
                         data.push({
                             id: doc.id,
