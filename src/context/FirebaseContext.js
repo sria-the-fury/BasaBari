@@ -407,6 +407,19 @@ const Firebase = {
         }
     },
 
+    updateListingLocation: async (updatedLocation, listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                location: updatedLocation
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingMoreDetails');
+
+        }
+
+    },
+
 
 
 

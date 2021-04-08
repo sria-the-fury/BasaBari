@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useRef} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 
@@ -13,11 +13,14 @@ import {CustomCheckbox} from "../components/custom-checkbox/CustomCheckbox";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {Colors} from "../components/utilities/Colors";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
-import {TextInput} from "react-native-paper";
+import { TextInput} from "react-native-paper";
 import {SearchPlacesModal} from "../modals/SearchPlacesModal";
+import RBSheet from "react-native-raw-bottom-sheet";
+import {SearchPlaces} from "../components/utilities/SearchPlaces";
 
 
 export default function AddListingScreen(props) {
+    const searchBottomSheet = useRef();
 
     const firebase = useContext(FirebaseContext);
 
@@ -188,15 +191,12 @@ export default function AddListingScreen(props) {
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
 
                     <Icon
                         name={'chevron-down-outline'}
                         type='ionicon'
-                        color={'black'} size={40}
+                        color={'black'} size={35} onPress={() => props.navigation.goBack()}
                     />
-
-                </TouchableOpacity>
 
                 <AddListingButton onPress={() => addListing()} disabled={disableSubmit() || loading}>
                     {loading ? <Loading/> : <TextComponent medium bold color={disableSubmit() ? 'grey' : 'white'}>ADD LISTING</TextComponent> }
@@ -232,11 +232,32 @@ export default function AddListingScreen(props) {
 
                 </BodyView>
 
+
+                <RBSheet
+                    ref={searchBottomSheet}
+                    closeOnDragDown={true}
+                    closeOnPressMask={true}
+                    dragFromTopOnly={true}
+                    height={320}
+
+                    customStyles={{
+                        wrapper: {
+                            backgroundColor: "transparent"
+                        },
+                        container: {backgroundColor: 'rgba(0,0,0,0.8)', borderTopLeftRadius: 20, borderTopRightRadius: 20},
+                        draggableIcon: {
+                            backgroundColor: "white"
+                        }
+                    }}
+                >
+                    <SearchPlaces updateQuery={setSelectPlaceName} closeBottomSheet={searchBottomSheet}/>
+                </RBSheet>
+
                 <SelectPlacesContainer>
 
 
                     <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', width: getSelectPlaceName === '' ? '100%' : '80%'}}
-                                      onPress={() => setPlaceSearchModal(true)}>
+                                      onPress={() => searchBottomSheet.current.open()}>
                         <Icon
                             name='location'
                             type='ionicon'
@@ -244,7 +265,7 @@ export default function AddListingScreen(props) {
                         { getSelectPlaceName !== '' ?
                             <View>
                                 <TextComponent semiLarge color={Colors.buttonPrimary}>
-                                    {getSelectPlaceName.city}, {getSelectPlaceName.county}
+                                    {getSelectPlaceName.city === getSelectPlaceName.county ? getSelectPlaceName.city : `${getSelectPlaceName.city}, ${getSelectPlaceName.county}`}
                                 </TextComponent>
                                 <TextComponent color={'rgba(0,0,0,0.5)'}>
                                     {getSelectPlaceName.state}, {getSelectPlaceName.country}
@@ -484,7 +505,6 @@ export default function AddListingScreen(props) {
 
                 <MainContainerForRent>
                     <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
-                    <Divider style={{backgroundColor: 'blue'}}/>
                     <RentContainer>
 
                         <TextInput style={{backgroundColor: 'rgba(1,65, 114, 1)', fontSize: 20, marginBottom: 10, width: 150, overflow: 'hidden'}}
@@ -526,8 +546,7 @@ export default function AddListingScreen(props) {
                 </MainContainerForRent>
 
                 <MoreDetailsContainer>
-                    <TextComponent semiLarge>MORE DETAILS (ENGAGE TENANT)</TextComponent>
-                    <Divider style={{backgroundColor: 'blue'}}/>
+                    <TextComponent semiLarge bold>MORE DETAILS (ENGAGE TENANT)</TextComponent>
 
                     <WritingDetailsContainer>
                         <Icon
@@ -548,7 +567,6 @@ export default function AddListingScreen(props) {
 
             </FormViewContainer>
 
-            <SearchPlacesModal modalVisible={openPlaceSearchModal} modalHide={closePlaceSearchModal} updateQuery={setSelectPlaceName}/>
         </Container>
     );
 };
