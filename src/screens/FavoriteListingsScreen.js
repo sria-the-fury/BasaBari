@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList} from 'react-native';
+import {FlatList, Text, View} from 'react-native';
 import styled from "styled-components";
 import {Colors} from "../components/utilities/Colors";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {TextComponent} from "../components/TextComponent";
-import {Icon} from "react-native-elements";
+import {Badge, Icon} from "react-native-elements";
 import {EachListing} from "../components/listings/EachListing";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../context/FirebaseContext";
@@ -69,9 +69,18 @@ export default function FavoriteListingsScreen(props) {
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
-                <Icon name={'heart'} type={'ionicon'} size={25}
-                      style={{marginRight: 5}} color={Colors.favorite}
-                />
+                <View>
+                    <Icon name={'heart'} type={'ionicon'} size={35}
+                          style={{marginRight: 5}} color={Colors.favorite}
+                    />
+
+                    { ListingsData?.length ?
+                        <Badge status={'success'} containerStyle={{position: 'absolute', right: 0,borderColor: Colors.primaryBody, borderWidth: 2, borderRadius:50}}
+                               value={<Text style={{color:'white', fontSize: 10}}>{ListingsData.length}</Text>} />
+                        : null
+                    }
+
+                </View>
                 <TextComponent color={'white'} bold medium>FAVORITE LISTINGS</TextComponent>
             </HeaderContainer>
             { ListingsData && ListingsData.length !== 0 ?

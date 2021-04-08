@@ -165,8 +165,8 @@ export const EachListing = (props) => {
                 <Location>
                     <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
                     <TextComponent color={'rgba(0,0,0, 0.9)'}>
-                        {location.city === location.county ? location.city : `${location.city}, ${location.county}`},
-                        <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location.state}, {location.country}</TextComponent>
+                        {location?.city === location?.county ? location.city : `${location.city}, ${location.county}`},
+                        <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location?.state}, {location?.country}</TextComponent>
                     </TextComponent>
 
                 </Location>

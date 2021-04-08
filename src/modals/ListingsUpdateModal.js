@@ -340,7 +340,7 @@ export const ListingsUpdateModal = (props) => {
                         <SelectPlacesContainer>
 
 
-                            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', width: getSelectPlaceName === '' ? '100%' : '80%'}}
+                            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}
                                               onPress={() => searchBottomSheet.current.open()}>
                                 <Icon
                                     name='location'
