@@ -34,7 +34,7 @@ export default function FavoriteListingsScreen(props) {
                             userId: doc.data().userId,
                             roomNumbers: doc.data().roomNumbers,
                             facilities: doc.data().facilities,
-                            forBachelor: doc.data().availableForBachelor,
+                            forBachelor: doc.data().forBachelor,
                             forFamily: doc.data().forFamily,
                             rentPerMonth: doc.data().rentPerMonth,
                             isNegotiable: doc.data().isNegotiable,

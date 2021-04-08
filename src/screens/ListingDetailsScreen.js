@@ -1,21 +1,41 @@
-import React, {useState} from "react";
-import {View, ScrollView, FlatList, Linking} from "react-native";
+import React, {useEffect, useState} from "react";
+import {View, ScrollView, FlatList, Linking, ActivityIndicator} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {Divider, Icon} from "react-native-elements";
+import {Divider, Icon, Image} from "react-native-elements";
 import {ListingsUpdateModal} from "../modals/ListingsUpdateModal";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
+import firestore from "@react-native-firebase/firestore";
 
 
 export const ListingDetailsScreen = (props) => {
     const {route, navigation} = props;
     const {params} = route;
 
-    const {listingsData, postedUserInfo, currentUserListings} = params;
-    const {images, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, location} = listingsData;
+    const {listingId, listingsData, postedUserInfo, currentUserListings} = params;
+    const [listingData, setListingData] = useState(listingsData);
 
 
+    useEffect(() => {
+
+        const subscriber = firestore().collection('listings').doc(listingId).onSnapshot(
+            doc=> {
+
+                if(doc) {
+
+                    setListingData(doc.data());
+                }
+
+
+            });
+
+        return () => subscriber();
+
+
+    }, []);
+
+    const {images, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, location} = listingData;
 
 
 
@@ -161,8 +181,7 @@ export const ListingDetailsScreen = (props) => {
                     </RentAvailableFor>
 
                     <MoreDetailsContainer>
-                        <TextComponent semiLarge>More Details</TextComponent>
-                        <Divider backgroundColor={'blue'}/>
+                        <TextComponent semiLarge bold>MORE DETAILS</TextComponent>
 
                         <ListingDetails>
                             <TextComponent medium selectable={true}>{moreDetails}</TextComponent>
@@ -189,7 +208,7 @@ export const ListingDetailsScreen = (props) => {
 
             </ModalView>
             <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
-                                 listingsData={listingsData}
+                                 listingsData={listingData}
             />
         </Container>
     );
@@ -199,7 +218,7 @@ const renderImage= (image) => {
 
     return(
         <View style={{marginHorizontal:15}}>
-            <ListingsImagesContainer source={{uri: image.imageUrl}}/>
+            <Image source={{uri: image.imageUrl}} style={{ height: 250, width: 250, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color={'white'}/>}/>
 
         </View>
     )

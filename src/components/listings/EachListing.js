@@ -207,6 +207,7 @@ export const EachListing = (props) => {
 
                 <Icon name={'chevron-forward-circle'} type={'ionicon'} size={35} style={{marginRight: 5}} color={'grey'}
                       onPress={() => props.navigation.navigate('ListingDetails', {
+                          listingId: item.id,
                           listingsData: item,
                           postedUserInfo: postedUser,
                           currentUserListings: currentUserListings()
@@ -223,8 +224,7 @@ const renderImage= (image) => {
 
     return(
         <View style={{marginHorizontal:10}}>
-            <Image source={{uri: image.imageUrl}} style={{ height: 150, width: 150, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator/>}
-                   placeholderStyle={{color: 'cyan', alignSelf: 'center'}}/>
+            <Image source={{uri: image.imageUrl}} style={{ height: 150, width: 150, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color="white"/>}/>
 
         </View>
     )

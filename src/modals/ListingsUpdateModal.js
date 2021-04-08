@@ -1,6 +1,6 @@
 import React, {useContext, useState} from "react";
-import {View, Modal, ScrollView, FlatList, ToastAndroid} from "react-native";
-import {Divider} from "react-native-elements";
+import {View, Modal, ScrollView, FlatList, ToastAndroid, ActivityIndicator} from "react-native";
+import {Divider, Image} from "react-native-elements";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
@@ -14,7 +14,7 @@ import {TextInput} from "react-native-paper";
 
 export const ListingsUpdateModal = (props) => {
     const {modalVisible, modalHide, listingsData} = props;
-    const {images, address, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, id} = listingsData;
+    const {images, address, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, listingId} = listingsData;
 
 
     const firebase = useContext(FirebaseContext);
@@ -140,7 +140,8 @@ export const ListingsUpdateModal = (props) => {
             <ListingImageMainContainer>
 
 
-                <ListingsImagesContainer source={{uri: image.imageUrl}}/>
+                <Image source={{uri: image.imageUrl}} style={{ height: 200, width: 200, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color="white"/>}/>
+
                 <View style={{top: 0,position:'absolute' }}>
                     <Icon
                         name={'close-circle'}
@@ -271,7 +272,7 @@ export const ListingsUpdateModal = (props) => {
                     <ModalHeader>
                         <Icon name={'chevron-down-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => closeModalAndUpdateState()}/>
 
-                        <UpdateListingButton disabled={disableUpdateIfSameValue() || disableUpdate() || loading} onPress={() => updateListing(id)}>
+                        <UpdateListingButton disabled={disableUpdateIfSameValue() || disableUpdate() || loading} onPress={() => updateListing(listingId)}>
                             { loading ? <Loading/> :
                                 <TextComponent bold medium color={disableUpdateIfSameValue() || disableUpdate() ? 'grey':'white'}>UPDATE LISTING</TextComponent>
                             }

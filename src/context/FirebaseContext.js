@@ -167,7 +167,7 @@ const Firebase = {
                         roomNumbers: listingData.roomNumbers,
                         facilities: listingData.facilities,
                         rentPerMonth: listingData.rentPerMonth.replace(/[^0-9]/g, ''),
-                        availableForBachelor: listingData.forBachelor,
+                        forBachelor: listingData.forBachelor,
                         forFamily: listingData.forFamily,
                         moreDetails: listingData.moreDetails,
                         listingId: listingId,
@@ -362,7 +362,7 @@ const Firebase = {
 
         try {
             await firestore().collection('listings').doc(listingId).update({
-                availableForBachelor: updateForBachelor,
+                forBachelor: updateForBachelor,
                 forFamily: updateForFamily
             });
 
