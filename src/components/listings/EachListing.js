@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, View} from 'react-native';
-import {Icon, Image} from "react-native-elements";
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {ActivityIndicator, FlatList, View, StyleSheet, ToastAndroid, Dimensions} from 'react-native';
+import {Divider, Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
 import moment from "moment";
@@ -8,10 +8,17 @@ import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
 import {Avatar} from "react-native-paper";
 import {Colors} from "../utilities/Colors";
+import {SearchPlaces} from "../utilities/SearchPlaces";
+import RBSheet from "react-native-raw-bottom-sheet";
+import {ListingsUpdateModal} from "../../modals/ListingsUpdateModal";
+import Svg, {Rect} from "react-native-svg";
 
 
 
 export const EachListing = (props) => {
+    const ListingsBottomSheet = useRef();
+    const windowWidth = Dimensions.get('window').width;
+
     const firebase = useContext(FirebaseContext);
     const {item} = props;
     const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth} = item;
@@ -69,8 +76,11 @@ export const EachListing = (props) => {
         // console.log('ok remove');
         try {
             await firebase.removeListing(id, images);
+            ToastAndroid.show('Listing Deleted', ToastAndroid.LONG);
         } catch (error){
             alert(error.message);
+        }finally {
+            CloseBottomSheet();
         }
 
     };
@@ -97,6 +107,29 @@ export const EachListing = (props) => {
 
     const isCurrentUserFavList = usersInFav ? usersInFav.includes(currentUserId) : false;
 
+    // onPress={() => removeListing(item.id, images)}
+
+    //open update modal
+
+    //Bottom Sheet Actions
+    const [deleteListingInfo, setDeleteListingInfo] = useState(null);
+    const [EditListingInfo, setEditListingInfo] = useState(item);
+
+    const OpenBottomSheet = (item) => {
+        setDeleteListingInfo({
+            listingId: item.id,
+            listingImages: item.images
+        });
+        setEditListingInfo(item);
+        ListingsBottomSheet.current.open();
+
+    }
+
+    const CloseBottomSheet = () => {
+        setDeleteListingInfo(null);
+        setEditListingInfo(item);
+        ListingsBottomSheet.current.close();
+    }
 
 
     return (
@@ -124,10 +157,8 @@ export const EachListing = (props) => {
                 </View>
 
                 { currentUserListings() ?
-                    // <Icon name={'more-vert'} type={'md'} size={20}
-                    //       style={{marginRight: 5}} color={'grey'} onPress={() => ListingActions(item)}/>
-                    <Icon name={'trash'} type={'ionicon'} size={20}
-                          style={{marginRight: 5}} color={'red'} onPress={() => removeListing(item.id, images)}/>
+                    <Icon name={'more-vert'} type={'md'} size={20}
+                          style={{marginRight: 5}} color={'grey'} onPress={() => OpenBottomSheet(item)}/>
 
                     :
 
@@ -214,6 +245,45 @@ export const EachListing = (props) => {
                       })}/>
 
             </HomeItemsNumbersContainer>
+
+            <RBSheet
+                ref={ListingsBottomSheet}
+                closeOnDragDown={true}
+                closeOnPressMask={true}
+                dragFromTopOnly={true}
+                height={150}
+
+                customStyles={{
+                    wrapper: {
+                        backgroundColor: "transparent"
+                    },
+                    container: style.sheetContainer,
+                    draggableIcon: {
+                        backgroundColor: "white"
+                    }
+                }}
+            >
+                <DeleteContainer onLongPress={() => removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)} delayLongPress={3000} >
+                    <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
+                    <TextComponent  medium color={'white'}>DELETE </TextComponent>
+                </DeleteContainer>
+
+                <Divider backgroundColor={'grey'}/>
+
+                <EditContainer>
+                    <View style={{overflow: 'hidden', backgroundColor: 'white'}}>
+                        <Svg width={windowWidth-35} height="50">
+                            <Rect
+                                width="100%"
+                                height="100%"
+                                fill="red"
+                            />
+                        </Svg>
+                    </View>
+                </EditContainer>
+
+            </RBSheet>
+
 
         </CardsContainer>
 
@@ -320,4 +390,38 @@ backgroundColor: #9c45c1;
 paddingVertical: 5px;
 paddingHorizontal: 5px;
 borderRadius: 20px;
-`
+`;
+
+const DeleteContainer = styled.Pressable`
+display: flex;
+flexDirection: row;
+paddingHorizontal: 20px; 
+paddingVertical: 10px;
+alignItems: center;
+
+
+`;
+
+const EditContainer = styled.Pressable`
+display: flex;
+flexDirection: row;
+paddingHorizontal: 20px; 
+paddingVertical: 10px;
+alignItems: center;
+overflow: hidden
+
+
+`;
+
+const style = StyleSheet.create({
+    sheetContainer : {
+        backgroundColor: Colors.primaryBody,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        shadowColor: '#000',
+        shadowRadius: 5,
+        elevation:10,
+        shadowOpacity: 1
+
+    }
+})

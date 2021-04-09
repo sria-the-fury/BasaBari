@@ -289,7 +289,6 @@ const Firebase = {
 
             if(removedImageId.length !== 0){
                 _.each(removedImageId, async (imageId) => {
-                    console.log('imageId=>', imageId);
                     const imageRef = storage().ref(`listingImages/${listingId}`).child(imageId);
                     await imageRef.delete();
 
@@ -297,7 +296,7 @@ const Firebase = {
             }
 
             if(newImages.length !== 0) {
-                console.log('new images');
+
                 _.each(newImages,  async (image) => {
                     const photo = await Firebase.getBlob(image.imageUrl);
 

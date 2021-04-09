@@ -121,7 +121,7 @@ export const ListingsUpdateModal = (props) => {
 
     };
 
-    const removeImageFromArray = (id) =>{
+    const removeImageFromArray = (id) => {
         let clonedListingImage = _.clone(listingImages);
         let clonePreviousImage = _.clone(images);
         _.remove(clonePreviousImage, {imageId: id});
@@ -189,7 +189,7 @@ export const ListingsUpdateModal = (props) => {
         setLoading(true)
         try {
 
-            const isNewImages = _.difference(listingImages, images),
+            const isNewImages = _.differenceWith(listingImages, images, _.isEqual),
                 differenceImages = _.isEqual(listingImages, images),
                 isSameLocation = _.isEqual(location,getSelectPlaceName);
 
@@ -256,7 +256,7 @@ export const ListingsUpdateModal = (props) => {
         setUpdateMoreDetails(moreDetails);
         setUpdateRentPerMonth(rentPerMonth);
         setUpdateNegotiable(isNegotiable);
-        setSelectPlaceName(location)
+        setSelectPlaceName(location);
         setImagesAfterRemoved([]);
         setRemovedImageId([]);
 
@@ -339,8 +339,7 @@ export const ListingsUpdateModal = (props) => {
 
                         <SelectPlacesContainer>
 
-
-                            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}
+                            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', width:'100%'}}
                                               onPress={() => searchBottomSheet.current.open()}>
                                 <Icon
                                     name='location'

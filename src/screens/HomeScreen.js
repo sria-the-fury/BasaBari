@@ -26,6 +26,7 @@ export default function  HomeScreen (props) {
                     docs.forEach(doc => {
                         data.push({
                             id: doc.id,
+                            listingId: doc.data().listingId,
                             postedTime: doc.data().postedTime,
                             address: doc.data().address,
                             images: doc.data().images,
