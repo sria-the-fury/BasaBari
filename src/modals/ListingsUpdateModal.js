@@ -13,6 +13,7 @@ import {Colors} from "../components/utilities/Colors";
 import {TextInput} from "react-native-paper";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {SearchPlaces} from "../components/utilities/SearchPlaces";
+import {Notifier} from "../components/utilities/Notifier";
 
 export const ListingsUpdateModal = (props) => {
     const searchBottomSheet = useRef();
@@ -186,7 +187,7 @@ export const ListingsUpdateModal = (props) => {
 
     //update method
     const updateListing = async (listingId) => {
-        setLoading(true)
+        setLoading(true);
         try {
 
             const isNewImages = _.differenceWith(listingImages, images, _.isEqual),
@@ -213,20 +214,13 @@ export const ListingsUpdateModal = (props) => {
 
         }catch (e) {
             ToastAndroid.show(e.message, ToastAndroid.LONG);
+            setLoading(false);
 
         } finally {
-            setListingImages(images);
-
-            setImagesAfterRemoved([]);
-            setRemovedImageId([]);
-
             removeAllImagesOnce();
-
-
             setLoading(false);
-            closeModalAndUpdateState();
-
-
+            modalHide();
+            //closeModalAndUpdateState();
         }
 
     };
@@ -234,15 +228,13 @@ export const ListingsUpdateModal = (props) => {
 
     const closeModalAndUpdateState = () => {
 
-        //
         setListingImages(images);
-        setUpdateFacilities(prev=>({
-            ...prev,
+        setUpdateFacilities({
             hasBalcony: facilities.hasBalcony,
             isNearToMainRoad: facilities.isNearToMainRoad,
             hasCCTV: facilities.hasCCTV,
             isFireSafety: facilities.isFireSafety
-        }))
+        });
 
         setUpdateRoomNumbers({
             dinning: roomNumbers.dinning,
@@ -256,7 +248,6 @@ export const ListingsUpdateModal = (props) => {
         setUpdateMoreDetails(moreDetails);
         setUpdateRentPerMonth(rentPerMonth);
         setUpdateNegotiable(isNegotiable);
-        setSelectPlaceName(location);
         setImagesAfterRemoved([]);
         setRemovedImageId([]);
 
@@ -266,7 +257,6 @@ export const ListingsUpdateModal = (props) => {
     };
 
     const [getSelectPlaceName, setSelectPlaceName] = useState(location);
-
 
 
     return (

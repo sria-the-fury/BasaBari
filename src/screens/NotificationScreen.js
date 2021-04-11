@@ -10,12 +10,23 @@ import {
     TouchableWithoutFeedback,
     Image, Button,
 } from 'react-native';
+import {Snackbar} from "react-native-paper";
+import {TextComponent} from "../components/TextComponent";
+
 
 
 
 export default function NotificationScreen() {
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const [visible, setVisible] = React.useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
+
+    console.log()
 
     const fadeIn = () => {
         // Will change fadeAnim value to 1 in 5 seconds
@@ -52,6 +63,20 @@ export default function NotificationScreen() {
                 <Button title="Fade In" onPress={fadeIn} />
                 <Button title="Fade Out" onPress={fadeOut} />
             </View>
+
+            <Button onPress={onToggleSnackBar} title={visible ? 'Hide' : 'Show'}/>
+            <Snackbar
+                style={{backgroundColor: 'black'}}
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+                action={{
+                    label: 'Undo',
+                    onPress: () => {
+                        // Do something
+                    },
+                }}>
+               <TextComponent bold color={'white'} medium>Hi, I am A SnackBar</TextComponent>
+            </Snackbar>
         </View>
     )
 }

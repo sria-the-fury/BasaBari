@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, FlatList, View, StyleSheet, ToastAndroid, Dimensions} from 'react-native';
+import {ActivityIndicator, FlatList, View, StyleSheet, ToastAndroid, Dimensions, Animated} from 'react-native';
 import {Divider, Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
@@ -17,7 +17,6 @@ import Svg, {Rect} from "react-native-svg";
 
 export const EachListing = (props) => {
     const ListingsBottomSheet = useRef();
-    const windowWidth = Dimensions.get('window').width;
 
     const firebase = useContext(FirebaseContext);
     const {item} = props;
@@ -127,9 +126,39 @@ export const EachListing = (props) => {
 
     const CloseBottomSheet = () => {
         setDeleteListingInfo(null);
-        setEditListingInfo(item);
         ListingsBottomSheet.current.close();
     }
+
+    //update Modal
+    const [openListingUpdateModal, setListingUpdateModal] = useState(false);
+
+    const closeListingUpdateModal = () => {
+        setListingUpdateModal(false);
+    };
+
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const windowWidth = Dimensions.get('window').width;
+
+
+    const fadeIn = () => {
+        // Will change fadeAnim value to 1 in 5 seconds
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 3000,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const fadeOut = () => {
+        // Will change fadeAnim value to 0 in 5 seconds
+        Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 2000,
+            useNativeDriver: true,
+        }).start();
+    };
+
+
 
 
     return (
@@ -157,7 +186,7 @@ export const EachListing = (props) => {
                 </View>
 
                 { currentUserListings() ?
-                    <Icon name={'more-vert'} type={'md'} size={20}
+                    <Icon name={'more-horiz'} type={'md'} size={20}
                           style={{marginRight: 5}} color={'grey'} onPress={() => OpenBottomSheet(item)}/>
 
                     :
@@ -251,40 +280,42 @@ export const EachListing = (props) => {
                 closeOnDragDown={true}
                 closeOnPressMask={true}
                 dragFromTopOnly={true}
-                height={150}
+                height={110}
 
                 customStyles={{
                     wrapper: {
                         backgroundColor: "transparent"
                     },
                     container: style.sheetContainer,
-                    draggableIcon: {
-                        backgroundColor: "white"
-                    }
+
                 }}
             >
-                <DeleteContainer onLongPress={() => removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)} delayLongPress={3000} >
-                    <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
-                    <TextComponent  medium color={'white'}>DELETE </TextComponent>
-                </DeleteContainer>
+
+                <View style={{overflow: "hidden"}}>
+                    <Animated.View style={ [{scaleX: fadeAnim}, {backgroundColor: 'red',width: windowWidth, height: 45, position: "absolute"}]} ref={fadeAnim}/>
+                    <DeleteContainer onLongPress={() => removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)} delayLongPress={3000}
+                                     onPressIn={() => fadeIn()} onPressOut={() => fadeOut()}
+
+                    >
+                        <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
+                        <TextComponent  medium color={'white'}>DELETE </TextComponent>
+                    </DeleteContainer>
+                </View>
+
 
                 <Divider backgroundColor={'grey'}/>
 
-                <EditContainer>
-                    <View style={{overflow: 'hidden', backgroundColor: 'white'}}>
-                        <Svg width={windowWidth-35} height="50">
-                            <Rect
-                                width="100%"
-                                height="100%"
-                                fill="red"
-                            />
-                        </Svg>
-                    </View>
-                </EditContainer>
 
+                <EditContainer onLongPress={() => {setListingUpdateModal(true); CloseBottomSheet();}} delayLongPress={3000}
+                >
+                    <Icon name={'edit'} color={'white'} type={'md'} size={15} style={{marginRight: 10}}/>
+                    <TextComponent  medium color={'white'}>EDIT </TextComponent>
+                </EditContainer>
             </RBSheet>
 
-
+            <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
+                                 listingsData={EditListingInfo}
+            />
         </CardsContainer>
 
     )
@@ -422,6 +453,15 @@ const style = StyleSheet.create({
         shadowRadius: 5,
         elevation:10,
         shadowOpacity: 1
+
+    },
+    pressable: {
+        display: 'flex',
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        alignItems: 'center',
+        overflow: 'hidden',
 
     }
 })
