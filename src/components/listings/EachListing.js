@@ -306,7 +306,7 @@ export const EachListing = (props) => {
                 <Divider backgroundColor={'grey'}/>
 
 
-                <EditContainer onLongPress={() => {setListingUpdateModal(true); CloseBottomSheet();}} delayLongPress={3000}
+                <EditContainer onPress={() => {setListingUpdateModal(true); CloseBottomSheet();}}
                 >
                     <Icon name={'edit'} color={'white'} type={'md'} size={15} style={{marginRight: 10}}/>
                     <TextComponent  medium color={'white'}>EDIT </TextComponent>
