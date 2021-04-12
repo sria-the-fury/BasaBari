@@ -1,6 +1,6 @@
 import React,{useContext} from 'react';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {Icon, Image} from "react-native-elements";
+import {Icon} from "react-native-elements";
 import { Text, View} from "react-native";
 
 import HomeScreen from "../screens/HomeScreen";
@@ -113,7 +113,14 @@ export default function MainStackScreen() {
                               })}
             />
             <MainStack.Screen name={'Notification'} component={NotificationScreen}/>
-            <MainStack.Screen name={'Profile'} component={ProfileScreen}/>
+            <MainStack.Screen name={'Profile'} component={ProfileScreen}
+                              listeners={({navigation}) => ({
+                                  tabPress: event => {
+                                      event.preventDefault();
+                                      navigation.navigate("ProfileScreen");
+
+                                  }
+                              })}/>
 
         </MainStack.Navigator>
 

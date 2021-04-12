@@ -8,6 +8,7 @@ import {UserContext} from "../context/UserContext";
 import MyListingScreen from "../screens/MyListingsScreen";
 import InitialUpdateProfile from "../screens/InitialUpdateProfile";
 import {ListingDetailsScreen} from "../screens/ListingDetailsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 
 export default function AppStackScreen() {
@@ -33,6 +34,11 @@ export default function AppStackScreen() {
                 <AppStack.Screen name={'ListingDetails'} component={ListingDetailsScreen} options={{
                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                 }}/>
+
+                <AppStack.Screen name={'ProfileScreen'} component={ProfileScreen}
+                                 options={{
+                                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
+                                 }}/>
 
 
             </AppStack.Navigator>

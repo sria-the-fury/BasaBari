@@ -244,8 +244,7 @@ const Firebase = {
                 userName: userName,
             });
 
-            if(currentUserName === userName)
-                return true;
+            if(currentUserName === userName) return true;
 
 
 

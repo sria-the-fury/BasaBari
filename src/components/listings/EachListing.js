@@ -8,11 +8,8 @@ import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
 import {Avatar} from "react-native-paper";
 import {Colors} from "../utilities/Colors";
-import {SearchPlaces} from "../utilities/SearchPlaces";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {ListingsUpdateModal} from "../../modals/ListingsUpdateModal";
-import Svg, {Rect} from "react-native-svg";
-
 
 
 export const EachListing = (props) => {
@@ -294,9 +291,7 @@ export const EachListing = (props) => {
                 <View style={{overflow: "hidden"}}>
                     <Animated.View style={ [{scaleX: fadeAnim}, {backgroundColor: 'red',width: windowWidth, height: 45, position: "absolute"}]} ref={fadeAnim}/>
                     <DeleteContainer onLongPress={() => removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)} delayLongPress={3000}
-                                     onPressIn={() => fadeIn()} onPressOut={() => fadeOut()}
-
-                    >
+                                     onPressIn={() => fadeIn()} onPressOut={() => fadeOut()}>
                         <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
                         <TextComponent  medium color={'white'}>DELETE </TextComponent>
                     </DeleteContainer>
@@ -306,8 +301,7 @@ export const EachListing = (props) => {
                 <Divider backgroundColor={'grey'}/>
 
 
-                <EditContainer onPress={() => {setListingUpdateModal(true); CloseBottomSheet();}}
-                >
+                <EditContainer onPress={() => {setListingUpdateModal(true); CloseBottomSheet();}}>
                     <Icon name={'edit'} color={'white'} type={'md'} size={15} style={{marginRight: 10}}/>
                     <TextComponent  medium color={'white'}>EDIT </TextComponent>
                 </EditContainer>
@@ -464,4 +458,4 @@ const style = StyleSheet.create({
         overflow: 'hidden',
 
     }
-})
+});
