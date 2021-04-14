@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {View, ScrollView, FlatList, Linking, ActivityIndicator} from "react-native";
+import React, {useEffect, useRef, useState, useContext} from "react";
+import {View, ScrollView, FlatList, Linking, ActivityIndicator, StyleSheet, ToastAndroid} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Divider, Icon, Image} from "react-native-elements";
@@ -7,9 +7,12 @@ import {ListingsUpdateModal} from "../modals/ListingsUpdateModal";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
 import firestore from "@react-native-firebase/firestore";
+import RBSheet from "react-native-raw-bottom-sheet";
+import {FirebaseContext} from "../context/FirebaseContext";
 
 
 export const ListingDetailsScreen = (props) => {
+    const firebase = useContext(FirebaseContext);
     const {route, navigation} = props;
     const {params} = route;
 
@@ -48,6 +51,35 @@ export const ListingDetailsScreen = (props) => {
 
     const closeListingUpdateModal = () => {
         setListingUpdateModal(false);
+    }
+
+    //SendMessageBottomSheet
+
+    const SendMessageBottomSheet = useRef();
+
+    const [message, setMessage] = useState('Is it still available?');
+    const [sendingMessage, setSendingMessage] = useState(false);
+
+    const SendMessageToLandlord = async () => {
+        setSendingMessage(true);
+        try {
+            const currentUserId = firebase.getCurrentUser().uid;
+            const postedUserId = listingData.userId;
+            const chattedUserIds = [currentUserId, postedUserId];
+            await firebase.sendMessage(postedUserId,currentUserId, message, [], listingId);
+
+
+        }catch (e) {
+            setSendingMessage(false);
+            ToastAndroid.show(e.message+'@sending Message', ToastAndroid.LONG);
+
+        }
+        finally {
+            setSendingMessage(false);
+            ToastAndroid.show('Message Sent', ToastAndroid.SHORT);
+            SendMessageBottomSheet.current.close();
+
+        }
     }
 
     return (
@@ -198,11 +230,45 @@ export const ListingDetailsScreen = (props) => {
                         <TextComponent bold medium color={'white'}>EDIT LISTING</TextComponent>
                     </EditListingButton>
                     :
-                    <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
-                        <Icon name={'call'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}/>
-                        <TextComponent bold medium color={'white'}>CONTACT WITH LANDLORD</TextComponent>
-                    </ContactContainer>
+                    <ContactAndMessageContainer>
+                        <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
+                            <Icon name={'call'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}/>
+                            <TextComponent bold medium color={'white'}>CONTACT WITH LANDLORD</TextComponent>
+                        </ContactContainer>
+                        <Icon name={'chatbubble-ellipses-outline'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'} onPress={() => SendMessageBottomSheet.current.open()}/>
+                    </ContactAndMessageContainer>
+
                 }
+
+                <RBSheet
+                    ref={SendMessageBottomSheet}
+                    closeOnDragDown={true}
+                    closeOnPressMask={true}
+                    dragFromTopOnly={true}
+                    height={130}
+
+                    customStyles={{
+                        wrapper: {
+                            backgroundColor: "transparent"
+                        },
+                        container: style.sheetContainer,
+
+                    }}
+                >
+                    <MessageAndButtonContainer>
+                        <SendMessageBox placeholder={'Send your Message'} placeholderTextColor={'grey'}
+                        defaultValue={message}
+                                        onChangeText={(message) => setMessage(message)}
+                        />
+                        { sendingMessage ?  <ActivityIndicator size={'small'} color={'white'}/>
+                            :
+                            <Icon name={'send'} type={'md'} size={35} style={{marginLeft: 5}} color={'white'} onPress={() => SendMessageToLandlord()}/>
+                        }
+
+
+                    </MessageAndButtonContainer>
+
+                </RBSheet>
 
 
 
@@ -331,18 +397,24 @@ borderWidth: 2px;
 
 `;
 
-const ContactContainer = styled.TouchableOpacity`
+const ContactAndMessageContainer = styled.View`
 position: absolute;
  bottom:0;
- flexDirection: row;
- alignItems: center;
+ flexDirection:row;
  borderTopLeftRadius: 10px;
  borderTopRightRadius: 10px;
  paddingVertical: 15px;
  width:100%;
- justifyContent: center;
+ alignItems: center;
+ justifyContent: space-between;
  paddingHorizontal: 20px;
-  backgroundColor: red;
+   backgroundColor: red;
+`
+
+const ContactContainer = styled.Pressable`
+
+ flexDirection: row;
+ alignItems: center;
 `;
 
 const EditListingButton = styled.TouchableOpacity`
@@ -395,3 +467,47 @@ paddingVertical: 5px;
 borderRadius: 5px;
 
 `;
+
+const MessageAndButtonContainer = styled.View`
+marginVertical: 15px;
+paddingHorizontal: 10px;
+flexDirection: row;
+alignItems: center;
+marginHorizontal: 5px;
+borderRadius: 50px;
+backgroundColor: ${Colors.primaryBodyLight};
+justifyContent: space-between;
+`;
+
+const SendMessageBox = styled.TextInput`
+borderWidth: 1px;
+borderColor: lavender;
+borderRadius: 50px;
+color: white;
+backgroundColor: ${Colors.primaryBody};
+paddingHorizontal: 10px;
+width: 88%;
+fontSize: 18px;
+`;
+
+const style = StyleSheet.create({
+    sheetContainer : {
+        backgroundColor: Colors.primaryBody,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        shadowColor: '#000',
+        shadowRadius: 5,
+        elevation:10,
+        shadowOpacity: 1
+
+    },
+    pressable: {
+        display: 'flex',
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        alignItems: 'center',
+        overflow: 'hidden',
+
+    }
+});

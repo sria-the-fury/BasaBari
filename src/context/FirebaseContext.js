@@ -437,7 +437,29 @@ const Firebase = {
             console.log(e.message+'@removeListing');
 
         }
-    }
+    },
+
+
+    //messaging functions
+
+    sendMessage: async (listingOwnerId, senderId, message, sharedImages, listingId) => {
+
+        try {
+            await firestore().collection('messages').add({
+                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date()}),
+                listingOwnerId,
+                senderId,
+                sharedImages,
+                listingId,
+                createdAt: new Date()
+
+            });
+
+        }catch (e){
+            ToastAndroid.show(e.message+"@sendingMessage", ToastAndroid.LONG);
+        }
+
+    },
 
 
 }

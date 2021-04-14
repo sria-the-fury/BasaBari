@@ -55,7 +55,6 @@ const Container = styled.View`
 
 const ModalView = styled.View`
 backgroundColor: white;
-borderRadius: 20px;
 alignItems: center;
 shadowColor: #000;
 shadowOpacity: 0.25;
