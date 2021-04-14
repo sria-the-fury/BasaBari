@@ -445,8 +445,9 @@ const Firebase = {
     sendMessage: async (listingOwnerId, senderId, message, sharedImages, listingId) => {
 
         try {
+            const currentUserId = Firebase.getCurrentUser().uid;
             await firestore().collection('messages').add({
-                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date()}),
+                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: currentUserId, id: uuidv4(), read: false}),
                 listingOwnerId,
                 senderId,
                 sharedImages,
@@ -460,6 +461,39 @@ const Firebase = {
         }
 
     },
+
+    sendMessageAtMessageScreen: async  (messageId, currentUserId, message) => {
+
+        try{
+            await firestore().collection('messages').doc(messageId).update({
+                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: currentUserId, id: uuidv4(), read: false}),
+            });
+
+        } catch (e) {
+            ToastAndroid.show(e.message+'@ sent from message', ToastAndroid.LONG);
+        }
+
+    },
+
+    readMessages: async (eachMessageId, messageId, read, eachMessage) =>{
+
+        console.log('eachMessageId=>', eachMessageId);
+        console.log('messageId=>', messageId);
+        console.log('read=>', read);
+        try{
+            const clonePreviousMessage = _.clone(eachMessage);
+            await firestore().collection('messages').doc(messageId).update({
+                messages: firestore.FieldValue.arrayRemove({...eachMessage}),
+            });
+
+            await firestore().collection('messages').doc(messageId).update({
+                messages: firestore.FieldValue.arrayUnion({...eachMessage, readAt: new Date(), read: read}),
+            });
+
+        } catch (e) {
+            ToastAndroid.show(e.message+'@ read from message', ToastAndroid.LONG);
+        }
+    }
 
 
 }

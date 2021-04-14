@@ -6,7 +6,7 @@ import { Text, View} from "react-native";
 import HomeScreen from "../screens/HomeScreen";
 import FavoriteListingsScreen from "../screens/FavoriteListingsScreen";
 import AddListingScreen from "../screens/AddListingScreen";
-import NotificationScreen from "../screens/NotificationScreen";
+import MessagesScreen from "../screens/MessagesScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {FirebaseContext} from "../context/FirebaseContext";
 import { Avatar } from 'react-native-paper';
@@ -42,8 +42,8 @@ export default function MainStackScreen() {
                     iconName = 'home';
                     break;
 
-                case 'Notification':
-                    iconName = 'notifications';
+                case 'Messages':
+                    iconName = 'chatbubble-ellipses';
                     break;
 
                 case 'Profile':
@@ -68,19 +68,10 @@ export default function MainStackScreen() {
 
             if(route.name === 'Profile'){
                 return(
-
-                    <View style={{borderWidth: 2, borderColor: focused ? 'white' : null, borderRadius: 16}}>
-                        {
                             getCurrentUserProfileUrl ?
-
                                 <Avatar.Image size={30} source={{uri: getCurrentUserProfileUrl}}/>
                                 :
                                 <Icon name={'person-circle'} type='ionicon' size={30} color={focused ? '#5d00ff' :'#666666' }/>
-
-                        }
-
-                    </View>
-
                 )
             }
 
@@ -112,7 +103,7 @@ export default function MainStackScreen() {
                                   }
                               })}
             />
-            <MainStack.Screen name={'Notification'} component={NotificationScreen}/>
+            <MainStack.Screen name={'Messages'} component={MessagesScreen}/>
             <MainStack.Screen name={'Profile'} component={ProfileScreen}
                               listeners={({navigation}) => ({
                                   tabPress: event => {

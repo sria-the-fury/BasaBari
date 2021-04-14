@@ -9,20 +9,19 @@ import {
 import {TextComponent} from "../components/TextComponent";
 import styled from "styled-components";
 import {Colors} from "../components/utilities/Colors";
-import {Icon} from "react-native-elements";
+import {Badge, Icon, ListItem} from "react-native-elements";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import firestore from "@react-native-firebase/firestore";
 import _ from "lodash";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {Avatar} from "react-native-paper";
-import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
-import {ChatModal} from "../modals/ChatModal";
 import {Messages} from "../components/messages/Messages";
+import moment from "moment";
 
 
 
 
-export default function NotificationScreen(props) {
+export default function MessagesScreen(props) {
 
     const [messages, setMessages] = useState(null);
     const [sendUsersInfo, setSendUsersInfo] = useState(null);
@@ -38,13 +37,13 @@ export default function NotificationScreen(props) {
             docs=> {
                 let allMessages = [];
                 if(docs) {
-                   docs.forEach((doc) => {
+                    docs.forEach((doc) => {
 
-                       let {listingOwnerId, senderId, listingId, sharedImages, messages} = doc.data();
-                       allMessages.push({
-                           id: doc.id,listingOwnerId,senderId, listingId, sharedImages, messages
-                       })
-                   });
+                        let {listingOwnerId, senderId, listingId, sharedImages, messages} = doc.data();
+                        allMessages.push({
+                            id: doc.id,listingOwnerId,senderId, listingId, sharedImages, messages
+                        })
+                    });
 
                     setMessages(allMessages);
                 }
@@ -118,58 +117,56 @@ export default function NotificationScreen(props) {
 
     const [openChatModal, setChatModal] = useState(false);
 
+    const sentAtTime = (time) => {
+
+        const sentAt = new Date(time * 1000),
+            todayDate = new Date(),
+            getDayDifference =  Math.round((todayDate.getTime() - sentAt.getTime())/(1000*3600*24));
+        if(getDayDifference > 25) return moment(sentAt).format('ddd, Do MMM YYYY');
+        else if(getDayDifference < 7 ){
+            if(getDayDifference < 1)  return moment(sentAt).startOf('minutes').fromNow();
+            else return moment(sentAt).calendar();
+        } else return moment(sentAt).startOf('minutes').fromNow();
+    };
+
     const UserInfoAndListingInfo = (listingId, sendUserId, listingOwnerId, messages) => {
         const findListingData = ListingsData ? _.find(ListingsData, {listingId : listingId}) : null;
         const UserInfo = users && currentUserId !== sendUserId ? _.find(users, {id : sendUserId}) : users && currentUserId !== listingOwnerId ? _.find(users, {id : listingOwnerId}) : null;
+        const lastMessage = messages.length > 0 ? messages[messages.length-1] : messages[0];
+        const unreadMessage = _.filter(messages, {read: false});
 
         if(findListingData && UserInfo){
             return(
-                <View style={{flexDirection: 'row', paddingHorizontal: 10, alignItems: 'center'}}>
-                    <Avatar.Image size={50} source={{uri: UserInfo.profilePhotoUrl}}/>
-                    <View style={{marginLeft: 10}}>
-                        <TextComponent bold semiLarge>{UserInfo.userName}</TextComponent>
+                <ListItem bottomDivider>
+                    <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
+                    <ListItem.Content>
+                        <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
+                            <TextComponent bold semiLarge>{UserInfo.userName}</TextComponent>
+                            <TextComponent tiny color={'grey'} >{sentAtTime(lastMessage.sentAt.seconds)}</TextComponent>
+                        </View>
+
                         <View style={{flexDirection: "row", alignItems: "center"}}>
-                            <Icon name={'mode-comment'} type={'md'} size={15} color={'grey'} style={{marginRight: 5}}/>
-                            {messages[0].senderId === currentUserId ? <TextComponent bold > Me : </TextComponent> : null }
-                            <TextComponent bold >{messages[0].message}</TextComponent>
+                            <Icon name={'mode-comment'} type={'md'} size={15} color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9':'grey'} style={{marginRight: 5}}/>
+                            {lastMessage.senderId === currentUserId ? <TextComponent bold > Me : </TextComponent> : null }
+                            <TextComponent medium numberOfLines={1} color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9' : 'grey'}>{lastMessage.message}</TextComponent>
+                            { lastMessage.senderId !== currentUserId && !lastMessage.read ?
+                                <Badge containerStyle={{marginLeft: 10}}
+                                       value={<Text style={{color:'white', fontSize: 10}}>{unreadMessage.length}</Text>} /> : null
+                            }
                         </View>
                         <View style={{flexDirection: "row", alignItems: "center"}}>
                             <Icon name={'home'} type={'ionicon'} size={15} color={'grey'} style={{marginRight: 5}}/>
-                            <TextComponent color={'grey'}>{findListingData.address}</TextComponent>
+                            <TextComponent color={'grey'}>{findListingData.address}, {findListingData.location.city}</TextComponent>
                         </View>
-                    </View>
 
-                </View>
+
+                    </ListItem.Content>
+
+                </ListItem>
             )
         }
 
     };
-
-    const [toUserInfo, setToUserInfo] = useState(null);
-    const [includeListing, setIncludeListing] = useState(null);
-
-    const messageActions = (listingId, sendUserId, listingOwnerId) => {
-        const findListingData = ListingsData ? _.find(ListingsData, {listingId : listingId}) : null;
-        const UserInfo = users && currentUserId !== sendUserId ? _.find(users, {id : sendUserId}) : users && currentUserId !== listingOwnerId ? _.find(users, {id : listingOwnerId}) : null;
-        if(findListingData && UserInfo) {
-            setToUserInfo({
-                userName: UserInfo.userName,
-                profileImage: UserInfo.profilePhotoUrl,
-                phoneNumber: UserInfo.phoneNumber
-
-            });
-
-            setIncludeListing({
-                address: findListingData.address,
-                location: findListingData.location
-            });
-
-            setChatModal(true);
-
-
-        }
-    };
-
 
 
     return (
@@ -180,12 +177,12 @@ export default function NotificationScreen(props) {
                 <TextComponent color={'white'} semiLarge>Messages</TextComponent>
 
             </Header>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'always'}>
                 {
-                     users && ListingsData && filterMessageByCurrentUser && filterMessageByCurrentUser.map(message =>
+                    users && ListingsData && filterMessageByCurrentUser && filterMessageByCurrentUser.map(message =>
                         <Messages key={message.id} message={message} users={users} listingData={ListingsData}>
                             {UserInfoAndListingInfo(message.listingId, message.senderId, message.listingOwnerId, message.messages)}
-                            {/*<ChatModal modalVisible={openChatModal} modalHide={setChatModal} message={message} ToUserInfo={toUserInfo} IncludeListing={includeListing}/>*/}
+
                         </Messages>
 
                     )
