@@ -1,5 +1,5 @@
-import React, {useContext, useState} from "react";
-import {Modal, ScrollView, View, StyleSheet, TextInput, ToastAndroid} from "react-native";
+import React, {useContext, useRef, useState} from "react";
+import {Modal, ScrollView, View, StyleSheet, TextInput, ToastAndroid, FlatList} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
@@ -8,6 +8,7 @@ import {Colors} from "../components/utilities/Colors";
 import _ from 'lodash';
 import moment from "moment";
 import {FirebaseContext} from "../context/FirebaseContext";
+import {EachListing} from "../components/listings/EachListing";
 
 export const ChatModal = (props) => {
     const {modalVisible, modalHide, message, ToUserInfo, IncludeListing, currentUserId} = props;
@@ -16,11 +17,11 @@ export const ChatModal = (props) => {
 
     const firstName = ToUserInfo.userName.split(' ');
 
-    const ChatBubble = (message) => {
+    const ChatBubble = (eachMessage) => {
 
         return(
-            <TextComponent selectable={true} color={'black'}>
-                {message}
+            <TextComponent selectable={true} color={currentUserId === eachMessage.senderId ? 'white': 'black'}>
+                {eachMessage.message}
             </TextComponent>
         )
 
@@ -53,13 +54,55 @@ export const ChatModal = (props) => {
     const SendMessage = async (messageId) => {
 
         try{
+            // ScrollViewRef.current.scrollToEnd({animated: true});
             await firebase.sendMessageAtMessageScreen(messageId, currentUserId, sendMessage);
             setSendMessage('');
         } catch (e) {
             ToastAndroid.show(e.message+ '@front sent msg', ToastAndroid.LONG);
         } finally {
+            // ScrollViewRef.current.scrollToEnd({animated: true});
             setSendMessage('');
+
         }
+
+    };
+
+
+    // const EachMessageBubble = ({eachMessage}) => {
+    //
+    //
+    //     return(
+    //         <View>
+    //             <View  style={{flexDirection: 'row', alignItems: "center", alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
+    //
+    //                 { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 10}}/> : null
+    //
+    //                 }
+    //                 <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#8eabf2',
+    //                     marginVertical: 5,
+    //                     paddingHorizontal: 10, paddingVertical: 10, maxWidth: '75%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
+    //                     {ChatBubble(eachMessage.message)}
+    //                 </View>
+    //             </View>
+    //             {ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
+    //         </View>
+    //     )
+    // }
+
+    const ScrollViewRef = useRef();
+
+    const [hideSend, setHideSend] = useState(false);
+
+
+    const unreadMessage = _.filter(message.messages, {read: false});
+    const lastMessage = message.messages.length > 0 ? message.messages[message.messages.length-1] : message.messages[0];
+
+    const messageActions = () => {
+
+        if(unreadMessage.length > 0 && lastMessage.senderId !== currentUserId ) {
+            _.each(unreadMessage, async (eachMessage) => await firebase.readMessages(eachMessage.id, message.id, true, eachMessage));
+        }
+
 
     }
 
@@ -90,7 +133,16 @@ export const ChatModal = (props) => {
                     </ListingInfo>
 
                 </ModalHeader>
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <ScrollView showsVerticalScrollIndicator={false} ref={ScrollViewRef}
+                            onContentSizeChange={(contentWidth, contentHeight)=>{
+                                console.log('hello at => ', new Date());
+                                messageActions();
+                                ScrollViewRef.current.scrollToEnd({animated: true}); }}
+                >
+                    {/*<FlatList data={message.messages} renderItem={({item}) =>*/}
+                    {/*    <EachMessageBubble eachMessage={item}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}*/}
+                    {/*/>*/}
+
                     <View style={{paddingHorizontal: 10, paddingVertical: 10}}>
                         { message.messages.map((eachMessage, key= 0) =>
                             <View key={key}>
@@ -99,10 +151,10 @@ export const ChatModal = (props) => {
                                     { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 10}}/> : null
 
                                     }
-                                    <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#8eabf2',
+                                    <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
                                         marginVertical: 5,
                                         paddingHorizontal: 10, paddingVertical: 10, maxWidth: '75%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
-                                        {ChatBubble(eachMessage.message)}
+                                        {ChatBubble(eachMessage)}
                                     </View>
                                 </View>
                                 {ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
@@ -111,12 +163,21 @@ export const ChatModal = (props) => {
                     </View>
                 </ScrollView>
                 <MessageSendMainContainer>
-                        <SendMessageBox placeholder={'Send your Message'} placeholderTextColor={'grey'} multiline={true}
-                                        defaultValue={sendMessage}
-                                        onChangeText={(text) => setSendMessage(text)}
-                        />
+                    <SendMessageBox placeholder={'Send your Message'} placeholderTextColor={'grey'} multiline={true}
+                                    style={{width: hideSend ? '88%' : '100%'}}
+                                    defaultValue={sendMessage}
+                                    onChangeText={(text) => setSendMessage(text)}
+                                    onBlur={() => setHideSend(false)}
+                                    onFocus={() =>{
+                                        console.log('focused');
+                                        setHideSend(true);
+                                        ScrollViewRef.current.scrollToEnd({animated: true});
+                                    }}
+                    />
+                    { hideSend ?
                         <Icon reverse name={'send'} type={'md'} size={15} style={{marginLeft: 5}} color={sendMessage.trim() ==='' ? 'grey' : '#8eabf2'} onPress={() => SendMessage(message.id)}
-                              disabled={sendMessage.trim() === ''}/>
+                              disabled={sendMessage.trim() === ''}/> : null
+                    }
 
                 </MessageSendMainContainer>
 
@@ -167,7 +228,6 @@ borderRadius: 10px;
 color: white;
 backgroundColor: ${Colors.primaryBody};
 paddingHorizontal: 10px;
-width: 88%;
 maxHeight: 70px;
 fontSize: 18px;
 `;
