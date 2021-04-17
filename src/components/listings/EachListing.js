@@ -17,7 +17,7 @@ export const EachListing = (props) => {
 
     const firebase = useContext(FirebaseContext);
     const {item} = props;
-    const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth} = item;
+    const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth, interestedTenantId} = item;
     const [postedUser, setPostedUser] = useState('');
     const currentUserId = firebase.getCurrentUser().uid;
 

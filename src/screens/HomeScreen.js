@@ -39,7 +39,8 @@ export default function  HomeScreen (props) {
                             isNegotiable: doc.data().isNegotiable,
                             usersInFav: doc.data().usersInFav,
                             moreDetails: doc.data().moreDetails,
-                            location: doc.data().location
+                            location: doc.data().location,
+                            interestedTenantId: doc.data().interestedTenantId
                         });
 
                     });

@@ -39,9 +39,9 @@ export default function MessagesScreen(props) {
                 if(docs) {
                     docs.forEach((doc) => {
 
-                        let {listingOwnerId, senderId, listingId, sharedImages, messages} = doc.data();
+                        let {listingOwnerId, interestedTenantId, listingId, sharedImages, messages} = doc.data();
                         allMessages.push({
-                            id: doc.id,listingOwnerId,senderId, listingId, sharedImages, messages
+                            id: doc.id,listingOwnerId,interestedTenantId, listingId, sharedImages, messages
                         })
                     });
 
@@ -97,22 +97,8 @@ export default function MessagesScreen(props) {
     }, []);
 
     const filterMessageByCurrentUser = messages ? _.filter(messages, (message) => {
-        return (message.listingOwnerId === currentUserId || message.senderId === currentUserId);
+        return (message.listingOwnerId === currentUserId || message.interestedTenantId === currentUserId);
     }): null;
-
-    const findListingData = filterMessageByCurrentUser && ListingsData ? _.find(ListingsData, (listing) => {
-        return _.find(filterMessageByCurrentUser, {listingId : listing.listingId})
-    }) : null;
-
-    const findOwner = filterMessageByCurrentUser && users ? _.filter(users, (user) => {
-        return (_.find(filterMessageByCurrentUser, {listingOwnerId : user.id}))
-    }) : null;
-
-    const findOtherUser = filterMessageByCurrentUser && users ? _.filter(users, (user) => {
-        return (_.find(filterMessageByCurrentUser, {senderId : user.id}))
-    }) : null;
-
-
 
 
     const [openChatModal, setChatModal] = useState(false);
@@ -129,15 +115,15 @@ export default function MessagesScreen(props) {
         } else return moment(sentAt).startOf('minutes').fromNow();
     };
 
-    const UserInfoAndListingInfo = (listingId, sendUserId, listingOwnerId, messages) => {
+    const UserInfoAndListingInfo = (listingId, interestedTenantId, listingOwnerId, messages) => {
         const findListingData = ListingsData ? _.find(ListingsData, {listingId : listingId}) : null;
-        const UserInfo = users && currentUserId !== sendUserId ? _.find(users, {id : sendUserId}) : users && currentUserId !== listingOwnerId ? _.find(users, {id : listingOwnerId}) : null;
-        const lastMessage = messages.length > 0 ? messages[messages.length-1] : messages[0];
+        const UserInfo = users && currentUserId !== interestedTenantId ? _.find(users, {id : interestedTenantId}) : users && currentUserId !== listingOwnerId ? _.find(users, {id : listingOwnerId}) : null;
+        const lastMessage = messages[messages.length-1];
         const unreadMessage = _.filter(messages, {read: false});
 
         if(findListingData && UserInfo){
             return(
-                <ListItem bottomDivider>
+                <ListItem bottomDivider containerStyle={{overflow: 'hidden'}}>
                     <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
                     <ListItem.Content>
                         <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
@@ -148,7 +134,9 @@ export default function MessagesScreen(props) {
                         <View style={{flexDirection: "row", alignItems: "center"}}>
                             <Icon name={'mode-comment'} type={'md'} size={15} color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9':'grey'} style={{marginRight: 5}}/>
                             {lastMessage.senderId === currentUserId ? <TextComponent bold > Me : </TextComponent> : null }
-                            <TextComponent medium numberOfLines={1} color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9' : 'grey'}>{lastMessage.message}</TextComponent>
+                            <TextComponent medium numberOfLines={1} color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9' : 'grey'}
+                            style={{width: '85%'}}
+                            >{lastMessage.message}</TextComponent>
                             { lastMessage.senderId !== currentUserId && !lastMessage.read ?
                                 <Badge containerStyle={{marginLeft: 10}}
                                        value={<Text style={{color:'white', fontSize: 10}}>{unreadMessage.length}</Text>} /> : null
@@ -156,7 +144,8 @@ export default function MessagesScreen(props) {
                         </View>
                         <View style={{flexDirection: "row", alignItems: "center"}}>
                             <Icon name={'home'} type={'ionicon'} size={15} color={'grey'} style={{marginRight: 5}}/>
-                            <TextComponent color={'grey'}>{findListingData.address}, {findListingData.location.city}</TextComponent>
+                            <TextComponent small color={'grey'} style={{ flex:1,
+                                flexWrap: 'wrap'}} numberOfLines={2}>{findListingData.address}, {findListingData.location.city}</TextComponent>
                         </View>
 
 
@@ -181,7 +170,7 @@ export default function MessagesScreen(props) {
                 {
                     users && ListingsData && filterMessageByCurrentUser && filterMessageByCurrentUser.map(message =>
                         <Messages key={message.id} message={message} users={users} listingData={ListingsData}>
-                            {UserInfoAndListingInfo(message.listingId, message.senderId, message.listingOwnerId, message.messages)}
+                            {UserInfoAndListingInfo(message.listingId, message.interestedTenantId, message.listingOwnerId, message.messages)}
 
                         </Messages>
 

@@ -11,7 +11,7 @@ export const Messages = ({children, message, users, listingData}) => {
 
     const [openChatModal, setChatModal] = useState(false);
     const includeListing = _.find(listingData, {listingId : message.listingId}) ;
-    const ToUserInfo = (includeListing.userId === currentUserId) && (currentUserId === message.listingOwnerId) ? _.find(users, {id : message.senderId}) : _.find(users, {id : message.listingOwnerId});
+    const ToUserInfo = (includeListing.userId === currentUserId) && (currentUserId === message.listingOwnerId) ? _.find(users, {id : message.interestedTenantId}) : _.find(users, {id : message.listingOwnerId});
 
     return (
         <TouchableOpacity onPress={() => setChatModal(true)}>

@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useState} from "react";
-import {Modal, ScrollView, View, StyleSheet, TextInput, ToastAndroid, FlatList} from "react-native";
+import {Modal, ScrollView, View, StyleSheet, ToastAndroid, Linking} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
@@ -8,7 +8,6 @@ import {Colors} from "../components/utilities/Colors";
 import _ from 'lodash';
 import moment from "moment";
 import {FirebaseContext} from "../context/FirebaseContext";
-import {EachListing} from "../components/listings/EachListing";
 
 export const ChatModal = (props) => {
     const {modalVisible, modalHide, message, ToUserInfo, IncludeListing, currentUserId} = props;
@@ -41,7 +40,7 @@ export const ChatModal = (props) => {
     const ChatSentTime = ( time, senderId ) => {
 
         return(
-            <TextComponent tiny style={currentUserId === senderId ? { textAlign: 'right'} : {marginLeft: 45}} color={'grey'}>
+            <TextComponent tiny style={currentUserId === senderId ? { textAlign: 'right'} : {marginLeft: 0}} color={'grey'}>
                 {sentAtTime(time)}
             </TextComponent>
 
@@ -67,28 +66,6 @@ export const ChatModal = (props) => {
 
     };
 
-
-    // const EachMessageBubble = ({eachMessage}) => {
-    //
-    //
-    //     return(
-    //         <View>
-    //             <View  style={{flexDirection: 'row', alignItems: "center", alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
-    //
-    //                 { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 10}}/> : null
-    //
-    //                 }
-    //                 <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#8eabf2',
-    //                     marginVertical: 5,
-    //                     paddingHorizontal: 10, paddingVertical: 10, maxWidth: '75%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
-    //                     {ChatBubble(eachMessage.message)}
-    //                 </View>
-    //             </View>
-    //             {ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
-    //         </View>
-    //     )
-    // }
-
     const ScrollViewRef = useRef();
 
     const [hideSend, setHideSend] = useState(false);
@@ -104,6 +81,10 @@ export const ChatModal = (props) => {
         }
 
 
+    };
+
+    const cellularCall = async (number) => {
+        await Linking.openURL('tel:'+number);
     }
 
 
@@ -122,43 +103,49 @@ export const ChatModal = (props) => {
                     <Icon name={'chevron-down-outline'} type={'ionicon'} size={35} color={ 'white'} onPress={() => modalHide(false)}/>
 
                     <NameAndAvatar>
-                        <Avatar.Image size={40} source={{uri: ToUserInfo.profilePhotoUrl}}/>
-                        <TextComponent bold medium color={'white'}>  {firstName[0]}</TextComponent>
+                        <Icon name={'call'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'white'} onPress={() => cellularCall(ToUserInfo.phoneNumber)}/>
+                        <TextComponent bold semiLarge color={'white'}>  {firstName[0]}</TextComponent>
 
                     </NameAndAvatar>
 
                     <ListingInfo>
-                        <Icon name={'home'} type={'ionicon'} size={10} color={'white'}/>
-                        <TextComponent tiny color={'white'} multiline={true}>  {IncludeListing.address}, {IncludeListing.location.city}</TextComponent>
+                        <Icon name={'home'} type={'ionicon'} size={10} color={'white'} style={{marginRight: 5}}/>
+                        <TextComponent left style={{ flex:1,
+                            flexWrap: 'wrap'}} numberOfLines={2} tiny color={'white'} multiline={true}>  {IncludeListing.address}, {IncludeListing.location.city}</TextComponent>
                     </ListingInfo>
 
                 </ModalHeader>
                 <ScrollView showsVerticalScrollIndicator={false} ref={ScrollViewRef}
                             onContentSizeChange={(contentWidth, contentHeight)=>{
-                                console.log('hello at => ', new Date());
                                 messageActions();
                                 ScrollViewRef.current.scrollToEnd({animated: true}); }}
                 >
-                    {/*<FlatList data={message.messages} renderItem={({item}) =>*/}
-                    {/*    <EachMessageBubble eachMessage={item}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}*/}
-                    {/*/>*/}
 
-                    <View style={{paddingHorizontal: 10, paddingVertical: 10}}>
+                    <View style={{paddingHorizontal: 5, paddingVertical: 10}}>
                         { message.messages.map((eachMessage, key= 0) =>
-                            <View key={key}>
-                                <View  style={{flexDirection: 'row', alignItems: "center", alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
+                                <View key={key}  style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row', alignItems: "center", alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
 
-                                    { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 10}}/> : null
+                                    { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> :
+
+                                       <View>
+                                           <Avatar.Image size={25} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginLeft: 3}}/>
+                                           <View style={{position: 'absolute', bottom:0, right: 0, backgroundColor: 'white', borderRadius: 50}}>
+                                               <Icon name={'visibility'} type={'md'} size={15} color={eachMessage.read ? 'green' : 'grey'}/>
+
+                                           </View>
+                                       </View>
 
                                     }
-                                    <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
-                                        marginVertical: 5,
-                                        paddingHorizontal: 10, paddingVertical: 10, maxWidth: '75%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
-                                        {ChatBubble(eachMessage)}
+                                    <View style={{width: '75%', marginVertical: 5,}}>
+                                        <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
+                                            paddingHorizontal: 10, paddingVertical: 10, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
+                                            {ChatBubble(eachMessage)}
+                                        </View>
+                                        {ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
+
                                     </View>
-                                </View>
-                                {ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
-                            </View>)
+
+                                </View>)
                         }
                     </View>
                 </ScrollView>

@@ -15,6 +15,7 @@ export const ListingDetailsScreen = (props) => {
     const firebase = useContext(FirebaseContext);
     const {route, navigation} = props;
     const {params} = route;
+    const currentUserId = firebase.getCurrentUser().uid;
 
     const {listingId, listingsData, postedUserInfo, currentUserListings} = params;
     const [listingData, setListingData] = useState(listingsData);
@@ -38,7 +39,7 @@ export const ListingDetailsScreen = (props) => {
 
     }, []);
 
-    const {images, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, location} = listingData;
+    const {images, roomNumbers, facilities, forBachelor, forFamily,address, rentPerMonth, isNegotiable, moreDetails, location, interestedTenantId} = listingData;
 
 
 
@@ -63,10 +64,8 @@ export const ListingDetailsScreen = (props) => {
     const SendMessageToLandlord = async () => {
         setSendingMessage(true);
         try {
-            const currentUserId = firebase.getCurrentUser().uid;
             const postedUserId = listingData.userId;
-            const chattedUserIds = [currentUserId, postedUserId];
-            await firebase.sendMessage(postedUserId,currentUserId, message, [], listingId);
+            await firebase.sendMessage(postedUserId, currentUserId, message, [], listingId);
 
 
         }catch (e) {
@@ -80,6 +79,14 @@ export const ListingDetailsScreen = (props) => {
             SendMessageBottomSheet.current.close();
 
         }
+    }
+
+    const isCurrentUserInterested = interestedTenantId?.includes(currentUserId);
+
+
+    const isSendMessageOrGoMessageScreen = () => {
+        if(isCurrentUserInterested) navigation.navigate('Messages');
+        else SendMessageBottomSheet.current.open();
     }
 
     return (
@@ -235,7 +242,8 @@ export const ListingDetailsScreen = (props) => {
                             <Icon name={'call'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}/>
                             <TextComponent bold medium color={'white'}>CONTACT WITH LANDLORD</TextComponent>
                         </ContactContainer>
-                        <Icon name={'chatbubble-ellipses-outline'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'} onPress={() => SendMessageBottomSheet.current.open()}/>
+                        <Icon name={'chatbubble-ellipses-outline'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}
+                              onPress={() => isSendMessageOrGoMessageScreen()}/>
                     </ContactAndMessageContainer>
 
                 }

@@ -442,19 +442,23 @@ const Firebase = {
 
     //messaging functions
 
-    sendMessage: async (listingOwnerId, senderId, message, sharedImages, listingId) => {
+    sendMessage: async (listingOwnerId, interestedTenantId, message, sharedImages, listingId) => {
 
         try {
             const currentUserId = Firebase.getCurrentUser().uid;
             await firestore().collection('messages').add({
                 messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: currentUserId, id: uuidv4(), read: false}),
                 listingOwnerId,
-                senderId,
+                interestedTenantId,
                 sharedImages,
                 listingId,
                 createdAt: new Date()
 
             });
+            await firestore().collection('listings').doc(listingId).set(
+                {
+                    interestedTenantId: firestore.FieldValue.arrayUnion(interestedTenantId)
+                }, {merge: true})
 
         }catch (e){
             ToastAndroid.show(e.message+"@sendingMessage", ToastAndroid.LONG);
