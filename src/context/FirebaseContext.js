@@ -481,9 +481,6 @@ const Firebase = {
 
     readMessages: async (eachMessageId, messageId, read, eachMessage) =>{
 
-        console.log('eachMessageId=>', eachMessageId);
-        console.log('messageId=>', messageId);
-        console.log('read=>', read);
         try{
             const clonePreviousMessage = _.clone(eachMessage);
             await firestore().collection('messages').doc(messageId).update({
@@ -491,7 +488,7 @@ const Firebase = {
             });
 
             await firestore().collection('messages').doc(messageId).update({
-                messages: firestore.FieldValue.arrayUnion({...eachMessage, readAt: new Date(), read: read}),
+                messages: firestore.FieldValue.arrayUnion({...clonePreviousMessage, readAt: new Date(), read: read}),
             });
 
         } catch (e) {
