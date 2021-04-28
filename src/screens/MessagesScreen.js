@@ -91,7 +91,7 @@ export default function MessagesScreen(props) {
 
             });
 
-        return () => subscriber();
+        return () => subscriber() || listingSubscriber() || usersSubscriber();
 
 
     }, []);
@@ -120,6 +120,7 @@ export default function MessagesScreen(props) {
         const UserInfo = users && currentUserId !== interestedTenantId ? _.find(users, {id : interestedTenantId}) : users && currentUserId !== listingOwnerId ? _.find(users, {id : listingOwnerId}) : null;
         const lastMessage = messages[messages.length-1];
         const unreadMessage = _.filter(messages, {read: false});
+        const userName = UserInfo.userName.split(' ');
 
         if(findListingData && UserInfo){
             return(
@@ -127,7 +128,7 @@ export default function MessagesScreen(props) {
                     <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
                     <ListItem.Content>
                         <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
-                            <TextComponent bold semiLarge>{UserInfo.userName}</TextComponent>
+                            <TextComponent bold semiLarge>{userName.length >= 2 ? `${userName[0]} ${userName[1]}` : userName[0]}</TextComponent>
                             <TextComponent tiny color={'grey'} >{sentAtTime(lastMessage.sentAt.seconds)}</TextComponent>
                         </View>
 
@@ -163,7 +164,7 @@ export default function MessagesScreen(props) {
             <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryBody}/>
             <Header>
                 <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => props.navigation.goBack()}/>
-                <TextComponent color={'white'} semiLarge>Messages</TextComponent>
+                <TextComponent color={'white'} medium bold>MESSAGES</TextComponent>
 
             </Header>
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'always'}>

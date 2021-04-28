@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, FlatList, View, StyleSheet, ToastAndroid, Dimensions, Animated} from 'react-native';
+import {ActivityIndicator, FlatList, View, StyleSheet, ToastAndroid, Dimensions, Animated, Vibration} from 'react-native';
 import {Divider, Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
@@ -84,6 +84,7 @@ export const EachListing = (props) => {
     //add favorite
 
     const addRemoveFavorite = async (listingId) => {
+        Vibration.vibrate(20);
 
         try{
             const isCurrentUserFavList = usersInFav ? usersInFav.find(userId => userId === currentUserId) : null;
@@ -171,7 +172,7 @@ export const EachListing = (props) => {
                         <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                     :
-                    <Icon name={'heart'} type={'ionicon'} size={25}
+                    <Icon name={isCurrentUserFavList ? 'heart' : 'heart-outline'} type={'ionicon'} size={25}
                           style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'grey'}
                           onPress={() => addRemoveFavorite(item.id)}/>
                 }

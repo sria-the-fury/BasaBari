@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useState} from "react";
-import {Modal, ScrollView, View, StyleSheet, ToastAndroid, Linking} from "react-native";
+import {Modal, ScrollView, View, StyleSheet, ToastAndroid, Linking, Pressable} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
@@ -8,6 +8,7 @@ import {Colors} from "../components/utilities/Colors";
 import _ from 'lodash';
 import moment from "moment";
 import {FirebaseContext} from "../context/FirebaseContext";
+
 
 export const ChatModal = (props) => {
     const {modalVisible, modalHide, message, ToUserInfo, IncludeListing, currentUserId} = props;
@@ -47,6 +48,18 @@ export const ChatModal = (props) => {
         )
     };
 
+    const MessageSeenTime = (time, senderId) => {
+        return(
+            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
+                <Icon name={'checkmark-done-outline'} color={'green'} type={'ionicon'} size={10}/>
+                <TextComponent tiny color={'grey'} style={currentUserId === senderId ? { textAlign: 'right'} : {marginLeft: 0}}>
+                    {moment(time).startOf('minutes').fromNow()}
+                </TextComponent>
+            </View>
+
+        )
+    }
+
     const [sendMessage, setSendMessage] = useState('');
 
 
@@ -74,18 +87,22 @@ export const ChatModal = (props) => {
     const unreadMessage = _.filter(message.messages, {read: false});
     const lastMessage = message.messages.length > 0 ? message.messages[message.messages.length-1] : message.messages[0];
 
-    const messageActions = () => {
+    const messageActions = async () => {
 
-        if(unreadMessage.length > 0 && lastMessage.senderId !== currentUserId ) {
-            _.each(unreadMessage, async (eachMessage) => await firebase.readMessages(eachMessage.id, message.id, true, eachMessage));
-        }
-
-
+            if(unreadMessage.length > 0 && lastMessage.senderId !== currentUserId ) {
+                await firebase.readMessages(message.messages, message.id, true);
+            }
     };
 
     const cellularCall = async (number) => {
         await Linking.openURL('tel:'+number);
     }
+
+    const [sentTime, setSentTime] = useState(false);
+    const showSentTime = () => {
+        setSentTime(!sentTime);
+    }
+
 
 
 
@@ -116,24 +133,21 @@ export const ChatModal = (props) => {
 
                 </ModalHeader>
                 <ScrollView showsVerticalScrollIndicator={false} ref={ScrollViewRef}
-                            onContentSizeChange={(contentWidth, contentHeight)=>{
-                                messageActions();
+                            onContentSizeChange={ async (contentWidth, contentHeight)=>{
+                                 await messageActions();
                                 ScrollViewRef.current.scrollToEnd({animated: true}); }}
                 >
 
                     <View style={{paddingHorizontal: 5, paddingVertical: 10}}>
                         { message.messages.map((eachMessage, key= 0) =>
-                                <View key={key}  style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row', alignItems: "center", alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
+                                <Pressable key={key} onPress={() => showSentTime()}
+                                      style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row',
+                                          alignItems: "center",
+                                          alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
 
                                     { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> :
 
-                                       <View>
-                                           <Avatar.Image size={25} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginLeft: 3}}/>
-                                           <View style={{position: 'absolute', bottom:0, right: 0, backgroundColor: 'white', borderRadius: 50}}>
-                                               <Icon name={'visibility'} type={'md'} size={15} color={eachMessage.read ? 'green' : 'grey'}/>
-
-                                           </View>
-                                       </View>
+                                        eachMessage.read ? <Avatar.Image size={20} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginLeft: 3}}/> : null
 
                                     }
                                     <View style={{width: '75%', marginVertical: 5,}}>
@@ -141,11 +155,14 @@ export const ChatModal = (props) => {
                                             paddingHorizontal: 10, paddingVertical: 10, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
                                             {ChatBubble(eachMessage)}
                                         </View>
-                                        {ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
+                                        { ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
+                                        {eachMessage.read && eachMessage.readAt && eachMessage?.senderId === currentUserId ?
+                                            MessageSeenTime(eachMessage.readAt, eachMessage?.senderId) : null}
+
 
                                     </View>
 
-                                </View>)
+                                </Pressable>)
                         }
                     </View>
                 </ScrollView>
@@ -162,7 +179,7 @@ export const ChatModal = (props) => {
                                     }}
                     />
                     { hideSend ?
-                        <Icon reverse name={'send'} type={'md'} size={15} style={{marginLeft: 5}} color={sendMessage.trim() ==='' ? 'grey' : '#8eabf2'} onPress={() => SendMessage(message.id)}
+                        <Icon reverse name={'send'} type={'md'} size={15} style={{marginLeft: 5}} color={sendMessage.trim() ==='' ? 'grey' : '#49478e'} onPress={() => SendMessage(message.id)}
                               disabled={sendMessage.trim() === ''}/> : null
                     }
 

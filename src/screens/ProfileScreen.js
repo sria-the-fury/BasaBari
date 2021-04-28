@@ -171,7 +171,7 @@ export default function ProfileScreen(props) {
             <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
             <Header>
                 <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => props.navigation.goBack()}/>
-                <TextComponent color={'white'} semiLarge bold center>PROFILE</TextComponent>
+                <TextComponent color={'white'} medium bold center>PROFILE</TextComponent>
                 <Icon name={'log-out'} type={'ionicon'} size={35} color={'red'} onPress={() => loggedOut()}/>
 
             </Header>
@@ -224,12 +224,6 @@ export default function ProfileScreen(props) {
                 </InfoContainer>
 
                 <BodyContainer>
-
-                    <SettingsCardContainer>
-                        <Icon name={'add-location'} type={'material'} size={30} color={'white'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium color={'white'}>Set your Location</TextComponent>
-                    </SettingsCardContainer>
-                    <Divider backrgoundColor={'white'}/>
 
 
                     <SettingsCardContainer onPress={() => setTermsModal(true)}>

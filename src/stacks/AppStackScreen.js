@@ -9,6 +9,7 @@ import MyListingScreen from "../screens/MyListingsScreen";
 import InitialUpdateProfile from "../screens/InitialUpdateProfile";
 import {ListingDetailsScreen} from "../screens/ListingDetailsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import MessagesScreen from "../screens/MessagesScreen";
 
 
 export default function AppStackScreen() {
@@ -39,6 +40,7 @@ export default function AppStackScreen() {
                                  options={{
                                      ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                                  }}/>
+                <AppStack.Screen name={'MessagesScreen'} component={MessagesScreen}/>
 
 
             </AppStack.Navigator>

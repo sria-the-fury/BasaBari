@@ -479,17 +479,23 @@ const Firebase = {
 
     },
 
-    readMessages: async (eachMessageId, messageId, read, eachMessage) =>{
+    readMessages: async (messages, messageId, read) =>{
 
         try{
-            const clonePreviousMessage = _.clone(eachMessage);
-            await firestore().collection('messages').doc(messageId).update({
-                messages: firestore.FieldValue.arrayRemove({...eachMessage}),
+            const readMessages = _.filter(messages, {read: true});
+            const unreadMessages = _.filter(messages, {read: false});
+
+            const readUnreadMessages = _.each(unreadMessages, (message) => {
+                return _.assign(message, {read: true, readAt: _.now()})
             });
 
-            await firestore().collection('messages').doc(messageId).update({
-                messages: firestore.FieldValue.arrayUnion({...clonePreviousMessage, readAt: new Date(), read: read}),
-            });
+            const combineMessages = _.concat(readMessages, readUnreadMessages);
+
+            if(messages.length === combineMessages.length) {
+                await firestore().collection('messages').doc(messageId).update({
+                    messages: combineMessages
+                });
+            }
 
         } catch (e) {
             ToastAndroid.show(e.message+'@ read from message', ToastAndroid.LONG);

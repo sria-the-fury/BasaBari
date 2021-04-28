@@ -68,10 +68,10 @@ export default function MainStackScreen() {
 
             if(route.name === 'Profile'){
                 return(
-                            getCurrentUserProfileUrl ?
-                                <Avatar.Image size={30} source={{uri: getCurrentUserProfileUrl}}/>
-                                :
-                                <Icon name={'person-circle'} type='ionicon' size={30} color={focused ? '#5d00ff' :'#666666' }/>
+                    getCurrentUserProfileUrl ?
+                        <Avatar.Image size={30} source={{uri: getCurrentUserProfileUrl}}/>
+                        :
+                        <Icon name={'person-circle'} type='ionicon' size={30} color={focused ? '#5d00ff' :'#666666' }/>
                 )
             }
 
@@ -103,7 +103,14 @@ export default function MainStackScreen() {
                                   }
                               })}
             />
-            <MainStack.Screen name={'Messages'} component={MessagesScreen}/>
+            <MainStack.Screen name={'Messages'} component={MessagesScreen}
+                              listeners={({navigation}) => ({
+                                  tabPress: event => {
+                                      event.preventDefault();
+                                      navigation.navigate("MessagesScreen");
+                                  }
+                              })}
+            />
             <MainStack.Screen name={'Profile'} component={ProfileScreen}
                               listeners={({navigation}) => ({
                                   tabPress: event => {
