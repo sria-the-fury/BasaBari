@@ -1,5 +1,5 @@
 import React, {useContext, useRef, useState} from "react";
-import {Modal, ScrollView, View, StyleSheet, ToastAndroid, Linking, Pressable} from "react-native";
+import {Modal, ScrollView, View, StyleSheet, ToastAndroid, Linking, Pressable, Vibration} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
@@ -135,7 +135,10 @@ export const ChatModal = (props) => {
                 <ScrollView showsVerticalScrollIndicator={false} ref={ScrollViewRef}
                             onContentSizeChange={ async (contentWidth, contentHeight)=>{
                                  await messageActions();
-                                ScrollViewRef.current.scrollToEnd({animated: true}); }}
+                                ScrollViewRef.current.scrollToEnd({animated: true});
+                                if(lastMessage.senderId !== currentUserId) Vibration.vibrate(20);
+                                if(lastMessage.read && lastMessage.senderId === currentUserId) Vibration.vibrate(10);
+                            }}
                 >
 
                     <View style={{paddingHorizontal: 5, paddingVertical: 10}}>

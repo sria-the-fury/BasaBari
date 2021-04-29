@@ -70,6 +70,7 @@ export const EachListing = (props) => {
     //remove listing
     const removeListing = async (id, images) => {
         // console.log('ok remove');
+        Vibration.vibrate(30);
         try {
             await firebase.removeListing(id, images);
             ToastAndroid.show('Listing Deleted', ToastAndroid.LONG);
@@ -113,6 +114,7 @@ export const EachListing = (props) => {
     const [EditListingInfo, setEditListingInfo] = useState(item);
 
     const OpenBottomSheet = (item) => {
+        Vibration.vibrate(20);
         setDeleteListingInfo({
             listingId: item.id,
             listingImages: item.images
@@ -245,7 +247,7 @@ export const EachListing = (props) => {
 
                 <HomeItemsNumbers>
                     <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.dinning}</TextComponent>
+                    <TextComponent>{roomNumbers.dining}</TextComponent>
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>

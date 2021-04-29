@@ -31,7 +31,7 @@ export const ListingsUpdateModal = (props) => {
     });
 
     const [updateRoomNumbers, setUpdateRoomNumbers] = useState({
-        dinning: roomNumbers.dinning,
+        dining: roomNumbers.dining,
         bedRoom: roomNumbers.bedRoom,
         washRoom: roomNumbers.washRoom
     })
@@ -179,7 +179,7 @@ export const ListingsUpdateModal = (props) => {
     const disableUpdate = () => {
 
         return (getSelectPlaceName === '' || (updateForBachelor === false && updateForFamily === false) ||  listingImages.length < 3 || (updateRentPerMonth === 0 || updateRentPerMonth.trim() ==='' || updateRentPerMonth.length < 3) || updateMoreDetails === '' || updateAddress === '' ||
-            ((updateRoomNumbers.washRoom === 0 || updateRoomNumbers.washRoom === '') || (updateRoomNumbers.dinning === 0 || updateRoomNumbers.dinning === '') || (updateRoomNumbers.bedRoom === 0 || updateRoomNumbers.bedRoom === '')));
+            ((updateRoomNumbers.washRoom === 0 || updateRoomNumbers.washRoom === '') || (updateRoomNumbers.dining === 0 || updateRoomNumbers.dining === '') || (updateRoomNumbers.bedRoom === 0 || updateRoomNumbers.bedRoom === '')));
     }
 
     // console.log('disableUpdateIfSameValue=>', disableUpdateIfSameValue());
@@ -237,7 +237,7 @@ export const ListingsUpdateModal = (props) => {
         });
 
         setUpdateRoomNumbers({
-            dinning: roomNumbers.dinning,
+            dining: roomNumbers.dining,
             bedRoom: roomNumbers.bedRoom,
             washRoom: roomNumbers.washRoom
         });
@@ -485,12 +485,12 @@ export const ListingsUpdateModal = (props) => {
 
                                         <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
                                                    mode={'outlined'}
-                                                   label="Dinning"
+                                                   label="Dining"
                                                    autoCorrect={false}
                                                    autoCompleteType={'off'}
-                                                   defaultValue={roomNumbers.dinning}
+                                                   defaultValue={roomNumbers.dining}
                                                    placeholder={'1'} keyboardType={'numeric'} maxLength={1}
-                                                   onChangeText={(dinning) => setUpdateRoomNumbers(prev => ({...prev, dinning: dinning}))}
+                                                   onChangeText={(dining) => setUpdateRoomNumbers(prev => ({...prev, dining: dining}))}
                                                    theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
                                                    left={

@@ -137,10 +137,10 @@ export const ListingDetailsScreen = (props) => {
 
                         <IconsAndRoomNumbers>
                             <View style={{backgroundColor: 'grey', paddingHorizontal: 10, paddingVertical: 10, borderRadius: 50}}>
-                                <TextComponent bold color={'white'}>{roomNumbers.dinning}</TextComponent>
+                                <TextComponent bold color={'white'}>{roomNumbers.dining}</TextComponent>
                             </View>
                             <View style={{paddingHorizontal: 5, paddingVertical: 10}}>
-                                <TextComponent> Dinning</TextComponent>
+                                <TextComponent> Dining</TextComponent>
                             </View>
                         </IconsAndRoomNumbers>
 

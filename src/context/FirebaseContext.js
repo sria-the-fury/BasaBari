@@ -175,7 +175,6 @@ const Firebase = {
                         images: [],
                         location: listingData.location
 
-
                     }
                 );
 

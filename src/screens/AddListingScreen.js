@@ -32,7 +32,7 @@ export default function AddListingScreen(props) {
     });
 
     const [roomNumbers, setRoomNumbers] = useState({
-        dinning: 0,
+        dining: 0,
         bedRoom: 0,
         washRoom: 0
     })
@@ -172,7 +172,7 @@ export default function AddListingScreen(props) {
 
     const disableSubmit = () => {
 
-        return ((forBachelor === false && forFamily === false) || listingImages.length < 3 || getSelectPlaceName === '' || rentPerMonth === 0 || moreDetails === '' || address === '' || (roomNumbers.washRoom === 0 || roomNumbers.dinning === 0 || roomNumbers.bedRoom === 0))
+        return ((forBachelor === false && forFamily === false) || listingImages.length < 3 || getSelectPlaceName === '' || rentPerMonth === 0 || moreDetails === '' || address === '' || (roomNumbers.washRoom === 0 || roomNumbers.dining === 0 || roomNumbers.bedRoom === 0))
     }
 
 
@@ -417,11 +417,11 @@ export default function AddListingScreen(props) {
 
                             <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
                                        mode={'outlined'}
-                                       label="Dinning"
+                                       label="dining"
                                        autoCorrect={false}
                                        autoCompleteType={'off'}
                                        placeholder={'1'} keyboardType={'numeric'} maxLength={1}
-                                       onChangeText={(dinning) => setRoomNumbers(prev => ({...prev, dinning: dinning}))}
+                                       onChangeText={(dining) => setRoomNumbers(prev => ({...prev, dining: dining}))}
                                        theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
                                        left={
