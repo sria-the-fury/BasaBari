@@ -30,10 +30,11 @@ export default function MessagesScreen(props) {
     const firebase = useContext(FirebaseContext);
 
     const currentUserId = firebase.getCurrentUser().uid;
+    const [notifications, setNotifications] = useState(null);
 
     useEffect(() => {
 
-        const subscriber = firestore().collection('messages').orderBy('createdAt', 'desc').onSnapshot(
+        const subscriber = firestore().collection('messages').orderBy('updatedAt', 'desc').onSnapshot(
             docs=> {
                 let allMessages = [];
                 if(docs) {
@@ -91,7 +92,31 @@ export default function MessagesScreen(props) {
 
             });
 
-        return () => subscriber() || listingSubscriber() || usersSubscriber();
+        const notificationSubscriber = firestore().collection('notifications')
+            .where('notifyTo', '==', currentUserId)
+            .where('type', '==', 'message')
+            .where('read', '==', false).onSnapshot(
+                docs=> {
+                    let data=[];
+                    if(docs) {
+                        docs.forEach(doc => {
+                            const {notifyTo, notifyFrom, read, notifyAt,messageId} = doc.data();
+                            data.push({
+                                id: doc.id,
+                                notifyTo,
+                                read,
+                                notifyAt,
+                                messageId
+
+                            });
+
+                        });
+                        setNotifications(data);
+                    }
+
+                });
+
+        return () => subscriber() || listingSubscriber() || usersSubscriber() || notificationSubscriber();
 
 
     }, []);
@@ -115,6 +140,19 @@ export default function MessagesScreen(props) {
         } else return moment(sentAt).startOf('minutes').fromNow();
     };
 
+    const LastMessageSeenTime = (time) => {
+        const getDayDifference =  Math.round((new Date().getTime() - new Date(time).getTime())/(1000*3600*24));
+        return(
+            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
+
+                <TextComponent extraTiny color={'grey'} style={{ textAlign: 'right'}}>
+                    {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
+                </TextComponent>
+            </View>
+
+        )
+    };
+
     const UserInfoAndListingInfo = (listingId, interestedTenantId, listingOwnerId, messages) => {
         const findListingData = ListingsData ? _.find(ListingsData, {listingId : listingId}) : null;
         const UserInfo = users && currentUserId !== interestedTenantId ? _.find(users, {id : interestedTenantId}) : users && currentUserId !== listingOwnerId ? _.find(users, {id : listingOwnerId}) : null;
@@ -128,16 +166,22 @@ export default function MessagesScreen(props) {
                     <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
                     <ListItem.Content>
                         <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
-                            <TextComponent bold semiLarge>{userName.length >= 2 ? `${userName[0]} ${userName[1]}` : userName[0]}</TextComponent>
-                            <TextComponent tiny color={'grey'} >{sentAtTime(lastMessage.sentAt.seconds)}</TextComponent>
+                            <TextComponent medium bold>{userName.length >= 2 ? `${userName[0]} ${userName[1]}` : userName[0]}</TextComponent>
+                            <View style={{flexDirection: 'row', alignItems: "center"}}>
+                                {lastMessage.senderId === currentUserId && lastMessage.read ?
+                                    <Icon name={'checkmark-done-outline'} color={'green'} type={'ionicon'} size={10}/> : null}
+                                <TextComponent tiny color={'grey'} >
+                                    {sentAtTime(lastMessage.sentAt.seconds)}</TextComponent>
+                            </View>
+
                         </View>
 
                         <View style={{flexDirection: "row", alignItems: "center"}}>
                             <Icon name={'mode-comment'} type={'md'} size={15} color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9':'grey'} style={{marginRight: 5}}/>
-                            {lastMessage.senderId === currentUserId ? <TextComponent bold > Me : </TextComponent> : null }
-                            <TextComponent medium numberOfLines={1} color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9' : 'grey'}
-                            style={{width: '85%'}}
-                            >{lastMessage.message}</TextComponent>
+                            {lastMessage.senderId === currentUserId ? <TextComponent medium> Me : </TextComponent> : null }
+                            <TextComponent medium numberOfLines={1}
+                                           color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9' : 'grey'}
+                            style={{width: '85%'}}>{lastMessage.message}</TextComponent>
                             { lastMessage.senderId !== currentUserId && !lastMessage.read ?
                                 <Badge containerStyle={{marginLeft: 10}}
                                        value={<Text style={{color:'white', fontSize: 10}}>{unreadMessage.length}</Text>} /> : null
@@ -170,7 +214,7 @@ export default function MessagesScreen(props) {
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'always'}>
                 {
                     users && ListingsData && filterMessageByCurrentUser && filterMessageByCurrentUser.map(message =>
-                        <Messages key={message.id} message={message} users={users} listingData={ListingsData}>
+                        <Messages key={message.id} message={message} users={users} listingData={ListingsData} notifications={notifications}>
                             {UserInfoAndListingInfo(message.listingId, message.interestedTenantId, message.listingOwnerId, message.messages)}
 
                         </Messages>

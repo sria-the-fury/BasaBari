@@ -9,6 +9,7 @@ import {Colors} from "../components/utilities/Colors";
 import firestore from "@react-native-firebase/firestore";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {FirebaseContext} from "../context/FirebaseContext";
+import {v4 as uuidv4} from "uuid";
 
 
 export const ListingDetailsScreen = (props) => {
@@ -65,7 +66,9 @@ export const ListingDetailsScreen = (props) => {
         setSendingMessage(true);
         try {
             const postedUserId = listingData.userId;
-            await firebase.sendMessage(postedUserId, currentUserId, message, [], listingId);
+            const messageId = uuidv4();
+            await firebase.sendMessage(postedUserId, currentUserId, message, [], listingId, messageId);
+            await firebase.createNotification(postedUserId, currentUserId, false, messageId);
 
 
         }catch (e) {
@@ -108,7 +111,7 @@ export const ListingDetailsScreen = (props) => {
 
                     <AddressContainer>
                         <Icon name={'home'} type={'ionicon'} size={25} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
-                        <TextComponent semiLarge bold style={{ flex:1,
+                        <TextComponent medium bold style={{ flex:1,
                             flexWrap: 'wrap'}}>
                             {listingsData.address}
                         </TextComponent>
@@ -253,7 +256,7 @@ export const ListingDetailsScreen = (props) => {
                     closeOnDragDown={true}
                     closeOnPressMask={true}
                     dragFromTopOnly={true}
-                    height={130}
+                    height={105}
 
                     customStyles={{
                         wrapper: {

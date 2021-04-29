@@ -216,7 +216,7 @@ export const EachListing = (props) => {
             <AddressContainer>
                 <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                 <TextComponent style={{ flex:1,
-                    flexWrap: 'wrap'}} semiLarge ellipsizeMode={'tail'}>{item.address}</TextComponent>
+                    flexWrap: 'wrap'}} medium ellipsizeMode={'tail'}>{item.address}</TextComponent>
 
             </AddressContainer>
 

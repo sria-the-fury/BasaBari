@@ -441,23 +441,26 @@ const Firebase = {
 
     //messaging functions
 
-    sendMessage: async (listingOwnerId, interestedTenantId, message, sharedImages, listingId) => {
+    sendMessage: async (listingOwnerId, interestedTenantId, message, sharedImages, listingId, messageId) => {
 
         try {
-            const currentUserId = Firebase.getCurrentUser().uid;
-            await firestore().collection('messages').add({
-                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: currentUserId, id: uuidv4(), read: false}),
+
+            const isSendMessage =  await firestore().collection('messages').doc(messageId).set({
+                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: interestedTenantId, id: uuidv4(), read: false}),
                 listingOwnerId,
                 interestedTenantId,
                 sharedImages,
                 listingId,
-                createdAt: new Date()
+                createdAt: new Date(),
+                updatedAt: new Date()
 
             });
+
             await firestore().collection('listings').doc(listingId).set(
                 {
                     interestedTenantId: firestore.FieldValue.arrayUnion(interestedTenantId)
                 }, {merge: true})
+
 
         }catch (e){
             ToastAndroid.show(e.message+"@sendingMessage", ToastAndroid.LONG);
@@ -470,6 +473,7 @@ const Firebase = {
         try{
             await firestore().collection('messages').doc(messageId).update({
                 messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: currentUserId, id: uuidv4(), read: false}),
+                updatedAt: new Date()
             });
 
         } catch (e) {
@@ -499,7 +503,37 @@ const Firebase = {
         } catch (e) {
             ToastAndroid.show(e.message+'@ read from message', ToastAndroid.LONG);
         }
-    }
+    },
+
+    createNotification: async (notifyTo, notifyFrom, read, messageId) => {
+        try{
+            await firestore().collection('notifications').add({
+                notifyAt: _.now(),
+                notifyFrom,
+                notifyTo,
+                read,
+                messageId,
+                type: 'message'
+            });
+
+        }
+        catch (e) {
+            console.log(e.message);
+
+        }
+    },
+
+
+    readNotifications: async (notifications, read) => {
+        try{
+            _.each(notifications, async (notification) => await firestore().collection('notifications').doc(notification.id).update({read}))
+
+        }
+        catch (e) {
+            console.log(e.message);
+        }
+    },
+
 
 
 }

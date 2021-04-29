@@ -11,11 +11,11 @@ import {FirebaseContext} from "../context/FirebaseContext";
 
 
 export const ChatModal = (props) => {
-    const {modalVisible, modalHide, message, ToUserInfo, IncludeListing, currentUserId} = props;
+    const {modalVisible, modalHide, message, ToUserInfo, IncludeListing, currentUserId, notifications} = props;
     const firebase = useContext(FirebaseContext);
 
-
     const firstName = ToUserInfo.userName.split(' ');
+
 
     const ChatBubble = (eachMessage) => {
 
@@ -41,24 +41,25 @@ export const ChatModal = (props) => {
     const ChatSentTime = ( time, senderId ) => {
 
         return(
-            <TextComponent tiny style={currentUserId === senderId ? { textAlign: 'right'} : {marginLeft: 0}} color={'grey'}>
+            <TextComponent extraTiny style={currentUserId === senderId ? { textAlign: 'right', color: 'rgba(255, 255, 255, 0.7)'} : {marginLeft: 0}} color={'grey'}>
                 {sentAtTime(time)}
             </TextComponent>
 
         )
     };
 
-    const MessageSeenTime = (time, senderId) => {
+    const MessageSeenTime = (time) => {
+        const getDayDifference =  Math.round((new Date().getTime() - new Date(time).getTime())/(1000*3600*24));
         return(
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
                 <Icon name={'checkmark-done-outline'} color={'green'} type={'ionicon'} size={10}/>
-                <TextComponent tiny color={'grey'} style={currentUserId === senderId ? { textAlign: 'right'} : {marginLeft: 0}}>
-                    {moment(time).startOf('minutes').fromNow()}
+                <TextComponent extraTiny color={'grey'} style={{ textAlign: 'right'}}>
+                    {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
                 </TextComponent>
             </View>
 
         )
-    }
+    };
 
     const [sendMessage, setSendMessage] = useState('');
 
@@ -69,6 +70,8 @@ export const ChatModal = (props) => {
             // ScrollViewRef.current.scrollToEnd({animated: true});
             await firebase.sendMessageAtMessageScreen(messageId, currentUserId, sendMessage);
             setSendMessage('');
+            await firebase.createNotification(ToUserInfo.id, currentUserId, false, messageId);
+
         } catch (e) {
             ToastAndroid.show(e.message+ '@front sent msg', ToastAndroid.LONG);
         } finally {
@@ -104,8 +107,6 @@ export const ChatModal = (props) => {
     }
 
 
-
-
     return (
         <Modal
             animationType="slide"
@@ -134,10 +135,11 @@ export const ChatModal = (props) => {
                 </ModalHeader>
                 <ScrollView showsVerticalScrollIndicator={false} ref={ScrollViewRef}
                             onContentSizeChange={ async (contentWidth, contentHeight)=>{
-                                 await messageActions();
                                 ScrollViewRef.current.scrollToEnd({animated: true});
-                                if(lastMessage.senderId !== currentUserId) Vibration.vibrate(20);
-                                if(lastMessage.read && lastMessage.senderId === currentUserId) Vibration.vibrate(10);
+                                if(lastMessage.senderId !== currentUserId && !lastMessage.read) Vibration.vibrate(20);
+                                await messageActions();
+                                if(lastMessage.read && lastMessage.senderId === currentUserId) Vibration.vibrate(15);
+                                if(notifications.length > 0 ) await firebase.readNotifications(notifications, true);
                             }}
                 >
 
@@ -148,19 +150,15 @@ export const ChatModal = (props) => {
                                           alignItems: "center",
                                           alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
 
-                                    { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> :
-
-                                        eachMessage.read ? <Avatar.Image size={20} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginLeft: 3}}/> : null
-
-                                    }
+                                    { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> : null }
                                     <View style={{width: '75%', marginVertical: 5,}}>
                                         <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
-                                            paddingHorizontal: 10, paddingVertical: 10, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
+                                            paddingHorizontal: 10, paddingVertical: 5, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
                                             {ChatBubble(eachMessage)}
+                                            { ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
                                         </View>
-                                        { ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
                                         {eachMessage.read && eachMessage.readAt && eachMessage?.senderId === currentUserId ?
-                                            MessageSeenTime(eachMessage.readAt, eachMessage?.senderId) : null}
+                                            MessageSeenTime(eachMessage.readAt) : null}
 
 
                                     </View>
@@ -176,7 +174,6 @@ export const ChatModal = (props) => {
                                     onChangeText={(text) => setSendMessage(text)}
                                     onBlur={() => setHideSend(false)}
                                     onFocus={() =>{
-                                        console.log('focused');
                                         setHideSend(true);
                                         ScrollViewRef.current.scrollToEnd({animated: true});
                                     }}

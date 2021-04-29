@@ -1,8 +1,8 @@
-import React,{useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {Icon} from "react-native-elements";
+import {Badge, Icon} from "react-native-elements";
 import { Text, View} from "react-native";
-
+import _ from 'lodash';
 import HomeScreen from "../screens/HomeScreen";
 import FavoriteListingsScreen from "../screens/FavoriteListingsScreen";
 import AddListingScreen from "../screens/AddListingScreen";
@@ -10,13 +10,46 @@ import MessagesScreen from "../screens/MessagesScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import {FirebaseContext} from "../context/FirebaseContext";
 import { Avatar } from 'react-native-paper';
+import {Colors} from "../components/utilities/Colors";
+import firestore from "@react-native-firebase/firestore";
 
 
 export default function MainStackScreen() {
     const firebase = useContext(FirebaseContext)
     const MainStack = createBottomTabNavigator();
 
-    const getCurrentUserProfileUrl = firebase.getCurrentUser().photoURL;
+    const currentUserInfo = firebase.getCurrentUser();
+    const [notifications, setNotifications] = useState(null);
+
+    useEffect(() => {
+
+        const subscriber = firestore().collection('notifications')
+            .where('type', '==', 'message')
+            .where('notifyTo', '==', currentUserInfo.uid).where('read', '==', false).onSnapshot(
+            docs=> {
+                let data=[];
+                if(docs) {
+                    docs.forEach(doc => {
+                        const {notifyTo, notifyFrom, read, notifyAt} = doc.data();
+                        data.push({
+                            id: doc.id,
+                            notifyTo,
+                            read,
+                            notifyAt
+
+                        });
+
+                    });
+                    setNotifications(data);
+                }
+
+            });
+
+        return () => subscriber();
+
+
+    }, []);
+
 
     const tabBarOptions = {
         showLabel: false,
@@ -26,8 +59,6 @@ export default function MainStackScreen() {
             paddingTop:5,
             height: 54
         }
-
-
 
     };
 
@@ -59,8 +90,8 @@ export default function MainStackScreen() {
                     <View style={{alignSelf:'center', alignItems: 'center', justifyContent: 'center', backgroundColor: 'red',
                         height: 46, width: 46, borderRadius:23, borderColor: 'white', borderWidth: 3
                     }}>
-                        <Text><Icon name={'add'} size={40} color={'white'} type='md' style={{shadowColor: 'black', shadowOffset: {width: 0, height: 10}, shadowRadius: 5,
-                            shadowOpacity: 0.3, elevation: 10}}/></Text>
+                        <Icon name={'add'} size={40} color={'white'} type='md' style={{shadowColor: 'black', shadowOffset: {width: 0, height: 10}, shadowRadius: 5,
+                            shadowOpacity: 0.3, elevation: 10}}/>
 
                     </View>
                 );
@@ -68,10 +99,20 @@ export default function MainStackScreen() {
 
             if(route.name === 'Profile'){
                 return(
-                    getCurrentUserProfileUrl ?
-                        <Avatar.Image size={30} source={{uri: getCurrentUserProfileUrl}}/>
+                    currentUserInfo.photoURL ?
+                        <Avatar.Image size={30} source={{uri: currentUserInfo.photoURL}}/>
                         :
                         <Icon name={'person-circle'} type='ionicon' size={30} color={focused ? '#5d00ff' :'#666666' }/>
+                )
+            }
+
+            if(route.name === 'Messages'){
+                return (
+                    <View>
+                        <Icon name={'chatbubble-ellipses'} type='ionicon' size={30} color={'#666666' }/>
+                        {notifications?.length > 0 ? <Badge status={'error'} containerStyle={{position: 'absolute', right: -10, top: -5,borderColor: Colors.primaryBody, borderWidth: 2, borderRadius:50}}
+                               value={<Text style={{color:'white', fontSize: 10}}>{notifications.length}</Text>} /> : null}
+                    </View>
                 )
             }
 
@@ -105,7 +146,7 @@ export default function MainStackScreen() {
             />
             <MainStack.Screen name={'Messages'} component={MessagesScreen}
                               listeners={({navigation}) => ({
-                                  tabPress: event => {
+                                  tabPress: async (event) => {
                                       event.preventDefault();
                                       navigation.navigate("MessagesScreen");
                                   }
