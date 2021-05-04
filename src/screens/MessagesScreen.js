@@ -162,7 +162,7 @@ export default function MessagesScreen(props) {
 
         if(findListingData && UserInfo){
             return(
-                <ListItem bottomDivider containerStyle={{overflow: 'hidden'}}>
+                <ListItem bottomDivider containerStyle={{overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 5}}>
                     <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
                     <ListItem.Content>
                         <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
