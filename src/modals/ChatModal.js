@@ -92,9 +92,10 @@ export const ChatModal = (props) => {
 
     const messageActions = async () => {
 
-            if(unreadMessage.length > 0 && lastMessage.senderId !== currentUserId ) {
-                await firebase.readMessages(message.messages, message.id, true);
-            }
+        if(unreadMessage.length > 0 && lastMessage.senderId !== currentUserId ) {
+            await firebase.readMessages(message.messages, message.id, true);
+
+        }
     };
 
     const cellularCall = async (number) => {
@@ -138,32 +139,32 @@ export const ChatModal = (props) => {
                                 ScrollViewRef.current.scrollToEnd({animated: true});
                                 if(lastMessage.senderId !== currentUserId && !lastMessage.read) Vibration.vibrate(20);
                                 await messageActions();
-                                if(lastMessage.read && lastMessage.senderId === currentUserId) Vibration.vibrate(15);
+
                                 if(notifications.length > 0 ) await firebase.readNotifications(notifications, true);
                             }}
                 >
 
                     <View style={{paddingHorizontal: 5, paddingVertical: 10}}>
                         { message.messages.map((eachMessage, key= 0) =>
-                                <Pressable key={key} onPress={() => showSentTime()}
-                                      style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row',
-                                          alignItems: "center",
-                                          alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
+                            <Pressable key={key} onPress={() => showSentTime()}
+                                       style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row',
+                                           alignItems: "center",
+                                           alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
 
-                                    { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> : null }
-                                    <View style={{width: '75%', marginVertical: 5,}}>
-                                        <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
-                                            paddingHorizontal: 10, paddingVertical: 5, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
-                                            {ChatBubble(eachMessage)}
-                                            { ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
-                                        </View>
-                                        {eachMessage.read && eachMessage.readAt && eachMessage?.senderId === currentUserId ?
-                                            MessageSeenTime(eachMessage.readAt) : null}
-
-
+                                { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> : null }
+                                <View style={{width: '75%', marginVertical: 5,}}>
+                                    <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
+                                        paddingHorizontal: 10, paddingVertical: 5, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
+                                        {ChatBubble(eachMessage)}
+                                        { ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
                                     </View>
+                                    {eachMessage.read && eachMessage.readAt && eachMessage?.senderId === currentUserId ?
+                                        MessageSeenTime(eachMessage.readAt) : null}
 
-                                </Pressable>)
+
+                                </View>
+
+                            </Pressable>)
                         }
                     </View>
                 </ScrollView>

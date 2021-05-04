@@ -216,7 +216,7 @@ export const EachListing = (props) => {
             <AddressContainer>
                 <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                 <TextComponent style={{ flex:1,
-                    flexWrap: 'wrap'}} medium ellipsizeMode={'tail'}>{item.address}</TextComponent>
+                    flexWrap: 'wrap'}} medium ellipsizeMode={'tail'} numberOfLines={2}>{item.address}</TextComponent>
 
             </AddressContainer>
 
@@ -340,13 +340,10 @@ marginHorizontal: 10px;
 `;
 
 const CardsContainer = styled.View`
-
-marginHorizontal:10px;
  marginVertical:10px;
   backgroundColor: white;
    paddingHorizontal: 10px;
     paddingVertical:10px;
-     borderRadius:10px;
      overflow: hidden;
      elevation: 5;
          shadowColor: #000;
@@ -385,9 +382,9 @@ const AddressContainer = styled.View`
 flexDirection : row;
 alignItems: center;
 marginRight: 10px;
-overflow: hidden
-
-paddingTop: 10px
+overflow: hidden;
+maxHeight: 60px;
+paddingVertical: 5px;
 
 `;
 
