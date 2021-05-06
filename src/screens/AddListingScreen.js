@@ -549,12 +549,6 @@ export default function AddListingScreen(props) {
                     <TextComponent semiLarge bold>MORE DETAILS (ENGAGE TENANT)</TextComponent>
 
                     <WritingDetailsContainer>
-                        <Icon
-                            name='article'
-                            type='md'
-                            color='#1c3787' size={30}
-                        />
-
                         <DetailsTextInput placeholder={'Add Details to engage more Tenants'} autoCapitalize={'words'}
                                           multiline={true} onChangeText={(moreDetails) => setMoreDetails(moreDetails)}
                                           autoCorrect={false} />
@@ -781,7 +775,7 @@ backgroundColor: lavender;
       marginBottom: 10px;
       alignItems: center;
       justifyContent: space-between;
-      height: 65px;
+      height: 60px;
                       
 
 `

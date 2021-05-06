@@ -466,14 +466,12 @@ backgroundColor: #9c45c1;
 `;
 
 const MoreDetailsContainer = styled.View`
-
+paddingHorizontal: 5px;
 
 `
 
 const ListingDetails = styled.View`
-marginTop: 10px;
-backgroundColor: lavender;
-paddingHorizontal: 5px;
+marginTop: 5px;
 paddingVertical: 5px;
 borderRadius: 5px;
 

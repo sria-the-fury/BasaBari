@@ -143,7 +143,6 @@ export const ListingsUpdateModal = (props) => {
         return(
             <ListingImageMainContainer>
 
-
                 <Image source={{uri: image.imageUrl}} style={{ height: 200, width: 200, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color="white"/>}/>
 
                 <View style={{top: 0,position:'absolute' }}>
@@ -245,6 +244,7 @@ export const ListingsUpdateModal = (props) => {
         setUpdateForBachelor(forBachelor);
         setUpdateForFamily(forFamily);
         setUpdateAddress(address);
+        setSelectPlaceName(location)
         setUpdateMoreDetails(moreDetails);
         setUpdateRentPerMonth(rentPerMonth);
         setUpdateNegotiable(isNegotiable);
@@ -620,12 +620,6 @@ export const ListingsUpdateModal = (props) => {
                                 <TextComponent semiLarge bold>MORE DETAILS (ENGAGE TENANT)</TextComponent>
 
                                 <WritingDetailsContainer>
-                                    <Icon
-                                        name='article'
-                                        type='md'
-                                        color='#1c3787' size={30}
-                                    />
-
                                     <DetailsTextInput placeholder={'Add Details to engage more Tenants'} autoCapitalize={'words'} defaultValue={moreDetails}
                                                       multiline={true} onChangeText={(moreDetails) => setUpdateMoreDetails(moreDetails)}
                                                       autoCorrect={false} />
@@ -833,7 +827,7 @@ backgroundColor: lavender;
       marginTop: 20px;
       alignItems: center;
       justifyContent: space-between;
-      height: 65px;
+      height: 60px;
                       
 
 `;

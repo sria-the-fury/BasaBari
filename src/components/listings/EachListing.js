@@ -343,7 +343,8 @@ const CardsContainer = styled.View`
  marginVertical:10px;
   backgroundColor: white;
    paddingHorizontal: 10px;
-    paddingVertical:10px;
+   paddingVertical: 5px;
+    
      overflow: hidden;
      elevation: 5;
          shadowColor: #000;
@@ -392,14 +393,11 @@ paddingVertical: 5px;
 const HomeItemsNumbers = styled.View`
 flexDirection : row;
 alignItems: center;
-paddingBottom: 5px;
-paddingTop: 5px
 `
 
 const HomeItemsNumbersContainer = styled.View`
 flexDirection : row;
 alignItems: center;
-paddingBottom: 5px;
 paddingTop: 5px
 justifyContent: space-between;
 `;
