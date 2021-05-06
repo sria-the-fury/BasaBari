@@ -153,7 +153,7 @@ export default function ProfileScreen(props) {
 
 
     const mailTo = async () => {
-        await Linking.openURL('mailto: jakariamsria@gmail.com');
+        await Linking.openURL('mailto: basabari@oasisoneric.tech');
     };
 
     const UpdateNameBottomSheet = useRef();
@@ -227,15 +227,15 @@ export default function ProfileScreen(props) {
 
 
                     <SettingsCardContainer onPress={() => setTermsModal(true)}>
-                        <Icon name={'article'} type={'material'} size={30} color={'white'} style={{marginRight: 10}}/>
+                        <Icon name={'article'} type={'material'} size={25} color={'white'} style={{marginRight: 10}}/>
                         <TextComponent bold medium color={'white'}>Terms & Conditions</TextComponent>
                     </SettingsCardContainer>
 
                     <Divider backrgoundColor={'white'}/>
 
                     <SettingsCardContainer onPress={() => mailTo()}>
-                        <Icon name={'report-problem'} type={'material'} size={30} color={'orange'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium color={'white'}>Facing problem? Email US</TextComponent>
+                        <Icon name={'email'} type={'material'} size={25} color={'white'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'white'}>Email us</TextComponent>
                     </SettingsCardContainer>
 
                 </BodyContainer>
@@ -355,8 +355,8 @@ alignItems: center;
 `;
 
 const ProfileImageContainer = styled.View`
-height:120px;
-width:120px;
+height:110px;
+width:110px;
 backgroundColor: white;
 alignItems: center;
 justifyContent:center;
@@ -365,9 +365,9 @@ alignSelf: center;
 
 `;
 const ProfileImage = styled.Image`
-height:110px;
-width:110px;
-borderRadius: 55px;
+height:100px;
+width:100px;
+borderRadius: 50px;
 
 
 `;

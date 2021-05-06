@@ -418,7 +418,7 @@ export default  function PhoneAuthScreen() {
 
                 </TermsAndConditionsTouchArea>
             </BodyContainer>
-            <TermsAndConditionsModal modalVisible={openTermsModal} modalHide={closeTermsModal} headerColor={'#320A28'}/>
+            <TermsAndConditionsModal modalVisible={openTermsModal} modalHide={closeTermsModal}/>
         </MainContainer>
 
     );

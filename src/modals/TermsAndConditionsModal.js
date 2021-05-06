@@ -3,9 +3,10 @@ import { View, Modal, Pressable, ScrollView } from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
+import {Colors} from "../components/utilities/Colors";
 
 export const TermsAndConditionsModal = (props) => {
-    const {modalVisible, modalHide, headerColor} = props;
+    const {modalVisible, modalHide} = props;
     return (
         <Container>
             {/*<StatusBar barStyle={'dark-content'} backgroundColor={StatusBarAndTopHeaderBGColor}/>*/}
@@ -18,11 +19,11 @@ export const TermsAndConditionsModal = (props) => {
                 }}
             >
                 <ModalView>
-                    <ModalHeader style={{backgroundColor: headerColor ? headerColor : StatusBarAndTopHeaderBGColor}}>
+                    <ModalHeader style={{backgroundColor: HeaderColor }}>
                         <Pressable onPress={() => modalHide()}>
-                            <Icon name={'chevron-down-circle'} type={'ionicon'} size={40} color={headerColor ? 'white' : 'black'}/>
+                            <Icon name={'chevron-down-circle'} type={'ionicon'} size={40} color={'white'}/>
                         </Pressable>
-                        <TextComponent bold medium color={headerColor ? 'white' : 'black'}>Terms & Conditions</TextComponent>
+                        <TextComponent bold medium color={'white'}>Terms & Conditions</TextComponent>
                     </ModalHeader>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{paddingHorizontal: 10, paddingVertical: 10}}>
@@ -48,7 +49,7 @@ export const TermsAndConditionsModal = (props) => {
     );
 };
 
-const StatusBarAndTopHeaderBGColor = '#d0ff00';
+const HeaderColor = Colors.primaryBody;
 const Container = styled.View`
 
 `;
