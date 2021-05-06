@@ -243,6 +243,8 @@ export default  function PhoneAuthScreen() {
                                    mode={'outlined'}
                                    label="Phone Number"
                                    keyboardType={'phone-pad'}
+                                   placeholder={'01*********'}
+                                   placeholderTextColor={'grey'}
                                    maxLength={11}
                                    onChangeText={(number) => setNumber(number)}
                                    theme={{ colors: { placeholder: 'lavender', text: 'lavender', primary: 'lavender', underlineColor:'transparent'}}}

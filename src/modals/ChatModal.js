@@ -8,6 +8,7 @@ import {Colors} from "../components/utilities/Colors";
 import _ from 'lodash';
 import moment from "moment";
 import {FirebaseContext} from "../context/FirebaseContext";
+import {ChatBubbleAndMessageReadTime} from "../components/chat/ChatBubbleAndMessageReadTime";
 
 
 export const ChatModal = (props) => {
@@ -15,51 +16,6 @@ export const ChatModal = (props) => {
     const firebase = useContext(FirebaseContext);
 
     const firstName = ToUserInfo.userName.split(' ');
-
-
-    const ChatBubble = (eachMessage) => {
-
-        return(
-            <TextComponent selectable={true} color={currentUserId === eachMessage.senderId ? 'white': 'black'}>
-                {eachMessage.message}
-            </TextComponent>
-        )
-
-    };
-
-    const sentAtTime = (time) => {
-        const sentAt = new Date(time * 1000),
-            todayDate = new Date(),
-            getDayDifference =  Math.round((todayDate.getTime() - sentAt.getTime())/(1000*3600*24));
-        if(getDayDifference > 25) return moment(sentAt).format('ddd, Do MMM YYYY');
-        else if(getDayDifference < 7 ){
-            if(getDayDifference < 1)  return moment(sentAt).startOf('minutes').fromNow();
-            else return moment(sentAt).calendar();
-        } else return moment(sentAt).startOf('minutes').fromNow();
-    };
-
-    const ChatSentTime = ( time, senderId ) => {
-
-        return(
-            <TextComponent extraTiny style={currentUserId === senderId ? { textAlign: 'right', color: 'rgba(255, 255, 255, 0.7)'} : {marginLeft: 0}} color={'grey'}>
-                {sentAtTime(time)}
-            </TextComponent>
-
-        )
-    };
-
-    const MessageSeenTime = (time) => {
-        const getDayDifference =  Math.round((new Date().getTime() - new Date(time).getTime())/(1000*3600*24));
-        return(
-            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
-                <Icon name={'checkmark-done-outline'} color={'green'} type={'ionicon'} size={10}/>
-                <TextComponent extraTiny color={'grey'} style={{ textAlign: 'right'}}>
-                    {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
-                </TextComponent>
-            </View>
-
-        )
-    };
 
     const [sendMessage, setSendMessage] = useState('');
 
@@ -102,11 +58,6 @@ export const ChatModal = (props) => {
         await Linking.openURL('tel:'+number);
     }
 
-    const [sentTime, setSentTime] = useState(false);
-    const showSentTime = () => {
-        setSentTime(!sentTime);
-    }
-
 
     return (
         <Modal
@@ -146,25 +97,18 @@ export const ChatModal = (props) => {
 
                     <View style={{paddingHorizontal: 5, paddingVertical: 10}}>
                         { message.messages.map((eachMessage, key= 0) =>
-                            <Pressable key={key} onPress={() => showSentTime()}
-                                       style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row',
-                                           alignItems: "center",
-                                           alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
+                            <View key={key}
+                                  style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row',
+                                      alignItems: "center",
+                                      alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
 
                                 { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> : null }
-                                <View style={{width: '75%', marginVertical: 5,}}>
-                                    <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
-                                        paddingHorizontal: 10, paddingVertical: 5, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}>
-                                        {ChatBubble(eachMessage)}
-                                        { ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
-                                    </View>
-                                    {eachMessage.read && eachMessage.readAt && eachMessage?.senderId === currentUserId ?
-                                        MessageSeenTime(eachMessage.readAt) : null}
 
 
-                                </View>
+                                {<ChatBubbleAndMessageReadTime currentUserId={currentUserId}
+                                                               eachMessage={eachMessage}/>}
 
-                            </Pressable>)
+                            </View>)
                         }
                     </View>
                 </ScrollView>
@@ -180,7 +124,12 @@ export const ChatModal = (props) => {
                                     }}
                     />
                     { hideSend ?
-                        <Icon reverse name={'send'} type={'md'} size={15} style={{marginLeft: 5}} color={sendMessage.trim() ==='' ? 'grey' : '#49478e'} onPress={() => SendMessage(message.id)}
+                        <Icon reverse raised name={'send'} type={'md'} size={15} style={{marginHorizontal: 5}}
+                              disabledStyle={{backgroundColor: Colors.primaryBody}}
+                              underlayColor={'rgba(255, 255, 255, 0.6)'}
+                              reverseColor={sendMessage.trim() === '' ? Colors.primaryBodyLight : 'white'}
+
+                              color={Colors.primaryBody} onPress={() => SendMessage(message.id)}
                               disabled={sendMessage.trim() === ''}/> : null
                     }
 
@@ -227,25 +176,22 @@ const NameAndAvatar = styled.View`
                             `;
 
 const SendMessageBox = styled.TextInput`
-borderWidth: 1px;
-borderColor: lavender;
-borderRadius: 10px;
+borderRadius: 20px;
 color: white;
-backgroundColor: ${Colors.primaryBody};
-paddingHorizontal: 10px;
-maxHeight: 70px;
-fontSize: 18px;
+backgroundColor: ${Colors.primaryBodyLight};
+paddingHorizontal: 15px;
+paddingVertical: 7px;
+maxHeight: 100px;
+fontSize: 15px;
 `;
 
 const MessageSendMainContainer = styled.View`
 backgroundColor: ${Colors.primaryBody};
-paddingHorizontal: 10px;
-paddingVertical: 10px;
+paddingHorizontal: 5px;
+paddingVertical: 5px
 flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
-borderTopLeftRadius: 15px;
-borderTopRightRadius: 15px;
 `
 
 

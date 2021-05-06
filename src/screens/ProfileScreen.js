@@ -246,7 +246,7 @@ export default function ProfileScreen(props) {
                 closeOnDragDown={true}
                 closeOnPressMask={true}
                 dragFromTopOnly={true}
-                height={150}
+                height={130}
 
                 customStyles={{
                     wrapper: {
@@ -256,7 +256,7 @@ export default function ProfileScreen(props) {
 
                 }}
             >
-                <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginTop: 30, paddingHorizontal: 10}}
+                <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginTop: 25, paddingHorizontal: 10}}
                            mode={'outlined'}
                            label="Your Name"
                            defaultValue={profileUserInfo.displayName}
