@@ -162,7 +162,7 @@ const InitialUpdateProfile = (props) => {
 
                 </ProfilePhotoContainer>
 
-                <TextInput style={{backgroundColor: Colors.primaryBodyLight, fontSize: 20, marginBottom: 30, marginTop: 60}}
+                <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginBottom: 30, marginTop: 60}}
                            mode={'outlined'}
                            label="Your Name"
                            autoCompleteType={'name'} maxLength={23} autoCapitalize={'words'}
@@ -191,8 +191,8 @@ const InitialUpdateProfile = (props) => {
                                        </LoadingView>
                                        :
                                            <Icon reverse raised
-                                                 disabledStyle={{backgroundColor: Colors.primaryBodyLight}}
-                                                 reverseColor={disableSubmit() ? Colors.primaryBodyLight : 'white'}
+                                                 disabledStyle={{backgroundColor: Colors.primaryBody}}
+                                                 reverseColor={disableSubmit() ? Colors.primaryBodyLight : 'green'}
                                                  color={disableSubmit() ? Colors.primaryBodyLight : Colors.primaryBody}
                                                name='cloud-upload'
                                                type='ionicon'
@@ -282,7 +282,6 @@ height: 260px;
 backgroundColor: white;
  alignItems: center;
 
-
 `;
 
 
@@ -294,7 +293,7 @@ width: 100%;
 flex: 1;
 
 justifyContent: center;
-backgroundColor: ${Colors.primaryBody};
+backgroundColor: ${Colors.primaryBodyLight};
 paddingVertical: 40px;
 paddingHorizontal: 20px;
 alignSelf: center;
