@@ -144,7 +144,7 @@ export const EachListing = (props) => {
         // Will change fadeAnim value to 1 in 5 seconds
         Animated.timing(fadeAnim, {
             toValue: 1,
-            duration: 3000,
+            duration: 2500,
             useNativeDriver: true,
         }).start();
     };
@@ -293,7 +293,7 @@ export const EachListing = (props) => {
 
                 <View style={{overflow: "hidden"}}>
                     <Animated.View style={ [{scaleX: fadeAnim}, {backgroundColor: 'red',width: windowWidth, height: 45, position: "absolute"}]} ref={fadeAnim}/>
-                    <DeleteContainer onLongPress={() => removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)} delayLongPress={3000}
+                    <DeleteContainer onLongPress={() => removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)} delayLongPress={2500}
                                      onPressIn={() => fadeIn()} onPressOut={() => fadeOut()}>
                         <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
                         <TextComponent  medium color={'white'}>DELETE </TextComponent>

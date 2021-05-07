@@ -52,7 +52,7 @@ export default function AppStackScreen() {
                 <AppStack.Screen name={'InitialProfileUpdate'} component={InitialUpdateProfile}
                                  options={{
                                      ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
-                                 }}/>/>
+                                 }}/>
             </AppStack.Navigator>
         )
 

@@ -69,12 +69,12 @@ export default  function PhoneAuthScreen() {
 
         let interval = setInterval(() => {
             setCount(prev => {
-                if (prev === 60) {
+                if (prev === 30) {
                     clearInterval(interval);
                     setResendDisable(false);
 
                 }
-                if(prev < 60) return prev + 1;
+                if(prev < 30) return prev + 1;
             })
         },1000)
         // interval cleanup on component unmount
@@ -368,11 +368,11 @@ export default  function PhoneAuthScreen() {
 
                             <OTPAndCircularProgressContainer onPress={() => resendCode()} disabled={isResendDisable}>
 
-                                <CircularProgress fillRatio={count} percentage={60} size={40}/>
+                                <CircularProgress fillRatio={count} percentage={30} size={40}/>
                                 <ResendOTPButton>
                                     <Icon
                                         name='phonelink-lock'
-                                        color={'lavender'}
+                                        color={!isResendDisable ? 'lavender' : Colors.primaryBody}
                                         type='md'
                                         size={25}
                                     />

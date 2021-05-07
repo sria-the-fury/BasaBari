@@ -14,7 +14,6 @@ import {FirebaseContext} from "../context/FirebaseContext";
 import {Colors} from "../components/utilities/Colors";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import { TextInput} from "react-native-paper";
-import {SearchPlacesModal} from "../modals/SearchPlacesModal";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {SearchPlaces} from "../components/utilities/SearchPlaces";
 
