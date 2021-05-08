@@ -68,7 +68,7 @@ export const ListingDetailsScreen = (props) => {
             const postedUserId = listingData.userId;
             const messageId = uuidv4();
             await firebase.sendMessage(postedUserId, currentUserId, message, [], listingId, messageId);
-            await firebase.createNotification(postedUserId, currentUserId, false, messageId);
+            await firebase.createNotification(postedUserId, currentUserId, false, messageId, listingId, message);
 
 
         }catch (e) {

@@ -505,7 +505,7 @@ const Firebase = {
         }
     },
 
-    createNotification: async (notifyTo, notifyFrom, read, messageId) => {
+    createNotification: async (notifyTo, notifyFrom, read, messageId, listingId, content) => {
         try{
             await firestore().collection('notifications').add({
                 notifyAt: _.now(),
@@ -513,6 +513,8 @@ const Firebase = {
                 notifyTo,
                 read,
                 messageId,
+                listingId,
+                content,
                 type: 'message'
             });
 

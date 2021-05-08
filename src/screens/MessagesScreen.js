@@ -100,13 +100,15 @@ export default function MessagesScreen(props) {
                     let data=[];
                     if(docs) {
                         docs.forEach(doc => {
-                            const {notifyTo, notifyFrom, read, notifyAt,messageId} = doc.data();
+                            const {notifyTo, notifyFrom, read, notifyAt,messageId, content} = doc.data();
                             data.push({
                                 id: doc.id,
                                 notifyTo,
+                                notifyFrom,
                                 read,
                                 notifyAt,
-                                messageId
+                                messageId,
+                                content
 
                             });
 
