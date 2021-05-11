@@ -26,13 +26,7 @@ export const ListingDetailsScreen = (props) => {
 
         const subscriber = firestore().collection('listings').doc(listingId).onSnapshot(
             doc=> {
-
-                if(doc) {
-
-                    setListingData(doc.data());
-                }
-
-
+                if(doc) setListingData(doc.data());
             });
 
         return () => subscriber();
@@ -101,8 +95,6 @@ export const ListingDetailsScreen = (props) => {
                     <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => navigation.goBack()}/>
                     <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                 </ModalHeader>
-
-
 
                 <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 5, marginBottom: 50}}>
 
@@ -208,15 +200,15 @@ export const ListingDetailsScreen = (props) => {
 
                     <RentAvailableFor>
                         { forFamily ?
-                            <RentType >
+                            <TenantType >
                                 <TextComponent medium bold color={'white'}>FAMILY</TextComponent>
-                            </RentType> : null
+                            </TenantType> : null
                         }
 
                         { forBachelor ?
-                            <RentType>
+                            <TenantType>
                                 <TextComponent medium bold color={'white'}>BACHELOR</TextComponent>
-                            </RentType> : null
+                            </TenantType> : null
                         }
 
 
@@ -268,7 +260,7 @@ export const ListingDetailsScreen = (props) => {
                 >
                     <MessageAndButtonContainer>
                         <SendMessageBox placeholder={'Send your Message'} placeholderTextColor={'grey'}
-                        defaultValue={message}
+                                        defaultValue={message}
                                         onChangeText={(message) => setMessage(message)}
                         />
                         { sendingMessage ?  <ActivityIndicator size={'small'} color={'white'}/>
@@ -349,6 +341,7 @@ backgroundColor: ${StatusBarAndTopHeaderBGColor};
 
 const RoomsContainer = styled.View`
 alignItems: center;
+marginVertical: 10px;
 justifyContent: space-between;
 flexDirection: row;
 marginHorizontal: 10px;
@@ -367,7 +360,7 @@ borderRadius: 50px;
 `;
 
 const FacilitiesContainer = styled.ScrollView`
-marginVertical: 30px;
+marginVertical: 20px;
 flexDirection: row;
 marginHorizontal: 10px;
 
@@ -385,6 +378,7 @@ marginHorizontal: 5px;
 
 const RentAndNegotiableContainer = styled.View`
 marginHorizontal: 10px;
+marginVertical: 10px;
 flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
@@ -451,16 +445,16 @@ alignItems: center;
 const RentAvailableFor = styled.View`
 alignItems:center;
 flexDirection: row;
-marginVertical: 20px;
+marginVertical: 10px;
  justifyContent: center;
 `;
 
-const RentType = styled.View`
+const TenantType = styled.View`
 marginRight: 10px;
 backgroundColor: #9c45c1;
- paddingVertical: 10px;
- paddingHorizontal: 20px;
-  borderRadius: 30px;
+paddingVertical: 10px;
+paddingHorizontal: 20px;
+borderRadius: 30px;
 
 
 `;

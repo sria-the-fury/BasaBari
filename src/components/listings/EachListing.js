@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, FlatList, View, StyleSheet, ToastAndroid, Dimensions, Animated, Vibration} from 'react-native';
+import {ActivityIndicator, FlatList, View, StyleSheet, Vibration} from 'react-native';
 import {Divider, Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
@@ -10,6 +10,7 @@ import {Avatar} from "react-native-paper";
 import {Colors} from "../utilities/Colors";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {ListingsUpdateModal} from "../../modals/ListingsUpdateModal";
+import {ListingDeleteConfirmModal} from "../../modals/ListingDeleteConfirmModal";
 
 
 export const EachListing = (props) => {
@@ -67,21 +68,6 @@ export const EachListing = (props) => {
 
     };
 
-    //remove listing
-    const removeListing = async (id, images) => {
-        // console.log('ok remove');
-        Vibration.vibrate(30);
-        try {
-            await firebase.removeListing(id, images);
-            ToastAndroid.show('Listing Deleted', ToastAndroid.LONG);
-        } catch (error){
-            alert(error.message);
-        }finally {
-            CloseBottomSheet();
-        }
-
-    };
-
     //add favorite
 
     const addRemoveFavorite = async (listingId) => {
@@ -110,22 +96,16 @@ export const EachListing = (props) => {
     //open update modal
 
     //Bottom Sheet Actions
-    const [deleteListingInfo, setDeleteListingInfo] = useState(null);
     const [EditListingInfo, setEditListingInfo] = useState(item);
 
     const OpenBottomSheet = (item) => {
         Vibration.vibrate(20);
-        setDeleteListingInfo({
-            listingId: item.id,
-            listingImages: item.images
-        });
         setEditListingInfo(item);
         ListingsBottomSheet.current.open();
 
     }
 
     const CloseBottomSheet = () => {
-        setDeleteListingInfo(null);
         ListingsBottomSheet.current.close();
     }
 
@@ -136,30 +116,33 @@ export const EachListing = (props) => {
         setListingUpdateModal(false);
     };
 
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const windowWidth = Dimensions.get('window').width;
+    //open Delete Confirm Modal
+    const [openDeleteConfirmModal, setConfirmModal] = useState(false);
+
+    // const fadeAnim = useRef(new Animated.Value(0)).current;
+    // const windowWidth = Dimensions.get('window').width;
 
 
-    const fadeIn = () => {
-        // Will change fadeAnim value to 1 in 5 seconds
-        Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 2500,
-            useNativeDriver: true,
-        }).start();
-    };
-
-    const fadeOut = () => {
-        // Will change fadeAnim value to 0 in 5 seconds
-        Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 2000,
-            useNativeDriver: true,
-        }).start();
-    };
-
-
-
+    // const fadeIn = () => {
+    //     // Will change fadeAnim value to 1 in 5 seconds
+    //     Animated.timing(fadeAnim, {
+    //         toValue: 1,
+    //         duration: 2500,
+    //         useNativeDriver: true,
+    //     }).start();
+    // };
+    //
+    // const fadeOut = () => {
+    //     // Will change fadeAnim value to 0 in 5 seconds
+    //     Animated.timing(fadeAnim, {
+    //         toValue: 0,
+    //         duration: 2000,
+    //         useNativeDriver: true,
+    //     }).start();
+    // };
+    //
+    //
+    // // removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)
 
     return (
         <CardsContainer>
@@ -186,7 +169,7 @@ export const EachListing = (props) => {
                 </View>
 
                 { currentUserListings() ?
-                    <Icon name={'more-horiz'} type={'md'} size={20}
+                    <Icon name={'more-vert'} type={'md'} size={20}
                           style={{marginRight: 5}} color={'grey'} onPress={() => OpenBottomSheet(item)}/>
 
                     :
@@ -288,18 +271,12 @@ export const EachListing = (props) => {
                     },
                     container: style.sheetContainer,
 
-                }}
-            >
+                }}>
 
-                <View style={{overflow: "hidden"}}>
-                    <Animated.View style={ [{scaleX: fadeAnim}, {backgroundColor: 'red',width: windowWidth, height: 45, position: "absolute"}]} ref={fadeAnim}/>
-                    <DeleteContainer onLongPress={() => removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)} delayLongPress={2500}
-                                     onPressIn={() => fadeIn()} onPressOut={() => fadeOut()}>
-                        <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
-                        <TextComponent  medium color={'white'}>DELETE </TextComponent>
-                    </DeleteContainer>
-                </View>
-
+                <DeleteContainer onPress={() => {ListingsBottomSheet.current.close(); setConfirmModal(true)}}>
+                    <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
+                    <TextComponent  medium color={'white'}>DELETE </TextComponent>
+                </DeleteContainer>
 
                 <Divider backgroundColor={'grey'}/>
 
@@ -311,8 +288,10 @@ export const EachListing = (props) => {
             </RBSheet>
 
             <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
-                                 listingsData={EditListingInfo}
-            />
+                                 listingsData={EditListingInfo}/>
+
+            <ListingDeleteConfirmModal modalVisible={openDeleteConfirmModal} actionProps={{itemId: item.id, images: item.images}}
+                                       modalHide={setConfirmModal} listingName={item.address}/>
         </CardsContainer>
 
     )
@@ -415,7 +394,7 @@ paddingHorizontal: 5px;
 borderRadius: 20px;
 `;
 
-const DeleteContainer = styled.Pressable`
+const DeleteContainer = styled.TouchableOpacity`
 display: flex;
 flexDirection: row;
 paddingHorizontal: 20px; 
@@ -425,7 +404,7 @@ alignItems: center;
 
 `;
 
-const EditContainer = styled.Pressable`
+const EditContainer = styled.TouchableOpacity`
 display: flex;
 flexDirection: row;
 paddingHorizontal: 20px; 
@@ -439,21 +418,12 @@ overflow: hidden
 const style = StyleSheet.create({
     sheetContainer : {
         backgroundColor: Colors.primaryBody,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
         shadowColor: '#000',
         shadowRadius: 5,
         elevation:10,
         shadowOpacity: 1
-
-    },
-    pressable: {
-        display: 'flex',
-        flexDirection: 'row',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        alignItems: 'center',
-        overflow: 'hidden',
 
     }
 });

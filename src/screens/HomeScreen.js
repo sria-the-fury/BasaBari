@@ -24,29 +24,17 @@ export default function  HomeScreen (props) {
                 let data=[];
                 if(docs) {
                     docs.forEach(doc => {
+                        const {listingId, postedTime, address, images, userId, roomNumbers,
+                            facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, usersInFav, moreDetails, location, interestedTenantId} = doc.data();
                         data.push({
                             id: doc.id,
-                            listingId: doc.data().listingId,
-                            postedTime: doc.data().postedTime,
-                            address: doc.data().address,
-                            images: doc.data().images,
-                            userId: doc.data().userId,
-                            roomNumbers: doc.data().roomNumbers,
-                            facilities: doc.data().facilities,
-                            forBachelor: doc.data().forBachelor,
-                            forFamily: doc.data().forFamily,
-                            rentPerMonth: doc.data().rentPerMonth,
-                            isNegotiable: doc.data().isNegotiable,
-                            usersInFav: doc.data().usersInFav,
-                            moreDetails: doc.data().moreDetails,
-                            location: doc.data().location,
-                            interestedTenantId: doc.data().interestedTenantId
+                            listingId, postedTime, address, images, userId, roomNumbers,
+                            facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, usersInFav, moreDetails, location, interestedTenantId
                         });
 
                     });
                     setListingsData(data);
                 }
-
 
             });
 
@@ -75,7 +63,7 @@ export default function  HomeScreen (props) {
             {/*    <TextComponent medium bold color={'white'}>SEARCH</TextComponent>*/}
 
             {/*</HeaderContainer>*/}
-            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id.toString()} showsVerticalScrollIndicator={false}/>
+            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
 
         </Container>
     )
