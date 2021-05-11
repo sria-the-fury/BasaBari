@@ -1,18 +1,24 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, View} from 'react-native';
-import {Icon, Image} from "react-native-elements";
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {ActivityIndicator, FlatList, View, StyleSheet, Vibration} from 'react-native';
+import {Divider, Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
 import moment from "moment";
 import firestore from "@react-native-firebase/firestore";
 import {FirebaseContext} from "../../context/FirebaseContext";
-
+import {Avatar} from "react-native-paper";
+import {Colors} from "../utilities/Colors";
+import RBSheet from "react-native-raw-bottom-sheet";
+import {ListingsUpdateModal} from "../../modals/ListingsUpdateModal";
+import {ListingDeleteConfirmModal} from "../../modals/ListingDeleteConfirmModal";
 
 
 export const EachListing = (props) => {
+    const ListingsBottomSheet = useRef();
+
     const firebase = useContext(FirebaseContext);
     const {item} = props;
-    const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails} = item;
+    const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth, interestedTenantId} = item;
     const [postedUser, setPostedUser] = useState('');
     const currentUserId = firebase.getCurrentUser().uid;
 
@@ -40,7 +46,7 @@ export const EachListing = (props) => {
     useEffect(() => {
         const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
-                setPostedUser(doc.data());
+                if(doc) setPostedUser(doc.data());
             });
 
         return () => subscriber();
@@ -62,20 +68,10 @@ export const EachListing = (props) => {
 
     };
 
-    //remove listing
-    const removeListing = async (id, images) => {
-        // console.log('ok remove');
-        try {
-            await firebase.removeListing(id, images);
-        } catch (error){
-            alert(error.message);
-        }
-
-    };
-
     //add favorite
 
     const addRemoveFavorite = async (listingId) => {
+        Vibration.vibrate(20);
 
         try{
             const isCurrentUserFavList = usersInFav ? usersInFav.find(userId => userId === currentUserId) : null;
@@ -95,7 +91,58 @@ export const EachListing = (props) => {
 
     const isCurrentUserFavList = usersInFav ? usersInFav.includes(currentUserId) : false;
 
+    // onPress={() => removeListing(item.id, images)}
 
+    //open update modal
+
+    //Bottom Sheet Actions
+    const [EditListingInfo, setEditListingInfo] = useState(item);
+
+    const OpenBottomSheet = (item) => {
+        Vibration.vibrate(20);
+        setEditListingInfo(item);
+        ListingsBottomSheet.current.open();
+
+    }
+
+    const CloseBottomSheet = () => {
+        ListingsBottomSheet.current.close();
+    }
+
+    //update Modal
+    const [openListingUpdateModal, setListingUpdateModal] = useState(false);
+
+    const closeListingUpdateModal = () => {
+        setListingUpdateModal(false);
+    };
+
+    //open Delete Confirm Modal
+    const [openDeleteConfirmModal, setConfirmModal] = useState(false);
+
+    // const fadeAnim = useRef(new Animated.Value(0)).current;
+    // const windowWidth = Dimensions.get('window').width;
+
+
+    // const fadeIn = () => {
+    //     // Will change fadeAnim value to 1 in 5 seconds
+    //     Animated.timing(fadeAnim, {
+    //         toValue: 1,
+    //         duration: 2500,
+    //         useNativeDriver: true,
+    //     }).start();
+    // };
+    //
+    // const fadeOut = () => {
+    //     // Will change fadeAnim value to 0 in 5 seconds
+    //     Animated.timing(fadeAnim, {
+    //         toValue: 0,
+    //         duration: 2000,
+    //         useNativeDriver: true,
+    //     }).start();
+    // };
+    //
+    //
+    // // removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)
 
     return (
         <CardsContainer>
@@ -105,32 +152,31 @@ export const EachListing = (props) => {
                 { currentUserListings() ?
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
-                        <PostedUserAvatar source={{uri: postedUser?.profilePhotoUrl}} style={{marginRight: 2}}/>
-                        <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
+                        <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+
+                        <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                     :
-                    <Icon name={'heart'} type={'ionicon'} size={25}
+                    <Icon name={isCurrentUserFavList ? 'heart' : 'heart-outline'} type={'ionicon'} size={25}
                           style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'grey'}
                           onPress={() => addRemoveFavorite(item.id)}/>
                 }
 
                 <View style={{alignItems: "center", flexDirection: 'row'}}>
-                    <Icon name={'time-outline'} type={'ionicon'} size={15} style={{marginRight: 5}}/>
+                    <Icon name={'time-outline'} type={'ionicon'} size={15} style={{marginRight: 1}}/>
                     <TextComponent small>{postedTime()}</TextComponent>
 
                 </View>
 
                 { currentUserListings() ?
-                    // <Icon name={'more-vert'} type={'md'} size={20}
-                    //       style={{marginRight: 5}} color={'grey'} onPress={() => ListingActions(item)}/>
-                    <Icon name={'trash'} type={'ionicon'} size={20}
-                          style={{marginRight: 5}} color={'red'} onPress={() => removeListing(item.id, images)}/>
+                    <Icon name={'more-vert'} type={'md'} size={20}
+                          style={{marginRight: 5}} color={'grey'} onPress={() => OpenBottomSheet(item)}/>
 
                     :
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
-                        <PostedUserAvatar source={{uri: postedUser.profilePhotoUrl}} style={{marginRight: 2}}/>
-                        <TextComponent >{getFirstNameFromPostedUser()}</TextComponent>
+                        <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+                        <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                 }
 
@@ -150,13 +196,30 @@ export const EachListing = (props) => {
 
             }
 
-
-            <LocationContainer>
-                <Icon name={'navigate'} type={'ionicon'} size={18} style={{marginRight: 5}} color={'blue'}/>
+            <AddressContainer>
+                <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                 <TextComponent style={{ flex:1,
-                    flexWrap: 'wrap'}} semiLarge ellipsizeMode={'tail'}>{item.address}</TextComponent>
+                    flexWrap: 'wrap'}} medium ellipsizeMode={'tail'} numberOfLines={2}>{item.address}</TextComponent>
 
-            </LocationContainer>
+            </AddressContainer>
+
+
+            <LocationAndRentContainer>
+                <Location>
+                    <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
+                    <TextComponent color={'rgba(0,0,0, 0.9)'}>
+                        {location?.city === location?.county ? location.city : `${location.city}, ${location.county}`},
+                        <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location?.state}, {location?.country}</TextComponent>
+                    </TextComponent>
+
+                </Location>
+                <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50}}>
+                    <TextComponent color={'white'} bold>TK. {rentPerMonth}</TextComponent>
+
+                </View>
+
+
+            </LocationAndRentContainer>
 
 
             <HomeItemsNumbersContainer>
@@ -166,20 +229,20 @@ export const EachListing = (props) => {
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>
-                    <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.washRoom}</TextComponent>
+                    <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
+                    <TextComponent>{roomNumbers.dining}</TextComponent>
                 </HomeItemsNumbers>
 
                 <HomeItemsNumbers>
-                    <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.dinning}</TextComponent>
+                    <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
+                    <TextComponent>{roomNumbers.washRoom}</TextComponent>
                 </HomeItemsNumbers>
 
                 <RentType>
                     {
                         forFamily && forBachelor ? <TextComponent color={'white'} bold tiny>Bachelor/Family</TextComponent>
                             : forBachelor ? <TextComponent color={'white'} tiny bold>BACHELOR</TextComponent>
-                            : <TextComponent color={'white'} bold tiny>FAMILY</TextComponent>
+                            : forFamily ? <TextComponent color={'white'} bold tiny>FAMILY</TextComponent> : null
 
 
                     }
@@ -187,6 +250,7 @@ export const EachListing = (props) => {
 
                 <Icon name={'chevron-forward-circle'} type={'ionicon'} size={35} style={{marginRight: 5}} color={'grey'}
                       onPress={() => props.navigation.navigate('ListingDetails', {
+                          listingId: item.id,
                           listingsData: item,
                           postedUserInfo: postedUser,
                           currentUserListings: currentUserListings()
@@ -194,6 +258,40 @@ export const EachListing = (props) => {
 
             </HomeItemsNumbersContainer>
 
+            <RBSheet
+                ref={ListingsBottomSheet}
+                closeOnDragDown={true}
+                closeOnPressMask={true}
+                dragFromTopOnly={true}
+                height={110}
+
+                customStyles={{
+                    wrapper: {
+                        backgroundColor: "transparent"
+                    },
+                    container: style.sheetContainer,
+
+                }}>
+
+                <DeleteContainer onPress={() => {ListingsBottomSheet.current.close(); setConfirmModal(true)}}>
+                    <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
+                    <TextComponent  medium color={'white'}>DELETE </TextComponent>
+                </DeleteContainer>
+
+                <Divider backgroundColor={'grey'}/>
+
+
+                <EditContainer onPress={() => {setListingUpdateModal(true); CloseBottomSheet();}}>
+                    <Icon name={'edit'} color={'white'} type={'md'} size={15} style={{marginRight: 10}}/>
+                    <TextComponent  medium color={'white'}>EDIT </TextComponent>
+                </EditContainer>
+            </RBSheet>
+
+            <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
+                                 listingsData={EditListingInfo}/>
+
+            <ListingDeleteConfirmModal modalVisible={openDeleteConfirmModal} actionProps={{itemId: item.id, images: item.images}}
+                                       modalHide={setConfirmModal} listingName={item.address}/>
         </CardsContainer>
 
     )
@@ -203,7 +301,7 @@ const renderImage= (image) => {
 
     return(
         <View style={{marginHorizontal:10}}>
-            <Image source={{uri: image.imageUrl}} style={{ height: 150, width: 150, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator style={{color: 'blue'}}/>}/>
+            <Image source={{uri: image.imageUrl}} style={{ height: 150, width: 150, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color="white"/>}/>
 
         </View>
     )
@@ -221,13 +319,11 @@ marginHorizontal: 10px;
 `;
 
 const CardsContainer = styled.View`
-
-marginHorizontal:10px;
  marginVertical:10px;
   backgroundColor: white;
    paddingHorizontal: 10px;
-    paddingVertical:10px;
-     borderRadius:10px;
+   paddingVertical: 5px;
+    
      overflow: hidden;
      elevation: 5;
          shadowColor: #000;
@@ -246,13 +342,29 @@ justifyContent: space-between;
 `;
 
 
-const LocationContainer = styled.View`
+const LocationAndRentContainer = styled.View`
+flexDirection : row;
+alignItems: center;
+justifyContent: space-between;
+marginRight: 10px;
+overflow: hidden;
+
+`;
+
+const Location = styled.View`
+flexDirection: row;
+ alignItems: center;
+ width: 70%;
+
+`;
+
+const AddressContainer = styled.View`
 flexDirection : row;
 alignItems: center;
 marginRight: 10px;
-overflow: hidden
-
-paddingTop: 10px
+overflow: hidden;
+maxHeight: 60px;
+paddingVertical: 5px;
 
 `;
 
@@ -260,14 +372,11 @@ paddingTop: 10px
 const HomeItemsNumbers = styled.View`
 flexDirection : row;
 alignItems: center;
-paddingBottom: 5px;
-paddingTop: 5px
 `
 
 const HomeItemsNumbersContainer = styled.View`
 flexDirection : row;
 alignItems: center;
-paddingBottom: 5px;
 paddingTop: 5px
 justifyContent: space-between;
 `;
@@ -283,4 +392,38 @@ backgroundColor: #9c45c1;
 paddingVertical: 5px;
 paddingHorizontal: 5px;
 borderRadius: 20px;
-`
+`;
+
+const DeleteContainer = styled.TouchableOpacity`
+display: flex;
+flexDirection: row;
+paddingHorizontal: 20px; 
+paddingVertical: 10px;
+alignItems: center;
+
+
+`;
+
+const EditContainer = styled.TouchableOpacity`
+display: flex;
+flexDirection: row;
+paddingHorizontal: 20px; 
+paddingVertical: 10px;
+alignItems: center;
+overflow: hidden
+
+
+`;
+
+const style = StyleSheet.create({
+    sheetContainer : {
+        backgroundColor: Colors.primaryBody,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        shadowColor: '#000',
+        shadowRadius: 5,
+        elevation:10,
+        shadowOpacity: 1
+
+    }
+});

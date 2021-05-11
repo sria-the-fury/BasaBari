@@ -69,12 +69,12 @@ export default  function PhoneAuthScreen() {
 
         let interval = setInterval(() => {
             setCount(prev => {
-                if (prev === 60) {
+                if (prev === 30) {
                     clearInterval(interval);
                     setResendDisable(false);
 
                 }
-                if(prev < 60) return prev + 1;
+                if(prev < 30) return prev + 1;
             })
         },1000)
         // interval cleanup on component unmount
@@ -243,6 +243,8 @@ export default  function PhoneAuthScreen() {
                                    mode={'outlined'}
                                    label="Phone Number"
                                    keyboardType={'phone-pad'}
+                                   placeholder={'01*********'}
+                                   placeholderTextColor={'grey'}
                                    maxLength={11}
                                    onChangeText={(number) => setNumber(number)}
                                    theme={{ colors: { placeholder: 'lavender', text: 'lavender', primary: 'lavender', underlineColor:'transparent'}}}
@@ -366,11 +368,11 @@ export default  function PhoneAuthScreen() {
 
                             <OTPAndCircularProgressContainer onPress={() => resendCode()} disabled={isResendDisable}>
 
-                                <CircularProgress fillRatio={count} percentage={60} size={40}/>
+                                <CircularProgress fillRatio={count} percentage={30} size={40}/>
                                 <ResendOTPButton>
                                     <Icon
                                         name='phonelink-lock'
-                                        color={'lavender'}
+                                        color={!isResendDisable ? 'lavender' : Colors.primaryBody}
                                         type='md'
                                         size={25}
                                     />
@@ -416,7 +418,7 @@ export default  function PhoneAuthScreen() {
 
                 </TermsAndConditionsTouchArea>
             </BodyContainer>
-            <TermsAndConditionsModal modalVisible={openTermsModal} modalHide={closeTermsModal} headerColor={'#320A28'}/>
+            <TermsAndConditionsModal modalVisible={openTermsModal} modalHide={closeTermsModal}/>
         </MainContainer>
 
     );

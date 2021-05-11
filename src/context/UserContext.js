@@ -10,17 +10,17 @@ export const UserProvider =  (props) => {
     const currentUser = firebase.getCurrentUser();
 
     const hasUserWithName = () => {
-        if(currentUser && currentUser.uid && currentUser.photoURL && currentUser.displayName) return true;
-        else if(currentUser && currentUser.uid && (!currentUser.photoURL || !currentUser.displayName)) return false;
+        if(currentUser?.uid && currentUser?.photoURL && currentUser?.displayName) return true;
+        else if(currentUser?.uid && (!currentUser?.photoURL || !currentUser?.displayName)) return false;
         else return null;
     };
 
 
     const [state, setState] = useState({
         isLoggedIn: hasUserWithName(),
-        profilePhotoUrl: currentUser ? currentUser.photoURL : null,
-        userName: currentUser ? currentUser.displayName : null,
-        userPhoneNumber: currentUser ? currentUser.phoneNumber : null
+        profilePhotoUrl: currentUser?.photoURL ?? null,
+        userName: currentUser?.displayName ?? null,
+        userPhoneNumber: currentUser?.phoneNumber ?? null
 
     });
 

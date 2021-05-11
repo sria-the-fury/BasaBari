@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useRef} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 
@@ -13,10 +13,13 @@ import {CustomCheckbox} from "../components/custom-checkbox/CustomCheckbox";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {Colors} from "../components/utilities/Colors";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
-import {TextInput} from "react-native-paper";
+import { TextInput} from "react-native-paper";
+import RBSheet from "react-native-raw-bottom-sheet";
+import {SearchPlaces} from "../components/utilities/SearchPlaces";
 
 
 export default function AddListingScreen(props) {
+    const searchBottomSheet = useRef();
 
     const firebase = useContext(FirebaseContext);
 
@@ -28,7 +31,7 @@ export default function AddListingScreen(props) {
     });
 
     const [roomNumbers, setRoomNumbers] = useState({
-        dinning: 0,
+        dining: 0,
         bedRoom: 0,
         washRoom: 0
     })
@@ -151,7 +154,8 @@ export default function AddListingScreen(props) {
     const addListing = async () => {
         setLoading(true);
         try {
-            const listingData =  {facilities, roomNumbers, forBachelor, moreDetails, address, rentPerMonth, listingImages, isNegotiable, forFamily}
+            const location = getSelectPlaceName;
+            const listingData =  {facilities, roomNumbers, forBachelor, moreDetails, address, rentPerMonth, listingImages, isNegotiable, forFamily, location}
             const isListingAdded = await firebase.addListing(listingData);
             if(isListingAdded) props.navigation.goBack();
         } catch (error) {
@@ -167,23 +171,31 @@ export default function AddListingScreen(props) {
 
     const disableSubmit = () => {
 
-        return ((forBachelor === false && forFamily === false) || listingImages.length < 3 || rentPerMonth === 0 || moreDetails === '' || address === '' || (roomNumbers.washRoom === 0 || roomNumbers.dinning === 0 || roomNumbers.bedRoom === 0))
+        return ((forBachelor === false && forFamily === false) || listingImages.length < 3 || getSelectPlaceName === '' || rentPerMonth === 0 || moreDetails === '' || address === '' || (roomNumbers.washRoom === 0 || roomNumbers.dining === 0 || roomNumbers.bedRoom === 0))
     }
+
+
+    //open search Modal
+
+    const [openPlaceSearchModal, setPlaceSearchModal] = useState(false);
+
+    const closePlaceSearchModal = () => {
+        setPlaceSearchModal(false);
+    }
+
+    const [getSelectPlaceName, setSelectPlaceName] = useState('');
 
 
     return (
         <Container>
-            <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="dark-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
 
                     <Icon
-                        name={'chevron-down-circle'}
+                        name={'chevron-down-outline'}
                         type='ionicon'
-                        color={'black'} size={40}
+                        color={'black'} size={35} onPress={() => props.navigation.goBack()}
                     />
-
-                </TouchableOpacity>
 
                 <AddListingButton onPress={() => addListing()} disabled={disableSubmit() || loading}>
                     {loading ? <Loading/> : <TextComponent medium bold color={disableSubmit() ? 'grey' : 'white'}>ADD LISTING</TextComponent> }
@@ -220,12 +232,70 @@ export default function AddListingScreen(props) {
                 </BodyView>
 
 
+                <RBSheet
+                    ref={searchBottomSheet}
+                    closeOnDragDown={true}
+                    closeOnPressMask={true}
+                    dragFromTopOnly={true}
+                    height={320}
+
+                    customStyles={{
+                        wrapper: {
+                            backgroundColor: "transparent"
+                        },
+                        container: {backgroundColor: 'rgba(0,0,0,0.8)', borderTopLeftRadius: 20, borderTopRightRadius: 20},
+                        draggableIcon: {
+                            backgroundColor: "white"
+                        }
+                    }}
+                >
+                    <SearchPlaces updateQuery={setSelectPlaceName} closeBottomSheet={searchBottomSheet}/>
+                </RBSheet>
+
+                <SelectPlacesContainer>
+
+
+                    <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', width: getSelectPlaceName === '' ? '100%' : '80%'}}
+                                      onPress={() => searchBottomSheet.current.open()}>
+                        <Icon
+                            name='location'
+                            type='ionicon'
+                            color={Colors.buttonPrimary} size={25}/>
+                        { getSelectPlaceName !== '' ?
+                            <View>
+                                <TextComponent semiLarge color={Colors.buttonPrimary}>
+                                    {getSelectPlaceName.city === getSelectPlaceName.county ? getSelectPlaceName.city : `${getSelectPlaceName.city}, ${getSelectPlaceName.county}`}
+                                </TextComponent>
+                                <TextComponent color={'rgba(0,0,0,0.5)'}>
+                                    {getSelectPlaceName.state}, {getSelectPlaceName.country}
+                                </TextComponent>
+
+                            </View>
+
+                            :  <TextComponent semiLarge color={'rgba(0,0,0,0.5)'}>Select City or Place</TextComponent>
+
+                        }
+
+
+                    </TouchableOpacity>
+
+                    { getSelectPlaceName !== '' ?
+                        <Icon
+                            name='close'
+                            type='ionicon'
+                            color={'rgba(0,0,0, 0.5)'} size={25} onPress={() => setSelectPlaceName('')}/> : null
+                    }
+
+                </SelectPlacesContainer>
+
+
                 <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary}}
                            mode={'outlined'}
-                           label="Address"
+                           label="Write specific address"
                            autoCorrect={false}
-                           placeholder={'Shyamoli Block A, Road #5, Habiganj'} autoCapitalize={'words'} dataDetectorTypes={'address'}
+                           placeholder={'House No., Block No., Road No.'} autoCapitalize={'words'} dataDetectorTypes={'address'}
                            onChangeText={(address) => setAddress(address)}
+                           multiline={true}
                            theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
                            left={
@@ -233,7 +303,7 @@ export default function AddListingScreen(props) {
                                    name={()=>
 
                                        <Icon
-                                           name='location-outline'
+                                           name='home'
                                            type='ionicon'
                                            color={Colors.buttonPrimary} size={25}/>
                                    }
@@ -346,11 +416,11 @@ export default function AddListingScreen(props) {
 
                             <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
                                        mode={'outlined'}
-                                       label="Dinning"
+                                       label="dining"
                                        autoCorrect={false}
                                        autoCompleteType={'off'}
                                        placeholder={'1'} keyboardType={'numeric'} maxLength={1}
-                                       onChangeText={(dinning) => setRoomNumbers(prev => ({...prev, dinning: dinning}))}
+                                       onChangeText={(dining) => setRoomNumbers(prev => ({...prev, dining: dining}))}
                                        theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
                                        left={
@@ -434,7 +504,6 @@ export default function AddListingScreen(props) {
 
                 <MainContainerForRent>
                     <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
-                    <Divider style={{backgroundColor: 'blue'}}/>
                     <RentContainer>
 
                         <TextInput style={{backgroundColor: 'rgba(1,65, 114, 1)', fontSize: 20, marginBottom: 10, width: 150, overflow: 'hidden'}}
@@ -476,16 +545,9 @@ export default function AddListingScreen(props) {
                 </MainContainerForRent>
 
                 <MoreDetailsContainer>
-                    <TextComponent semiLarge>MORE DETAILS (ENGAGE TENANT)</TextComponent>
-                    <Divider style={{backgroundColor: 'blue'}}/>
+                    <TextComponent semiLarge bold>MORE DETAILS (ENGAGE TENANT)</TextComponent>
 
                     <WritingDetailsContainer>
-                        <Icon
-                            name='article'
-                            type='md'
-                            color='#1c3787' size={30}
-                        />
-
                         <DetailsTextInput placeholder={'Add Details to engage more Tenants'} autoCapitalize={'words'}
                                           multiline={true} onChangeText={(moreDetails) => setMoreDetails(moreDetails)}
                                           autoCorrect={false} />
@@ -497,7 +559,6 @@ export default function AddListingScreen(props) {
 
 
             </FormViewContainer>
-
 
         </Container>
     );
@@ -701,6 +762,21 @@ backgroundColor: #1c3787;
 paddingHorizontal: 10px;
 paddingVertical: 10px;
 borderRadius: 10px;
+`;
+
+const SelectPlacesContainer = styled.View`
+backgroundColor: lavender;
+ paddingVertical: 13px;
+  borderRadius:10px;
+   paddingHorizontal: 10px;
+    display: flex;
+     flexDirection: row;
+      marginBottom: 10px;
+      alignItems: center;
+      justifyContent: space-between;
+      height: 60px;
+                      
+
 `
 
 

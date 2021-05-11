@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import { TouchableOpacity, FlatList} from 'react-native';
+import { FlatList} from 'react-native';
 import {Icon} from "react-native-elements";
 import {FirebaseContext} from "../context/FirebaseContext";
 import firestore from "@react-native-firebase/firestore";
@@ -24,22 +24,24 @@ export default function MyListingScreen(props) {
         const subscriber = firestore().collection('listings').where('userId', '==', currentUserId).onSnapshot(
             docs=> {
                 let data=[];
-                if(!docs.empty) {
+                if(docs) {
                     docs.forEach(doc => {
                         data.push({
                             id: doc.id,
+                            listingId: doc.data().listingId,
                             postedTime: doc.data().postedTime,
                             address: doc.data().address,
                             images: doc.data().images,
                             userId: doc.data().userId,
                             roomNumbers: doc.data().roomNumbers,
                             facilities: doc.data().facilities,
-                            forBachelor: doc.data().availableForBachelor,
+                            forBachelor: doc.data().forBachelor,
                             forFamily: doc.data().forFamily,
                             rentPerMonth: doc.data().rentPerMonth,
                             isNegotiable: doc.data().isNegotiable,
                             usersInFav: doc.data().usersInFav,
-                            moreDetails: doc.data().moreDetails
+                            moreDetails: doc.data().moreDetails,
+                            location: doc.data().location
                         });
 
                     });
@@ -59,16 +61,12 @@ export default function MyListingScreen(props) {
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
-                <TouchableOpacity onPress={() => props.navigation.goBack()}>
-
-                    <Icon
-                        name={'chevron-forward-circle'}
-                        type='ionicon'
-                        color={'white'} size={40}
-                    />
-
-                </TouchableOpacity>
-
+                <Icon
+                    name={'chevron-back-outline'}
+                    type='ionicon'
+                    color={'white'} size={35}
+                    onPress={() => props.navigation.goBack()}
+                />
                 <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
 
             </HeaderContainer>
@@ -89,7 +87,7 @@ backgroundColor: ${StatusBarAndTopHeaderBGColor};
 
  flexDirection: row;
  alignItems: center;
- paddingHorizontal: 32px;
+ paddingHorizontal: 20px;
  paddingVertical: 12px;
  justifyContent: space-between;
 

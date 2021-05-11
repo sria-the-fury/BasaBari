@@ -1,6 +1,6 @@
-import React, {useContext, useState} from "react";
-import {View, Modal, ScrollView, FlatList, ToastAndroid} from "react-native";
-import {Divider} from "react-native-elements";
+import React, {useContext, useRef, useState} from "react";
+import {View, Modal, ScrollView, FlatList, ToastAndroid, ActivityIndicator, TouchableOpacity} from "react-native";
+import {Divider, Image} from "react-native-elements";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
@@ -11,10 +11,14 @@ import _ from "lodash";
 import {CustomCheckbox} from "../components/custom-checkbox/CustomCheckbox";
 import {Colors} from "../components/utilities/Colors";
 import {TextInput} from "react-native-paper";
+import RBSheet from "react-native-raw-bottom-sheet";
+import {SearchPlaces} from "../components/utilities/SearchPlaces";
+import {Notifier} from "../components/utilities/Notifier";
 
 export const ListingsUpdateModal = (props) => {
+    const searchBottomSheet = useRef();
     const {modalVisible, modalHide, listingsData} = props;
-    const {images, address, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, id} = listingsData;
+    const {images, address, roomNumbers, facilities, forBachelor, forFamily, rentPerMonth, isNegotiable, moreDetails, listingId, location} = listingsData;
 
 
     const firebase = useContext(FirebaseContext);
@@ -27,7 +31,7 @@ export const ListingsUpdateModal = (props) => {
     });
 
     const [updateRoomNumbers, setUpdateRoomNumbers] = useState({
-        dinning: roomNumbers.dinning,
+        dining: roomNumbers.dining,
         bedRoom: roomNumbers.bedRoom,
         washRoom: roomNumbers.washRoom
     })
@@ -118,7 +122,7 @@ export const ListingsUpdateModal = (props) => {
 
     };
 
-    const removeImageFromArray = (id) =>{
+    const removeImageFromArray = (id) => {
         let clonedListingImage = _.clone(listingImages);
         let clonePreviousImage = _.clone(images);
         _.remove(clonePreviousImage, {imageId: id});
@@ -139,8 +143,8 @@ export const ListingsUpdateModal = (props) => {
         return(
             <ListingImageMainContainer>
 
+                <Image source={{uri: image.imageUrl}} style={{ height: 200, width: 200, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color="white"/>}/>
 
-                <ListingsImagesContainer source={{uri: image.imageUrl}}/>
                 <View style={{top: 0,position:'absolute' }}>
                     <Icon
                         name={'close-circle'}
@@ -164,16 +168,17 @@ export const ListingsUpdateModal = (props) => {
             isSameFamily = forFamily === updateForFamily,
             isSameRent = rentPerMonth === updateRentPerMonth.trim(),
             isSameNegotiable = isNegotiable === updateIsNegotiable,
-            isSameDesc = moreDetails === updateMoreDetails.trim();
+            isSameDesc = moreDetails === updateMoreDetails.trim(),
+            isSameLocation = _.isEqual(location,getSelectPlaceName);
 
-        return (differenceImages && isAddressSame && isFacilitiesSame && isSameBachelor && isSameDesc && isSameFamily && isSameRent && isSameNegotiable && isSameRoom);
+        return (differenceImages && isAddressSame && isFacilitiesSame && isSameBachelor && isSameDesc && isSameFamily && isSameRent && isSameNegotiable && isSameRoom && isSameLocation);
 
     }
 
     const disableUpdate = () => {
 
-        return ((updateForBachelor === false && updateForFamily === false) ||  listingImages.length < 3 || (updateRentPerMonth === 0 || updateRentPerMonth.trim() ==='' || updateRentPerMonth.length < 3) || updateMoreDetails === '' || updateAddress === '' ||
-            ((updateRoomNumbers.washRoom === 0 || updateRoomNumbers.washRoom === '') || (updateRoomNumbers.dinning === 0 || updateRoomNumbers.dinning === '') || (updateRoomNumbers.bedRoom === 0 || updateRoomNumbers.bedRoom === '')));
+        return (getSelectPlaceName === '' || (updateForBachelor === false && updateForFamily === false) ||  listingImages.length < 3 || (updateRentPerMonth === 0 || updateRentPerMonth.trim() ==='' || updateRentPerMonth.length < 3) || updateMoreDetails === '' || updateAddress === '' ||
+            ((updateRoomNumbers.washRoom === 0 || updateRoomNumbers.washRoom === '') || (updateRoomNumbers.dining === 0 || updateRoomNumbers.dining === '') || (updateRoomNumbers.bedRoom === 0 || updateRoomNumbers.bedRoom === '')));
     }
 
     // console.log('disableUpdateIfSameValue=>', disableUpdateIfSameValue());
@@ -181,10 +186,12 @@ export const ListingsUpdateModal = (props) => {
 
     //update method
     const updateListing = async (listingId) => {
-        setLoading(true)
+        setLoading(true);
         try {
-            const isNewImages = _.difference(listingImages, images),
-                differenceImages = _.isEqual(listingImages, images);
+
+            const isNewImages = _.differenceWith(listingImages, images, _.isEqual),
+                differenceImages = _.isEqual(listingImages, images),
+                isSameLocation = _.isEqual(location,getSelectPlaceName);
 
             if((isNewImages.length !== 0) && !differenceImages) await  firebase.updateListingImages(isNewImages,removedImageId, getImagesAfterRemove, listingId);
 
@@ -194,7 +201,7 @@ export const ListingsUpdateModal = (props) => {
 
             if(!(_.isEqual(roomNumbers, updateRoomNumbers))) await firebase.updateListingRoomNumbers(updateRoomNumbers,listingId);
 
-            if((forBachelor !== updateForBachelor) || (forFamily !== updateForFamily)) await firebase.updateListingRentType(updateForBachelor, updateForFamily ,listingId);
+            if(forBachelor !== updateForBachelor || forFamily !== updateForFamily) await firebase.updateListingRentType(updateForBachelor, updateForFamily ,listingId);
 
             if(rentPerMonth !== updateRentPerMonth) await firebase.updateListingRent(updateRentPerMonth ,listingId);
 
@@ -202,22 +209,17 @@ export const ListingsUpdateModal = (props) => {
 
             if(moreDetails !== updateMoreDetails) await firebase.updateListingMoreDetails(updateMoreDetails ,listingId);
 
+            if(!isSameLocation) await firebase.updateListingLocation(getSelectPlaceName, listingId);
+
         }catch (e) {
             ToastAndroid.show(e.message, ToastAndroid.LONG);
+            setLoading(false);
 
         } finally {
-            setListingImages(images);
-
-            setImagesAfterRemoved([]);
-            setRemovedImageId([]);
-
             removeAllImagesOnce();
-
-
             setLoading(false);
             modalHide();
-
-
+            //closeModalAndUpdateState();
         }
 
     };
@@ -225,18 +227,16 @@ export const ListingsUpdateModal = (props) => {
 
     const closeModalAndUpdateState = () => {
 
-        //
         setListingImages(images);
-        setUpdateFacilities(prev=>({
-            ...prev,
+        setUpdateFacilities({
             hasBalcony: facilities.hasBalcony,
             isNearToMainRoad: facilities.isNearToMainRoad,
             hasCCTV: facilities.hasCCTV,
             isFireSafety: facilities.isFireSafety
-        }))
+        });
 
         setUpdateRoomNumbers({
-            dinning: roomNumbers.dinning,
+            dining: roomNumbers.dining,
             bedRoom: roomNumbers.bedRoom,
             washRoom: roomNumbers.washRoom
         });
@@ -244,6 +244,7 @@ export const ListingsUpdateModal = (props) => {
         setUpdateForBachelor(forBachelor);
         setUpdateForFamily(forFamily);
         setUpdateAddress(address);
+        setSelectPlaceName(location)
         setUpdateMoreDetails(moreDetails);
         setUpdateRentPerMonth(rentPerMonth);
         setUpdateNegotiable(isNegotiable);
@@ -253,7 +254,9 @@ export const ListingsUpdateModal = (props) => {
         removeAllImagesOnce();
         modalHide();
 
-    }
+    };
+
+    const [getSelectPlaceName, setSelectPlaceName] = useState(location);
 
 
     return (
@@ -269,9 +272,9 @@ export const ListingsUpdateModal = (props) => {
             >
                 <ModalView>
                     <ModalHeader>
-                        <Icon name={'chevron-down-circle'} type={'ionicon'} size={40} color={'white'} onPress={() => closeModalAndUpdateState()}/>
+                        <Icon name={'chevron-down-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => closeModalAndUpdateState()}/>
 
-                        <UpdateListingButton disabled={disableUpdateIfSameValue() || disableUpdate() || loading} onPress={() => updateListing(id)}>
+                        <UpdateListingButton disabled={disableUpdateIfSameValue() || disableUpdate() || loading} onPress={() => updateListing(listingId)}>
                             { loading ? <Loading/> :
                                 <TextComponent bold medium color={disableUpdateIfSameValue() || disableUpdate() ? 'grey':'white'}>UPDATE LISTING</TextComponent>
                             }
@@ -304,6 +307,55 @@ export const ListingsUpdateModal = (props) => {
 
                         </BodyView>
 
+                        <RBSheet
+                            ref={searchBottomSheet}
+                            closeOnDragDown={true}
+                            closeOnPressMask={true}
+                            dragFromTopOnly={true}
+                            height={320}
+
+                            customStyles={{
+                                wrapper: {
+                                    backgroundColor: "transparent"
+                                },
+                                container: {backgroundColor: 'rgba(0,0,0,0.8)', borderTopLeftRadius: 20, borderTopRightRadius: 20},
+                                draggableIcon: {
+                                    backgroundColor: "white"
+                                }
+                            }}
+                        >
+                            <SearchPlaces updateQuery={setSelectPlaceName} closeBottomSheet={searchBottomSheet}/>
+                        </RBSheet>
+
+                        <SelectPlacesContainer>
+
+                            <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center', width:'100%'}}
+                                              onPress={() => searchBottomSheet.current.open()}>
+                                <Icon
+                                    name='location'
+                                    type='ionicon'
+                                    color={Colors.buttonPrimary} size={25}/>
+                                { getSelectPlaceName !== '' ?
+                                    <View>
+                                        <TextComponent semiLarge color={Colors.buttonPrimary}>
+                                            {getSelectPlaceName.city === getSelectPlaceName.county ? getSelectPlaceName.city : `${getSelectPlaceName.city}, ${getSelectPlaceName.county}`}
+                                        </TextComponent>
+                                        <TextComponent color={'rgba(0,0,0,0.5)'}>
+                                            {getSelectPlaceName.state}, {getSelectPlaceName.country}
+                                        </TextComponent>
+
+                                    </View>
+
+                                    :  <TextComponent semiLarge color={'rgba(0,0,0,0.5)'}>Select City or Place</TextComponent>
+
+                                }
+
+
+                            </TouchableOpacity>
+
+
+                        </SelectPlacesContainer>
+
                         <FormViewContainer showsVerticalScrollIndicator={false}>
 
                             <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary}}
@@ -319,7 +371,7 @@ export const ListingsUpdateModal = (props) => {
                                                name={()=>
 
                                                    <Icon
-                                                       name='location-outline'
+                                                       name='home'
                                                        type='ionicon'
                                                        color={Colors.buttonPrimary} size={25}/>
                                                }
@@ -433,12 +485,12 @@ export const ListingsUpdateModal = (props) => {
 
                                         <TextInput style={{backgroundColor: 'white', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, width: 150, overflow: 'hidden'}}
                                                    mode={'outlined'}
-                                                   label="Dinning"
+                                                   label="Dining"
                                                    autoCorrect={false}
                                                    autoCompleteType={'off'}
-                                                   defaultValue={roomNumbers.dinning}
+                                                   defaultValue={roomNumbers.dining}
                                                    placeholder={'1'} keyboardType={'numeric'} maxLength={1}
-                                                   onChangeText={(dinning) => setUpdateRoomNumbers(prev => ({...prev, dinning: dinning}))}
+                                                   onChangeText={(dining) => setUpdateRoomNumbers(prev => ({...prev, dining: dining}))}
                                                    theme={{ colors: { placeholder: 'rgba(0,0,0,0.5)', text: Colors.buttonPrimary, primary: Colors.buttonPrimary, underlineColor:'transparent'}}}
 
                                                    left={
@@ -523,7 +575,6 @@ export const ListingsUpdateModal = (props) => {
 
                             <MainContainerForRent>
                                 <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
-                                <Divider style={{backgroundColor: 'blue'}}/>
                                 <RentContainer>
 
                                     <TextInput style={{backgroundColor: 'rgba(1,65, 114, 1)', fontSize: 20, marginBottom: 10, width: 150, overflow: 'hidden'}}
@@ -566,16 +617,9 @@ export const ListingsUpdateModal = (props) => {
                             </MainContainerForRent>
 
                             <MoreDetailsContainer>
-                                <TextComponent semiLarge>MORE DETAILS (ENGAGE TENANT)</TextComponent>
-                                <Divider style={{backgroundColor: 'blue'}}/>
+                                <TextComponent semiLarge bold>MORE DETAILS (ENGAGE TENANT)</TextComponent>
 
                                 <WritingDetailsContainer>
-                                    <Icon
-                                        name='article'
-                                        type='md'
-                                        color='#1c3787' size={30}
-                                    />
-
                                     <DetailsTextInput placeholder={'Add Details to engage more Tenants'} autoCapitalize={'words'} defaultValue={moreDetails}
                                                       multiline={true} onChangeText={(moreDetails) => setUpdateMoreDetails(moreDetails)}
                                                       autoCorrect={false} />
@@ -771,7 +815,22 @@ backgroundColor: ${Colors.buttonPrimary};
 paddingHorizontal: 10px;
 paddingVertical: 10px;
 borderRadius: 10px;
-`
+`;
+
+const SelectPlacesContainer = styled.View`
+backgroundColor: lavender;
+ paddingVertical: 13px;
+  borderRadius:10px;
+   paddingHorizontal: 10px;
+    display: flex;
+     flexDirection: row;
+      marginTop: 20px;
+      alignItems: center;
+      justifyContent: space-between;
+      height: 60px;
+                      
+
+`;
 
 
 const Loading = styled.ActivityIndicator.attrs(() => ({

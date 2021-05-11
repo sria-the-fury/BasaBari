@@ -1,23 +1,23 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import styled from "styled-components";
-import {StatusBar, TextInput, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Linking, StyleSheet, ToastAndroid, TouchableOpacity} from 'react-native';
 import {TextComponent} from "../components/TextComponent";
-import {Icon} from "react-native-elements";
+import {Divider, Icon} from "react-native-elements";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import {UserContext} from "../context/UserContext";
 import {FirebaseContext} from "../context/FirebaseContext";
 import ImagePicker from "react-native-customized-image-picker";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
+import RBSheet from "react-native-raw-bottom-sheet";
+import {Avatar, Colors as RNPColors, TextInput} from "react-native-paper";
 
 
 export default function ProfileScreen(props) {
 
     const [loading, setLoading] = useState(false);
     const [nameLoading, setNameLoading] = useState(false);
-    const [phoneLoading, setPhoneLoading] = useState(false);
     const [updatedName, setUpdateName] = useState('');
-    const [updatedPhone, setUpdatePhone] = useState('');
 
 
     // userContext
@@ -45,20 +45,6 @@ export default function ProfileScreen(props) {
 
     }
 
-    //cell update
-
-    const editCellNo = () => {
-        setEditableCellNo(true)
-
-    }
-
-    const cancelUpdatePhone = () => {
-        setEditableCellNo(false)
-        setUpdatePhone('');
-
-    }
-
-
 
 //functions for closing Modals
     const closeTermsModal = () => {
@@ -80,20 +66,20 @@ export default function ProfileScreen(props) {
 
         try{
             const newName = updatedName.trim();
-            const isNameUpdated = await firebase.updateUserProfileName(newName);
-
-            if(isNameUpdated){
-                cancelUpdateName();
-            }
+            await firebase.updateUserProfileName(newName);
 
         }catch (e) {
+            ToastAndroid.show(e.message , ToastAndroid.LONG);
+            setNameLoading(false);
             alert(e.message);
 
         }
         finally {
+            ToastAndroid.show('Name updated', ToastAndroid.SHORT);
 
             setNameLoading(false);
             cancelUpdateName();
+            UpdateNameBottomSheet.current.close();
 
         }
     };
@@ -107,6 +93,7 @@ export default function ProfileScreen(props) {
             alert(e.message);
 
         } finally {
+
             setPhoneLoading(false);
             cancelUpdatePhone();
 
@@ -162,117 +149,156 @@ export default function ProfileScreen(props) {
                 console.log(e);
             });
 
+    };
+
+
+    const mailTo = async () => {
+        await Linking.openURL('mailto: basabari@oasisoneric.tech');
+    };
+
+    const UpdateNameBottomSheet = useRef();
+
+    const disableUpdateNameButton = () => {
+        return (updatedName.trim() === profileUserInfo.displayName || updatedName === '' || updatedName.length < 3);
+
     }
+
 
 
     return (
 
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
-            <HeaderTop>
-                <View style={{alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginBottom: 3}}>
-                    { (isEditable && updatedName === '') || (updatedName.trim() === profileUserInfo.displayName) ?
-                        <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdateName()}/>
-                        :  isEditable && (updatedName !== '') &&  (updatedName.trim() !== profileUserInfo.displayName) && !nameLoading ?
-                            <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updateUserName()} disabled={updatedName.length<3}/> :
-                            isEditable && (updatedName !== '') &&  (updatedName.trim() !== profileUserInfo.displayName) && nameLoading ?
-                                <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>
-                                    <Loading/></View>
-                                : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editName()}/>
-                    }
-                    <TextInput defaultValue={profileUserInfo.displayName} style={{fontWeight: "bold", fontSize: 20, color: 'white',  backgroundColor: isEditable ? Colors.primaryBodyLight : null,
-                        borderRadius: isEditable ? 20 : null, paddingHorizontal: isEditable ? 10 : null,
-                    }}
-                               autoCapitalize={'words'} autoFocus={isEditable} editable={isEditable} onFocus={() => setEditable(true)}
-                               onBlur={() => {setEditable(false);
-                                   setUpdateName('');
-                               } }
-                               maxLength={23} onChangeText={(updateName) => setUpdateName(updateName)}
-                    />
-                    {/*<TextComponent bold large  color={'#6526a5'} numberOfLines={1}>{profileUserInfo.displayName}</TextComponent>*/}
-                    <Icon name={'log-out'} type={'ionicon'} size={25} color={'red'} onPress={() => loggedOut()}/>
-                </View>
+            <Header>
+                <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => props.navigation.goBack()}/>
+                <TextComponent color={'white'} medium bold center>PROFILE</TextComponent>
+                <Icon name={'log-out'} type={'ionicon'} size={35} color={'red'} onPress={() => loggedOut()}/>
 
-                <ProfileImageContainer style={{elevation: 10,
-                    shadowColor: '#000', shadowOpacity: 1,
-                    shadowRadius: 5.32,}}>
-
-                    <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/afjal.jpg')}/>
-                    <TouchableOpacity style={{position: "absolute", top: 5, left:6, backgroundColor: 'white',borderColor: 'white', borderWidth: 4, borderRadius:50}}
-                                      onPress={() => chooseProfileImage()} disabled={loading}>
-                        { loading ? <Loading/> :
-                            <Icon name={'add-photo-alternate'} type={'md'} size={24} color={'red'}
-                            />
-                        }
-                    </TouchableOpacity>
-                </ProfileImageContainer>
+            </Header>
 
 
-                <UserInfo>
+            <ScrollViewContainer showsVerticalScrollIndicator={false}>
+                <InfoContainer>
 
-                    <EachInfoWrapper>
-                        <Icon name={'call'} type={'material'} size={24} color={profileIconsColor} style={{marginRight: 10}}/>
+                    <ProfileAndUserInfoContainer>
 
-                        <TextInput defaultValue={profileUserInfo.phoneNumber} style={{fontWeight: "bold", fontSize: 16, color: 'white'
-                        }} keyboardType={'number-pad'}
+                        <ProfileImageContainer style={{elevation: 10,
+                            shadowColor: '#000', shadowOpacity: 1,
+                            shadowRadius: 5.32,}}>
 
-                                   editable={false}
-                                   maxLength={14}
-                        />
+                            <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/default-profile-image.png')}/>
+                            <TouchableOpacity style={{position: "absolute", top: 5, left:6, backgroundColor: 'white',borderColor: 'white', borderWidth: 4, borderRadius:50}}
+                                              onPress={() => chooseProfileImage()} disabled={loading}>
+                                { loading ? <Loading/> :
+                                    <Icon name={'add-photo-alternate'} type={'md'} size={24} color={'red'}
+                                    />
+                                }
+                            </TouchableOpacity>
+                        </ProfileImageContainer>
 
-                        {/*{(isEditableCellNo && updatedPhone === '') || (updatedPhone.trim() === profileUserInfo.phoneNumber) ?*/}
-                        {/*    <Icon reverse name={'close-circle-outline'} type={'ionicon'} size={15} color={'red'} onPress={() => cancelUpdatePhone()}/>*/}
-                        {/*    :  isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && !phoneLoading ?*/}
-                        {/*        <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15} color={'green'} onPress={() => updatePhoneNumber()} disabled={updatedPhone.length < 11}/> :*/}
-                        {/*        isEditableCellNo && (updatedPhone !== '') &&  (updatedPhone.trim() !== profileUserInfo.phoneNumber) && phoneLoading ?*/}
-                        {/*            <View style={{backgroundColor: 'white', padding: 6, borderRadius:50, marginLeft: 8}}>*/}
-                        {/*                <Loading/></View>*/}
-                        {/*            : <Icon raised name={'edit'} type={'material'} size={15} color={'grey'} onPress={() => editCellNo()}/>*/}
-                        {/*}*/}
-                    </EachInfoWrapper>
+                        <UserInfo>
+
+                            <EachInfoWrapper>
+                                <Icon name={'person'} type={'material'} size={30} color={profileIconsColor} style={{marginRight: 3}}/>
+
+                                <TextComponent bold color={'white'}  semiLarge>{profileUserInfo.displayName}</TextComponent>
+
+                            </EachInfoWrapper>
+
+                            <EachInfoWrapper>
+                                <Icon name={'call'} type={'material'} size={25} color={profileIconsColor} style={{marginRight: 3}}/>
+
+                                <TextComponent bold color={'white'}  medium>{profileUserInfo.phoneNumber}</TextComponent>
+
+                            </EachInfoWrapper>
+
+                        </UserInfo>
+                    </ProfileAndUserInfoContainer>
+
+                    <OpenBottomSheetButton onPress={() => UpdateNameBottomSheet.current.open()}>
+                        <Icon name={'edit'} type={'material'} size={15} color={profileIconsColor} style={{marginRight: 3}}/>
+                        <TextComponent color={'white'}>UPDATE NAME</TextComponent>
+                    </OpenBottomSheetButton>
 
 
+                </InfoContainer>
 
-                </UserInfo>
-
-
-
-            </HeaderTop>
-
-
-            <ScrollViewContainer showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
                 <BodyContainer>
 
-                    <SettingsCardContainer>
-                        <Icon name={'add-location'} type={'material'} size={30} color={'black'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium>Set your Location</TextComponent>
-                    </SettingsCardContainer>
-
-                    {/*<UpdatePassWordAndEmailContainerCard>*/}
-                    {/*    <UpdateSettingsCardLeft onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('email')}}>*/}
-                    {/*        <Icon name={'email'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>*/}
-                    {/*        <TextComponent bold medium>Update Email </TextComponent>*/}
-                    {/*    </UpdateSettingsCardLeft>*/}
-
-                    {/*    <UpdateSettingsCardRight onPress={() => {setOpenEmailOrPassWordUpdateModal(true); setUpdateType('password')}}>*/}
-                    {/*        <Icon name={'lock'} type={'material'} size={30} color={'orangered'} style={{marginRight: 10}}/>*/}
-                    {/*        <TextComponent bold medium>Update Password</TextComponent>*/}
-                    {/*    </UpdateSettingsCardRight>*/}
-
-                    {/*</UpdatePassWordAndEmailContainerCard>*/}
-
-                    <SettingsCardContainer>
-                        <Icon name={'report-problem'} type={'material'} size={30} color={'orange'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium>Facing problem? Email US</TextComponent>
-                    </SettingsCardContainer>
 
                     <SettingsCardContainer onPress={() => setTermsModal(true)}>
-                        <Icon name={'article'} type={'material'} size={30} color={'black'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium>Terms & Conditions</TextComponent>
+                        <Icon name={'article'} type={'material'} size={25} color={'white'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'white'}>Terms & Conditions</TextComponent>
+                    </SettingsCardContainer>
+
+                    <Divider backrgoundColor={'white'}/>
+
+                    <SettingsCardContainer onPress={() => mailTo()}>
+                        <Icon name={'email'} type={'material'} size={25} color={'white'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'white'}>Email us</TextComponent>
                     </SettingsCardContainer>
 
                 </BodyContainer>
             </ScrollViewContainer>
+
+            <RBSheet
+                ref={UpdateNameBottomSheet}
+                closeOnDragDown={true}
+                closeOnPressMask={true}
+                dragFromTopOnly={true}
+                height={130}
+
+                customStyles={{
+                    wrapper: {
+                        backgroundColor: "transparent"
+                    },
+                    container: style.sheetContainer,
+
+                }}
+            >
+                <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginTop: 25, paddingHorizontal: 10}}
+                           mode={'outlined'}
+                           label="Your Name"
+                           defaultValue={profileUserInfo.displayName}
+                           autoCompleteType={'name'} maxLength={23} autoCapitalize={'words'}
+                           onChangeText={(updatedName) => setUpdateName(updatedName)}
+                           theme={{ colors: { placeholder: 'lavender', text: 'lavender', primary: 'lavender', underlineColor:'transparent'}}}
+
+                           onBlur={() => setUpdateName('')}
+                           right={
+                               nameLoading ?
+                                   <TextInput.Icon name={ () =>
+                                       <ActivityIndicator color={'white'} size={'large'}/>
+
+                                   }/>
+
+
+                                   :<TextInput.Icon name={ () =>
+
+                                       <Icon raised reverse name={'cloud-upload-outline'} type={'ionicon'} size={15}
+                                             color={disableUpdateNameButton() ? 'grey' : 'green'} onPress={() => updateUserName()}
+                                             disabled={disableUpdateNameButton()}/>
+
+                                   }/>
+                           }
+
+                           left={
+                               <TextInput.Icon
+                                   name={()=>
+
+                                       <Avatar.Image size={30} source={{uri: profileUserInfo.photoURL}}/>
+                                   }
+                               />
+                           }
+                />
+
+                <UpdateNameButton disabled={disableUpdateNameButton()}>
+                    <Icon name={'edit'} type={'material'} size={20} color={profileIconsColor} style={{marginRight: 3}}/>
+                    <TextComponent color={'white'} medium bold>UPDATE NAME</TextComponent>
+                </UpdateNameButton>
+
+
+            </RBSheet>
 
 
 
@@ -303,56 +329,92 @@ backgroundColor: ${Colors.primaryBodyLight};
 
 `;
 
-const HeaderTop = styled.View`
-height: 240px;
+const Header = styled.View`
+backgroundColor: ${Colors.primaryStatusbarColor};
+paddingVertical: 10px;
+flexDirection: row;
+alignItems: center;
+justifyContent: space-between;
+paddingHorizontal: 20px;
+`
+
+const InfoContainer = styled.View`
 width:100%;
 backgroundColor: ${Colors.primaryStatusbarColor};
 paddingHorizontal: 10px;
-paddingVertical: 10px;
-
+paddingVertical: 10px
 borderBottomRightRadius: 20px;
 borderBottomLeftRadius: 20px;
 
 `;
 
-// const ProfileAndUserInfoContainer = styled.View`
-// flexDirection: row;
-// top:0;
-// alignItems: center;
-// paddingHorizontal: 10px;
-// `;
+const ProfileAndUserInfoContainer = styled.View`
+flexDirection: row;
+alignItems: center;
+
+`;
 
 const ProfileImageContainer = styled.View`
-
-height:120px;
-width:120px;
+height:110px;
+width:110px;
 backgroundColor: white;
 alignItems: center;
 justifyContent:center;
 borderRadius:60px;
 alignSelf: center;
 
-
 `;
 const ProfileImage = styled.Image`
-height:110px;
-width:110px;
-borderRadius: 55px;
+height:100px;
+width:100px;
+borderRadius: 50px;
 
 
 `;
 
 const UserInfo = styled.View`
 paddingHorizontal: 10px;
-marginVertical: 5px;
-alignItems:center;
+justifyContent: flex-start;
 overflow:hidden;
 `;
+
+
+const OpenBottomSheetButton = styled.Pressable`
+flexDirection : row;
+alignItems: center;
+marginTop: 10px;
+alignSelf: flex-end;
+backgroundColor: ${RNPColors.green400}
+paddingHorizontal: 5px;
+paddingVertical: 5px;
+borderRadius: 30px;
+`;
+
+const UpdateNameButton = styled.View`
+flexDirection : row;
+alignItems: center;
+backgroundColor: ${Colors.primaryBodyLight}
+paddingHorizontal: 10px;
+paddingVertical: 10px;
+position: absolute;
+
+alignSelf: center;
+borderRadius: 5px;
+`;
+
+const LoadingWrapper = styled.View`
+backgroundColor: ${RNPColors.green400}
+paddingHorizontal: 5px;
+paddingVertical: 5px;
+position: absolute;
+alignSelf: center;
+borderRadius: 50px;
+
+`
 
 const EachInfoWrapper = styled.View`
 flexDirection : row;
 alignItems: center;
-marginBottom: 5px;
 
 `;
 
@@ -361,7 +423,7 @@ const BodyContainer = styled.View`
 width:100%;
 paddingVertical: 15px;
 marginBottom: 50px;
-marginTop: 50px;
+
 
 `;
 
@@ -401,41 +463,12 @@ borderColor: ${Colors.primaryBodyLight};
 `;
 
 const SettingsCardContainer = styled.TouchableOpacity`
-backgroundColor: white;
 borderRadius: 15px;
-paddingHorizontal:20px;
-flexDirection: row
-paddingVertical: 15px;
-alignItems: center;
-marginVertical: 10px;
-`;
-
-const UpdatePassWordAndEmailContainerCard = styled.View`
-borderRadius: 15px;
-flexDirection: row
-paddingVertical: 20px;
-alignItems: center;
-justifyContent: space-between;
-`;
-
-const UpdateSettingsCardLeft = styled.TouchableOpacity`
-backgroundColor: white;
-paddingVertical: 10px;
-flexDirection: row;
-paddingHorizontal:20px;
-borderBottomRightRadius: 15px;
-borderTopRightRadius: 15px;
-alignItems: center;
-`;
-
-const UpdateSettingsCardRight = styled.TouchableOpacity`
-backgroundColor: white;
-borderBottomLeftRadius: 15px;
-borderTopLeftRadius: 15px;
 paddingHorizontal:20px;
 flexDirection: row
 paddingVertical: 10px;
 alignItems: center;
+
 `;
 
 
@@ -446,3 +479,22 @@ const Loading = styled.ActivityIndicator.attrs(() => ({
 
 
 }))``;
+
+
+const style = StyleSheet.create({
+    sheetContainer : {
+        backgroundColor: Colors.primaryBody,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+
+    },
+    pressable: {
+        display: 'flex',
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        alignItems: 'center',
+        overflow: 'hidden',
+
+    }
+});

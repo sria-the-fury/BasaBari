@@ -1,16 +1,14 @@
 import React, {useContext, useState} from 'react'
-import {View, Text, TouchableOpacity, ToastAndroid, ActivityIndicator} from 'react-native'
-import {Image} from "react-native-elements";
+import {View, Text, TouchableOpacity, ToastAndroid} from 'react-native'
 import styled from "styled-components";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
-import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
 import ImagePicker from "react-native-customized-image-picker";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {UserContext} from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import {Colors} from "../components/utilities/Colors";
-import {TextInput} from "react-native-paper";
+import {Avatar, TextInput} from "react-native-paper";
 
 const InitialUpdateProfile = (props) => {
     const [_, setUser] = useContext(UserContext);
@@ -97,7 +95,7 @@ const InitialUpdateProfile = (props) => {
     };
 
     const disableSubmit = () => {
-        return ( userName.length < 3 || (profileImageUri === null && getCurrentUser?.photoURL === null))
+        return ( userName.length < 3 || (profileImageUri === null || getCurrentUser?.photoURL === null))
     }
     return (
         <Container>
@@ -141,8 +139,9 @@ const InitialUpdateProfile = (props) => {
                             { getCurrentUser?.photoURL ?
                                 <ProfileImageView source={{uri: getCurrentUser.photoURL }}/> :
                                 profileImageUri ?
-                                    <ProfileImageView source={{uri: profileImageUri}}/> :  <Icon
-                                        name={'account-circle'}
+                                    <ProfileImageView source={{uri: profileImageUri}}/> :
+                                    <Icon
+                                        name={'add-photo-alternate'}
                                         type='md'
                                         color={'#512945'} size={120}
                                     />
@@ -172,8 +171,9 @@ const InitialUpdateProfile = (props) => {
 
                            left={
                                <TextInput.Icon
-                                   name={()=>
-
+                                   name={() =>
+                                       getCurrentUser?.photoURL ?
+                                           <Avatar.Image size={30} source={{uri: getCurrentUser.photoURL}}/> :
                                        <Icon
                                            name='person'
                                            type='md'
@@ -181,28 +181,29 @@ const InitialUpdateProfile = (props) => {
                                    }
                                />
                            }
+
+                           right={
+                               <TextInput.Icon
+                                   name={() =>
+                                   updateLoading ?
+                                       <LoadingView>
+                                           <LottieView source={require('../../assets/lottie-animations/loading.json')} autoPlay loop style={{width: 45}} />
+                                       </LoadingView>
+                                       :
+                                           <Icon reverse raised
+                                                 disabledStyle={{backgroundColor: Colors.primaryBody}}
+                                                 reverseColor={disableSubmit() ? Colors.primaryBodyLight : 'green'}
+                                                 color={disableSubmit() ? Colors.primaryBodyLight : Colors.primaryBody}
+                                               name='cloud-upload'
+                                               type='ionicon'
+                                               size={25}
+                                               disabled={disableSubmit() || loading || updateLoading}
+                                               onPress={() => updateProfile()}/>
+                                   }
+                               />
+                           }
                 />
 
-
-                { updateLoading ?
-                    <LoadingView>
-                        <LottieView source={require('../../assets/lottie-animations/loading.json')} autoPlay loop style={{width: 45}} />
-                    </LoadingView>
-                    :
-                    <TouchableOpacity disabled={disableSubmit() || loading || updateLoading} onPress={() => updateProfile()}
-                                      style={{flexDirection: 'row', alignItems: 'center', alignSelf: "center", backgroundColor: disableSubmit() ?  'white' : '#31bae0', padding: 6, borderRadius: 5}}>
-                        { getCurrentUser && getCurrentUser.photoURL ?
-                            <Image  PlaceholderContent={<ActivityIndicator style={{color: 'blue'}}/>}
-                                    source={{uri: getCurrentUser.photoURL}} style={{height: 25, width: 25, borderRadius:50, marginRight: 5}}/>
-
-                            :
-
-                            <Icon name={'person'} type={'md'} color={disableSubmit() ? 'grey' : 'white'} size={25} style={{ marginRight: 5}}/>
-                        }
-                        <TextComponent semiLarge bold color={disableSubmit() ? 'grey' : 'white'}>SET PROFILE</TextComponent>
-
-                    </TouchableOpacity>
-                }
 
 
             </BodyContainer>
@@ -262,7 +263,7 @@ marginBottom: 30px;
 
 
 const Loading = styled.ActivityIndicator.attrs(() => ({
-    color: 'white',
+    color: 'lavender',
     size: 'large',
 
 
@@ -281,7 +282,6 @@ height: 260px;
 backgroundColor: white;
  alignItems: center;
 
-
 `;
 
 
@@ -293,7 +293,7 @@ width: 100%;
 flex: 1;
 
 justifyContent: center;
-backgroundColor: #512945;
+backgroundColor: ${Colors.primaryBodyLight};
 paddingVertical: 40px;
 paddingHorizontal: 20px;
 alignSelf: center;

@@ -103,8 +103,6 @@ const Firebase = {
         try {
             const user = await firestore().collection('users').doc(uid).get();
 
-
-
             if(user.exists){
 
                 return user.data();
@@ -139,8 +137,8 @@ const Firebase = {
 
     signInWithPhoneNumber: async (phoneNumber) => {
         try {
-            const confirmation = await auth().signInWithPhoneNumber(phoneNumber,true);
-            return confirmation;
+            return await auth().signInWithPhoneNumber(phoneNumber,true);
+
         } catch (error) {
             console.log(error.message);
             ToastAndroid.show(error.message, ToastAndroid.LONG);
@@ -169,13 +167,13 @@ const Firebase = {
                         roomNumbers: listingData.roomNumbers,
                         facilities: listingData.facilities,
                         rentPerMonth: listingData.rentPerMonth.replace(/[^0-9]/g, ''),
-                        availableForBachelor: listingData.forBachelor,
+                        forBachelor: listingData.forBachelor,
                         forFamily: listingData.forFamily,
                         moreDetails: listingData.moreDetails,
                         listingId: listingId,
                         isNegotiable: listingData.isNegotiable,
-                        images: []
-
+                        images: [],
+                        location: listingData.location
 
                     }
                 );
@@ -222,8 +220,6 @@ const Firebase = {
             return true;
 
 
-
-
         } catch (e) {
             console.log(e.message+'@uploading Listing Images');
 
@@ -233,40 +229,6 @@ const Firebase = {
     },
 
     //update related functions
-    updateEmail: async (email) => {
-        try {
-            const currentUser = Firebase.getCurrentUser();
-
-            await currentUser.updateEmail(email);
-            await firestore().collection('users').doc(currentUser.uid).update({
-                email: email
-            });
-
-
-            return true;
-
-
-        } catch (e) {
-            console.log(e.message);
-
-        }
-
-        return false;
-
-    },
-
-    updatePassword: async (password) => {
-
-        try {
-            await Firebase.getCurrentUser().updatePassword(password);
-
-            return true;
-        } catch (error) {
-            console.log(error.message+'@updatePassWord');
-
-        }
-        return false;
-    },
 
     updateUserProfileName: async (userName) => {
         try {
@@ -281,8 +243,7 @@ const Firebase = {
                 userName: userName,
             });
 
-            if(currentUserName === userName)
-                return true;
+            if(currentUserName === userName) return true;
 
 
 
@@ -291,18 +252,6 @@ const Firebase = {
         }
     },
 
-    updateProfilePhoneNumber: async (phoneNumber) => {
-        try {
-            const uid = Firebase.getCurrentUser().uid;
-            await firestore().collection('users').doc(uid).update({
-                phoneNumber: phoneNumber,
-            });
-
-        }catch (e) {
-            console.log(e.message+'@updateProfilePhoneNumber');
-
-        }
-    },
 
     updateFavoriteListing: async (listingId, favoriteUserId, updateType) => {
         try{
@@ -338,7 +287,6 @@ const Firebase = {
 
             if(removedImageId.length !== 0){
                 _.each(removedImageId, async (imageId) => {
-                    console.log('imageId=>', imageId);
                     const imageRef = storage().ref(`listingImages/${listingId}`).child(imageId);
                     await imageRef.delete();
 
@@ -346,7 +294,7 @@ const Firebase = {
             }
 
             if(newImages.length !== 0) {
-                console.log('new images');
+
                 _.each(newImages,  async (image) => {
                     const photo = await Firebase.getBlob(image.imageUrl);
 
@@ -363,8 +311,6 @@ const Firebase = {
                 });
 
             }
-
-
 
 
         } catch (e) {
@@ -410,11 +356,12 @@ const Firebase = {
     },
 
     updateListingRentType: async (updateForBachelor, updateForFamily ,listingId) => {
+
         try {
             await firestore().collection('listings').doc(listingId).update({
-                availableForBachelor: updateForFamily,
+                forBachelor: updateForBachelor,
                 forFamily: updateForFamily
-            } );
+            });
 
         } catch (e) {
             console.log(e.message+'@updateListingRentType');
@@ -457,6 +404,19 @@ const Firebase = {
         }
     },
 
+    updateListingLocation: async (updatedLocation, listingId) => {
+        try {
+            await firestore().collection('listings').doc(listingId).update({
+                location: updatedLocation
+            });
+
+        } catch (e) {
+            console.log(e.message+'@updateListingMoreDetails');
+
+        }
+
+    },
+
 
 
 
@@ -476,7 +436,106 @@ const Firebase = {
             console.log(e.message+'@removeListing');
 
         }
-    }
+    },
+
+
+    //messaging functions
+
+    sendMessage: async (listingOwnerId, interestedTenantId, message, sharedImages, listingId, messageId) => {
+
+        try {
+
+            const isSendMessage =  await firestore().collection('messages').doc(messageId).set({
+                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: interestedTenantId, id: uuidv4(), read: false}),
+                listingOwnerId,
+                interestedTenantId,
+                sharedImages,
+                listingId,
+                createdAt: new Date(),
+                updatedAt: new Date()
+
+            });
+
+            await firestore().collection('listings').doc(listingId).set(
+                {
+                    interestedTenantId: firestore.FieldValue.arrayUnion(interestedTenantId)
+                }, {merge: true})
+
+
+        }catch (e){
+            ToastAndroid.show(e.message+"@sendingMessage", ToastAndroid.LONG);
+        }
+
+    },
+
+    sendMessageAtMessageScreen: async  (messageId, currentUserId, message) => {
+
+        try{
+            await firestore().collection('messages').doc(messageId).update({
+                messages: firestore.FieldValue.arrayUnion({ message, sentAt: new Date(), senderId: currentUserId, id: uuidv4(), read: false}),
+                updatedAt: new Date()
+            });
+
+        } catch (e) {
+            ToastAndroid.show(e.message+'@ sent from message', ToastAndroid.LONG);
+        }
+
+    },
+
+    readMessages: async (messages, messageId, read) =>{
+
+        try{
+            const readMessages = _.filter(messages, {read: true});
+            const unreadMessages = _.filter(messages, {read: false});
+
+            const readUnreadMessages = _.each(unreadMessages, (message) => {
+                return _.assign(message, {read: true, readAt: _.now()})
+            });
+
+            const combineMessages = _.concat(readMessages, readUnreadMessages);
+
+            if(messages.length === combineMessages.length) {
+                await firestore().collection('messages').doc(messageId).update({
+                    messages: combineMessages
+                });
+            }
+
+        } catch (e) {
+            ToastAndroid.show(e.message+'@ read from message', ToastAndroid.LONG);
+        }
+    },
+
+    createNotification: async (notifyTo, notifyFrom, read, messageId, listingId, content) => {
+        try{
+            await firestore().collection('notifications').add({
+                notifyAt: _.now(),
+                notifyFrom,
+                notifyTo,
+                read,
+                messageId,
+                listingId,
+                content,
+                type: 'message'
+            });
+
+        }
+        catch (e) {
+            console.log(e.message);
+
+        }
+    },
+
+
+    readNotifications: async (notifications, read) => {
+        try{
+            _.each(notifications, async (notification) => await firestore().collection('notifications').doc(notification.id).update({read}))
+
+        }
+        catch (e) {
+            console.log(e.message);
+        }
+    },
+
 
 
 }

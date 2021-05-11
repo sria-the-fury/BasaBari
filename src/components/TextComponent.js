@@ -10,7 +10,7 @@ const Text = styled.Text`
   margin: ${(props) => props.margin ?? 0};
   padding: ${(props) => props.padding ?? 0};
 
-  ${({title, large,semiLarge, medium, small, tiny}) => {
+  ${({title, large, semiLarge, medium, mediumPro, small, tiny, extraTiny}) => {
     switch (true) {
       case title:
         return 'font-size: 32px;';
@@ -18,6 +18,8 @@ const Text = styled.Text`
         return 'font-size: 24px;';
       case semiLarge:
         return 'font-size: 20px;';
+      case mediumPro:
+        return 'font-size: 18px;';
       case medium:
         return 'font-size: 16px;';
 
@@ -25,6 +27,8 @@ const Text = styled.Text`
         return 'font-size: 13px';
       case tiny:
         return 'font-size: 11px';
+      case extraTiny:
+        return 'font-size: 8px';
       default:
         return 'font-size: 14px;';
     }

@@ -8,6 +8,8 @@ import {UserContext} from "../context/UserContext";
 import MyListingScreen from "../screens/MyListingsScreen";
 import InitialUpdateProfile from "../screens/InitialUpdateProfile";
 import {ListingDetailsScreen} from "../screens/ListingDetailsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import MessagesScreen from "../screens/MessagesScreen";
 
 
 export default function AppStackScreen() {
@@ -27,12 +29,18 @@ export default function AppStackScreen() {
                     ...TransitionPresets.ModalSlideFromBottomIOS
                 }}/>
                 <AppStack.Screen name={'MyListings'} component={MyListingScreen} options={{
-                    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical'
+                    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                 }}/>
 
                 <AppStack.Screen name={'ListingDetails'} component={ListingDetailsScreen} options={{
                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                 }}/>
+
+                <AppStack.Screen name={'ProfileScreen'} component={ProfileScreen}
+                                 options={{
+                                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
+                                 }}/>
+                <AppStack.Screen name={'MessagesScreen'} component={MessagesScreen}/>
 
 
             </AppStack.Navigator>
@@ -44,7 +52,7 @@ export default function AppStackScreen() {
                 <AppStack.Screen name={'InitialProfileUpdate'} component={InitialUpdateProfile}
                                  options={{
                                      ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
-                                 }}/>/>
+                                 }}/>
             </AppStack.Navigator>
         )
 
