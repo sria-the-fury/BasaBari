@@ -109,8 +109,9 @@ export default function MainStackScreen() {
             if(route.name === 'Messages'){
                 return (
                     <View>
-                        <Icon name={'chatbubble-ellipses'} type='ionicon' size={30} color={'#666666' }/>
-                        {notifications?.length > 0 ? <Badge status={'error'} containerStyle={{position: 'absolute', right: -10, top: -5,borderColor: Colors.primaryBody, borderWidth: 2, borderRadius:50}}
+                        <Icon name={'chatbubble-ellipses'} type='ionicon' size={30} color={focused ? 'white' :'#666666'}/>
+                        {notifications?.length > 0 ?
+                            <Badge status={'error'} containerStyle={{position: 'absolute', right: -10, top: -5,borderColor: Colors.primaryBody, borderWidth: 2, borderRadius:50}}
                                value={<Text style={{color:'white', fontSize: 10}}>{notifications.length}</Text>} /> : null}
                     </View>
                 )
@@ -144,14 +145,7 @@ export default function MainStackScreen() {
                                   }
                               })}
             />
-            <MainStack.Screen name={'Messages'} component={MessagesScreen}
-                              listeners={({navigation}) => ({
-                                  tabPress: async (event) => {
-                                      event.preventDefault();
-                                      navigation.navigate("MessagesScreen");
-                                  }
-                              })}
-            />
+            <MainStack.Screen name={'Messages'} component={MessagesScreen}/>
             <MainStack.Screen name={'Profile'} component={ProfileScreen}
                               listeners={({navigation}) => ({
                                   tabPress: event => {

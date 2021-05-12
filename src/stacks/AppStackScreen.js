@@ -40,7 +40,6 @@ export default function AppStackScreen() {
                                  options={{
                                      ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                                  }}/>
-                <AppStack.Screen name={'MessagesScreen'} component={MessagesScreen}/>
 
 
             </AppStack.Navigator>

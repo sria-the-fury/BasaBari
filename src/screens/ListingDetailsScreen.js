@@ -10,6 +10,7 @@ import firestore from "@react-native-firebase/firestore";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {v4 as uuidv4} from "uuid";
+import {FAB} from "react-native-paper";
 
 
 export const ListingDetailsScreen = (props) => {
@@ -85,6 +86,8 @@ export const ListingDetailsScreen = (props) => {
         if(isCurrentUserInterested) navigation.navigate('Messages');
         else SendMessageBottomSheet.current.open();
     }
+
+    const [openSpeedDial, setSpeedDial] = useState(false)
 
     return (
         <Container>
@@ -232,14 +235,39 @@ export const ListingDetailsScreen = (props) => {
                         <TextComponent bold medium color={'white'}>EDIT LISTING</TextComponent>
                     </EditListingButton>
                     :
-                    <ContactAndMessageContainer>
-                        <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
-                            <Icon name={'call'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}/>
-                            <TextComponent bold medium color={'white'}>CONTACT WITH LANDLORD</TextComponent>
-                        </ContactContainer>
-                        <Icon name={'chatbubble-ellipses-outline'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}
-                              onPress={() => isSendMessageOrGoMessageScreen()}/>
-                    </ContactAndMessageContainer>
+                    <FAB.Group
+                        fabStyle={{backgroundColor: Colors.buttonPrimary}}
+                        open={openSpeedDial}
+                        icon={openSpeedDial ? 'close' : 'phone'}
+                        actions={[
+                            {
+                                icon: 'phone',
+                                label: 'Call Landlord',
+                                style: {backgroundColor: Colors.buttonPrimary},
+                                onPress: () => makeCall(postedUserInfo.phoneNumber),
+                            },
+                            {
+                                icon: 'chat',
+                                label: isCurrentUserInterested ? 'Go to Messages' :'Message Landlord',
+                                style: {backgroundColor: Colors.buttonPrimary},
+                                onPress: () => isSendMessageOrGoMessageScreen(),
+                            }
+                        ]}
+                        onStateChange={() => setSpeedDial(!openSpeedDial)}
+                        onPress={() => {
+                            if (openSpeedDial) {
+                                // do something if the speed dial is open
+                            }
+                        }}
+                    />
+                    // <ContactAndMessageContainer>
+                    //     <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
+                    //         <Icon name={'call'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}/>
+                    //         <TextComponent bold medium color={'white'}>CONTACT WITH LANDLORD</TextComponent>
+                    //     </ContactContainer>
+                    //     <Icon name={'chatbubble-ellipses-outline'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}
+                    //           onPress={() => isSendMessageOrGoMessageScreen()}/>
+                    // </ContactAndMessageContainer>
 
                 }
 
