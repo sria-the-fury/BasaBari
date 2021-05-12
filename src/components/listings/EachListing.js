@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, FlatList, View, StyleSheet, Vibration} from 'react-native';
+import {ActivityIndicator, FlatList, View, StyleSheet, Vibration, ToastAndroid} from 'react-native';
 import {Divider, Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
@@ -74,14 +74,17 @@ export const EachListing = (props) => {
         Vibration.vibrate(20);
 
         try{
-            const isCurrentUserFavList = usersInFav ? usersInFav.find(userId => userId === currentUserId) : null;
-            if(currentUserId === isCurrentUserFavList){
+            if(isCurrentUserFavList){
                 const updateType= 'REMOVE'
 
                 await firebase.updateFavoriteListing(listingId, currentUserId, updateType);
+                ToastAndroid.show('Removed from favorite', ToastAndroid.LONG);
 
             }
-            else await firebase.updateFavoriteListing(listingId, currentUserId);
+            else {
+                await firebase.updateFavoriteListing(listingId, currentUserId);
+                ToastAndroid.show('Added as favorite', ToastAndroid.LONG);
+            }
         } catch (e) {
             alert(e.message);
 
@@ -89,7 +92,7 @@ export const EachListing = (props) => {
     }
 
 
-    const isCurrentUserFavList = usersInFav ? usersInFav.includes(currentUserId) : false;
+    const isCurrentUserFavList = usersInFav?.includes(currentUserId) ?? false;
 
     // onPress={() => removeListing(item.id, images)}
 

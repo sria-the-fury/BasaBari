@@ -93,9 +93,7 @@ export default function MessagesScreen(props) {
             });
 
         const notificationSubscriber = firestore().collection('notifications')
-            .where('notifyTo', '==', currentUserId)
-            .where('type', '==', 'message')
-            .where('read', '==', false).onSnapshot(
+            .where('type', '==', 'message').onSnapshot(
                 docs=> {
                     let data=[];
                     if(docs) {
@@ -164,7 +162,7 @@ export default function MessagesScreen(props) {
 
         if(findListingData && UserInfo){
             return(
-                <ListItem bottomDivider containerStyle={{overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 5}}>
+                <ListItem bottomDivider containerStyle={{overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 5, backgroundColor: 'rgba(0,0,0,0)'}}>
                     <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
                     <ListItem.Content>
                         <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
@@ -224,6 +222,15 @@ export default function MessagesScreen(props) {
                     )
                 }
             </ScrollView>
+
+            {filterMessageByCurrentUser?.length === 0 ?
+            <View style={{flex: 1}}>
+                <TextComponent center medium>
+                    You have no message
+                </TextComponent>
+            </View> : null
+
+            }
 
         </Container>
 

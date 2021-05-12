@@ -1,5 +1,14 @@
 import React, {useEffect, useRef, useState, useContext} from "react";
-import {View, ScrollView, FlatList, Linking, ActivityIndicator, StyleSheet, ToastAndroid} from "react-native";
+import {
+    View,
+    ScrollView,
+    FlatList,
+    Linking,
+    ActivityIndicator,
+    StyleSheet,
+    ToastAndroid,
+    Vibration
+} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Divider, Icon, Image} from "react-native-elements";
@@ -35,7 +44,7 @@ export const ListingDetailsScreen = (props) => {
 
     }, []);
 
-    const {images, roomNumbers, facilities, forBachelor, forFamily,address, rentPerMonth, isNegotiable, moreDetails, location, interestedTenantId} = listingData;
+    const {images, roomNumbers, facilities, forBachelor, forFamily, userId , usersInFav, address, rentPerMonth, isNegotiable, moreDetails, location, interestedTenantId} = listingData;
 
 
 
@@ -87,7 +96,29 @@ export const ListingDetailsScreen = (props) => {
         else SendMessageBottomSheet.current.open();
     }
 
-    const [openSpeedDial, setSpeedDial] = useState(false)
+    const [openSpeedDial, setSpeedDial] = useState(false);
+
+    const isCurrentUserFavList = usersInFav.includes(currentUserId) ?? false;
+    const addRemoveFavorite = async (listingId) => {
+        Vibration.vibrate(20);
+
+        try{
+            if(isCurrentUserFavList){
+                const updateType= 'REMOVE'
+
+                await firebase.updateFavoriteListing(listingId, currentUserId, updateType);
+                ToastAndroid.show('Removed from favorite', ToastAndroid.LONG);
+
+            }
+            else {
+                await firebase.updateFavoriteListing(listingId, currentUserId);
+                ToastAndroid.show('Added as favorite', ToastAndroid.LONG);
+            }
+        } catch (e) {
+            alert(e.message);
+
+        }
+    }
 
     return (
         <Container>
@@ -96,6 +127,11 @@ export const ListingDetailsScreen = (props) => {
             <ModalView>
                 <ModalHeader>
                     <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => navigation.goBack()}/>
+                    { currentUserId !== userId ?
+                        <Icon name={isCurrentUserFavList ? 'heart' : 'heart-outline'} type={'ionicon'} size={35}
+                              style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'white'}
+                              onPress={() => addRemoveFavorite(listingId)}/> : null
+                    }
                     <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                 </ModalHeader>
 
@@ -291,7 +327,7 @@ export const ListingDetailsScreen = (props) => {
                                         defaultValue={message}
                                         onChangeText={(message) => setMessage(message)}
                         />
-                        { sendingMessage ?  <ActivityIndicator size={'small'} color={'white'}/>
+                        { sendingMessage ?  <ActivityIndicator size={'large'} color={'white'}/>
                             :
                             <Icon name={'send'} type={'md'} size={35} style={{marginLeft: 5}} color={'white'} onPress={() => SendMessageToLandlord()}/>
                         }

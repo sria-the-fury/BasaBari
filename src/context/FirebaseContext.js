@@ -536,6 +536,23 @@ const Firebase = {
         }
     },
 
+    deleteMessage: async (messageId, listingId, interestedTenantId, deleteNotifications) => {
+        try{
+            // await firestore().collection('notifications').doc().delete(); later try to delete all read notifications
+            await firestore().collection('listings').doc(listingId).update(
+                {
+                    interestedTenantId: firestore.FieldValue.arrayRemove(interestedTenantId)
+                });
+
+            await firestore().collection('messages').doc(messageId).delete();
+            _.each(deleteNotifications, async (notification) => await firestore().collection('notifications').doc(notification.id).delete());
+
+        } catch (e){
+            ToastAndroid.show(e.message+' @deleting message', ToastAndroid.SHORT);
+        }
+
+    }
+
 
 
 }
