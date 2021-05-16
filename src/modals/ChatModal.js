@@ -37,7 +37,7 @@ export const ChatModal = (props) => {
             // ScrollViewRef.current.scrollToEnd({animated: true});
             await firebase.sendMessageAtMessageScreen(messageId, currentUserId, sendMessage);
             setSendMessage('');
-            await firebase.createNotification(ToUserInfo.id, currentUserId, false, messageId);
+            await firebase.createNotification(ToUserInfo.id, currentUserId, false, messageId, IncludeListing.id, message);
 
         } catch (e) {
             ToastAndroid.show(e.message+ '@front sent msg', ToastAndroid.LONG);
@@ -113,7 +113,7 @@ export const ChatModal = (props) => {
                     <ListingInfo>
                         <Icon name={'home'} type={'ionicon'} size={10} color={'white'} style={{marginRight: 5}}/>
                         <TextComponent style={{ flex:1,
-                            flexWrap: 'wrap'}} tiny color={'white'} numberOfLines={2}>  {IncludeListing.address}, {IncludeListing.location.city}</TextComponent>
+                            flexWrap: 'wrap'}} tiny color={'white'} numberOfLines={3}>  {IncludeListing.address}, {IncludeListing.location.city}</TextComponent>
                     </ListingInfo>
 
                 </ModalHeader>

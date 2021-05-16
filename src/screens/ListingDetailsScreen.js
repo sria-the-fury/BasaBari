@@ -20,6 +20,7 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {v4 as uuidv4} from "uuid";
 import {Avatar, FAB} from "react-native-paper";
+import {ListingDeleteConfirmModal} from "../modals/ListingDeleteConfirmModal";
 
 
 export const ListingDetailsScreen = (props) => {
@@ -98,7 +99,7 @@ export const ListingDetailsScreen = (props) => {
 
     const [openSpeedDial, setSpeedDial] = useState(false);
 
-    const isCurrentUserFavList = usersInFav.includes(currentUserId) ?? false;
+    const isCurrentUserFavList = usersInFav?.includes(currentUserId) ?? false;
     const addRemoveFavorite = async (listingId) => {
         Vibration.vibrate(20);
 
@@ -118,7 +119,10 @@ export const ListingDetailsScreen = (props) => {
             alert(e.message);
 
         }
-    }
+    };
+
+    //open Delete Confirm Modal
+    const [openDeleteConfirmModal, setDeleteConfirmModal] = useState(false);
 
     return (
         <Container>
@@ -135,11 +139,20 @@ export const ListingDetailsScreen = (props) => {
                     <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                 </ModalHeader>
 
-                <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1, height: '100%'}}>
+                <ScrollView showsVerticalScrollIndicator={false}>
 
-                    <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
-                              style={{marginTop: 5}}
-                              showsHorizontalScrollIndicator={false}/>
+                    { images?.length > 0 ?
+                        <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
+                                  style={{marginTop: 5}}
+                                  showsHorizontalScrollIndicator={false}/> :
+                        <View style={{flexDirection: 'row', marginTop: 5}}>
+                            <ListingsImagesContainer/>
+                            <ListingsImagesContainer/>
+                            <ListingsImagesContainer/>
+                        </View>
+                    }
+
+
 
                     <AddressContainer>
                         <Icon name={'home'} type={'ionicon'} size={25} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
@@ -265,29 +278,51 @@ export const ListingDetailsScreen = (props) => {
 
                 </ScrollView>
 
-                { !currentUserListings ?
-                    <PostedBy>
-                        <View>
-                            <Avatar.Image size={35} source={{uri: postedUserInfo?.profilePhotoUrl}}/>
-                            { postedUserInfo?.isOnline ?
-                                <View style={{position: 'absolute', top: 0, right: 0, backgroundColor: 'white',
-                                    borderColor: 'white', borderRadius: 6, borderWidth: 2, height: 12, width: 12}}>
+                <PostedBy>
+                    <View>
+                        <Avatar.Image size={35} source={{uri: postedUserInfo?.profilePhotoUrl}}/>
+                        { postedUserInfo?.isOnline ?
+                            <View style={{position: 'absolute', top: 0, right: 0, backgroundColor: 'white',
+                                borderColor: 'white', borderRadius: 6, borderWidth: 2, height: 12, width: 12}}>
 
-                                    <View style={{backgroundColor: '#18f73d', height: 8, width: 8, borderRadius: 4}}/>
-                                </View> : null
-                            }
-                        </View>
-                        <TextComponent medium color={'white'}>  {postedUserInfo.userName}</TextComponent>
+                                <View style={{backgroundColor: '#18f73d', height: 8, width: 8, borderRadius: 4}}/>
+                            </View> : null
+                        }
+                    </View>
+                    <TextComponent medium color={'white'}>  {postedUserInfo.userName} {currentUserListings ? <Icon name={'home'} color={Colors.appIconColor} type={'ionicon'} size={13} style={{marginLeft: 2}}/> : null}</TextComponent>
 
-                    </PostedBy> : null
-                }
+                </PostedBy>
 
 
                 { currentUserListings ?
-                    <EditListingButton onPress={() => setListingUpdateModal(true)}>
-                        <Icon name={'mode-edit'} type={'md'} size={25} style={{marginRight: 5}} color={'white'}/>
-                        <TextComponent bold medium color={'white'}>EDIT LISTING</TextComponent>
-                    </EditListingButton>
+                    // <EditListingButton onPress={() => setListingUpdateModal(true)}>
+                    //     <Icon name={'mode-edit'} type={'md'} size={25} style={{marginRight: 5}} color={'white'}/>
+                    //     <TextComponent bold medium color={'white'}>EDIT LISTING</TextComponent>
+                    // </EditListingButton>
+
+                    <FAB.Group
+                        fabStyle={{backgroundColor: Colors.buttonPrimary}}
+                        open={openSpeedDial}
+                        icon={openSpeedDial ? 'close' : 'home-edit'}
+                        actions={[
+                            // {
+                            //     icon: 'delete',
+                            //     label: 'Delete Listing',
+                            //     style: {backgroundColor: 'red'},
+                            //     onPress: () => {
+                            //         Vibration.vibrate(30);
+                            //         setDeleteConfirmModal(true)}
+                            // },
+                            {
+                                icon: 'home-edit',
+                                label: 'Edit Listing',
+                                style: {backgroundColor: Colors.buttonPrimary},
+                                onPress: () => setListingUpdateModal(true),
+                            }
+                        ]}
+                        onStateChange={() =>
+                            setSpeedDial(!openSpeedDial)}
+                    />
                     :
                     <FAB.Group
                         fabStyle={{backgroundColor: Colors.buttonPrimary}}
@@ -357,6 +392,8 @@ export const ListingDetailsScreen = (props) => {
             <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
                                  listingsData={listingData}
             />
+            {/*<ListingDeleteConfirmModal modalVisible={openDeleteConfirmModal} actionProps={{itemId: listingId, images: images}} navigation={navigation}*/}
+            {/*                           modalHide={setDeleteConfirmModal} listingName={address}/>*/}
         </Container>
     );
 };
@@ -366,18 +403,10 @@ const renderImage= (image) => {
     return(
         <View style={{marginHorizontal:15}}>
             <Image source={{uri: image.imageUrl}} style={{ height: 250, width: 250, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color={'white'}/>}/>
-
         </View>
     )
 
 };
-
-const ListingsImagesContainer = styled.Image`
-height: 250px;
-width: 250px;
-borderRadius: 10px;
-
-`;
 
 const StatusBarAndTopHeaderBGColor = Colors.primaryStatusbarColor;
 const Container = styled.SafeAreaView`
@@ -580,7 +609,15 @@ paddingHorizontal: 10px;
 
 paddingVertical: 5px;
 
-`
+`;
+
+const ListingsImagesContainer = styled.View`
+height:250px;
+width:250px;
+backgroundColor: #d8d4d4;
+borderRadius: 10px;
+marginHorizontal: 10px;
+`;
 
 const style = StyleSheet.create({
     sheetContainer : {

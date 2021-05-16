@@ -120,7 +120,7 @@ export const EachListing = (props) => {
     };
 
     //open Delete Confirm Modal
-    const [openDeleteConfirmModal, setConfirmModal] = useState(false);
+    const [openDeleteConfirmModal, setDeleteConfirmModal] = useState(false);
 
     // const fadeAnim = useRef(new Animated.Value(0)).current;
     // const windowWidth = Dimensions.get('window').width;
@@ -285,7 +285,7 @@ export const EachListing = (props) => {
 
                 }}>
 
-                <DeleteContainer onPress={() => {ListingsBottomSheet.current.close(); setConfirmModal(true)}}>
+                <DeleteContainer onPress={() => {ListingsBottomSheet.current.close(); setDeleteConfirmModal(true)}}>
                     <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
                     <TextComponent  medium color={'white'}>DELETE </TextComponent>
                 </DeleteContainer>
@@ -303,7 +303,7 @@ export const EachListing = (props) => {
                                  listingsData={EditListingInfo}/>
 
             <ListingDeleteConfirmModal modalVisible={openDeleteConfirmModal} actionProps={{itemId: item.id, images: item.images}}
-                                       modalHide={setConfirmModal} listingName={item.address}/>
+                                       modalHide={setDeleteConfirmModal} listingName={item.address}/>
         </CardsContainer>
 
     )

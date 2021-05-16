@@ -422,19 +422,20 @@ const Firebase = {
 
     //remove functions go here
 
-    removeListing: async (listingId, storageImages) => {
+    removeListing: async (listingId, storageImages, messages, notifications) => {
         try{
-            await firestore().collection('listings').doc(listingId).delete();
             //remove this listings images when remove the listings
             _.each(storageImages, async (image) => {
                 const imageRef = storage().ref(`listingImages/${listingId}`).child(image.imageId);
                 await imageRef.delete();
             });
+            await firestore().collection('listings').doc(listingId).delete();
 
+            _.each(messages, async (message) => await firestore().collection('messages').doc(message.id).delete());
+            _.each(notifications, async (notification) => await firestore().collection('notifications').doc(notification.id).delete());
 
         }catch (e) {
             console.log(e.message+'@removeListing');
-
         }
     },
 
