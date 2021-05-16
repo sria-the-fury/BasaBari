@@ -178,11 +178,20 @@ export const EachListing = (props) => {
                     :
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
-                        <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+                        <View>
+                            <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+                            { postedUser?.isOnline ?
+                                <View style={{position: 'absolute', top: -3, right: -5, backgroundColor: 'white',
+                                    borderColor: 'white', borderRadius: 5, borderWidth: 2, height: 10, width: 10}}>
+
+                                    <View style={{backgroundColor: '#18f73d', height: 6, width: 6, borderRadius: 6}}/>
+                                </View> : null
+                            }
+                        </View>
+
                         <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                 }
-
 
 
             </TimeContainer>

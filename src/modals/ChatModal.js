@@ -1,8 +1,17 @@
 import React, {useContext, useRef, useState} from "react";
-import {Modal, ScrollView, View, StyleSheet, ToastAndroid, Linking, Pressable, Vibration} from "react-native";
+import {
+    Modal,
+    ScrollView,
+    View,
+    StyleSheet,
+    ToastAndroid,
+    Linking,
+    Vibration,
+    ImageBackground,
+} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {Icon} from "react-native-elements";
+import { Icon} from "react-native-elements";
 import {Avatar} from "react-native-paper";
 import {Colors} from "../components/utilities/Colors";
 import _ from 'lodash';
@@ -18,6 +27,8 @@ export const ChatModal = (props) => {
     const firstName = ToUserInfo.userName.split(' ');
 
     const [sendMessage, setSendMessage] = useState('');
+
+    console.assert(ToUserInfo.isOnline, 'Hello');
 
 
     const SendMessage = async (messageId) => {
@@ -56,8 +67,16 @@ export const ChatModal = (props) => {
 
     const cellularCall = async (number) => {
         await Linking.openURL('tel:'+number);
-    }
+    };
 
+    const LastSeen = (time) => {
+        const getDayDifference =  Math.round((new Date().getTime() - new Date(time).getTime())/(1000*3600*24));
+        return(
+            <TextComponent extraTiny color={'white'} style={{ marginLeft: 3}}>
+                {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
+            </TextComponent>
+        )
+    };
 
     return (
         <Modal
@@ -72,68 +91,95 @@ export const ChatModal = (props) => {
                 <ModalHeader style={{backgroundColor: Colors.primaryBody}}>
                     <Icon name={'chevron-down-outline'} type={'ionicon'} size={35} color={ 'white'} onPress={() => modalHide(false)}/>
 
-                    <NameAndAvatar>
-                        <Icon name={'call'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'white'} onPress={() => cellularCall(ToUserInfo.phoneNumber)}/>
-                        <TextComponent bold semiLarge color={'white'}>  {firstName[0]}</TextComponent>
+                    <NameAndOnlineStatus>
+                        <NameAndPhone>
+                            <Icon name={'call'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'white'} onPress={() => cellularCall(ToUserInfo.phoneNumber)}/>
+                            <TextComponent bold semiLarge color={'white'}>  {firstName[0]}</TextComponent>
+                        </NameAndPhone>
 
-                    </NameAndAvatar>
+                        <IsUserOnline>
+                            <Icon name={ToUserInfo.isOnline ? 'ellipse' : 'ellipse-outline'} type={'ionicon'} size={ToUserInfo.isOnline ? 10 : 8} color={'#18f73d'}/>
+                            {
+                                ToUserInfo.isOnline ? <TextComponent tiny color={'white'} style={{marginLeft: 2}}>
+                                        Online
+                                    </TextComponent> :
+                                    !ToUserInfo.isOnline && ToUserInfo.lastSeen ? LastSeen(ToUserInfo.lastSeen): null
+                            }
+                        </IsUserOnline>
+
+
+                    </NameAndOnlineStatus>
 
                     <ListingInfo>
                         <Icon name={'home'} type={'ionicon'} size={10} color={'white'} style={{marginRight: 5}}/>
-                        <TextComponent left style={{ flex:1,
-                            flexWrap: 'wrap'}} numberOfLines={2} tiny color={'white'} multiline={true}>  {IncludeListing.address}, {IncludeListing.location.city}</TextComponent>
+                        <TextComponent style={{ flex:1,
+                            flexWrap: 'wrap'}} tiny color={'white'} numberOfLines={2}>  {IncludeListing.address}, {IncludeListing.location.city}</TextComponent>
                     </ListingInfo>
 
                 </ModalHeader>
-                <ScrollView showsVerticalScrollIndicator={false} ref={ScrollViewRef}
-                            onContentSizeChange={ async (contentWidth, contentHeight)=>{
-                                ScrollViewRef.current.scrollToEnd({animated: true});
-                                if(lastMessage.senderId !== currentUserId && !lastMessage.read) Vibration.vibrate(20);
-                                await messageActions();
 
-                                if(notifications.length > 0 ) await firebase.readNotifications(notifications, true);
-                            }}
-                >
+                <ImageBackground source={require('../../assets/chat-bg.jpg')} style={{flex:1, justifyContent: "center", resizeMode: 'cover'}}>
+                    <ScrollView showsVerticalScrollIndicator={false} ref={ScrollViewRef}
+                                onContentSizeChange={ async (contentWidth, contentHeight)=>{
+                                    ScrollViewRef.current.scrollToEnd({animated: true});
+                                    if(lastMessage.senderId !== currentUserId && !lastMessage.read) Vibration.vibrate(30);
+                                    await messageActions();
 
-                    <View style={{paddingHorizontal: 5, paddingVertical: 10}}>
-                        { message.messages.map((eachMessage, key= 0) =>
-                            <View key={key}
-                                  style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row',
-                                      alignItems: "center",
-                                      alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
+                                    if(notifications.length > 0 ) await firebase.readNotifications(notifications, true);
+                                }}
+                    >
 
-                                { currentUserId !== eachMessage.senderId ? <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/> : null }
+                        <View style={{paddingHorizontal: 5, paddingVertical: 10}}>
+                            { message.messages.map((eachMessage, key= 0) =>
+                                <View key={key}
+                                      style={{flexDirection: currentUserId === eachMessage.senderId ? 'row-reverse' : 'row',
+                                          alignItems: "center",
+                                          alignSelf: currentUserId === eachMessage?.senderId ? 'flex-end' : 'flex-start'}}>
+
+                                    { currentUserId !== eachMessage.senderId ?
+                                        <View>
+                                            <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/>
+                                            { ToUserInfo.isOnline ?
+                                                <View style={{position: 'absolute', bottom: 0, right: 6, backgroundColor: 'white',
+                                                    borderColor: 'white', borderRadius: 6, borderWidth: 2, height: 12, width: 12}}>
+
+                                                    <View style={{backgroundColor: '#18f73d', height: 8, width: 8, borderRadius: 4}}/>
+                                                </View> : null
+                                            }
+                                        </View>
+                                        : null }
 
 
-                                {<ChatBubbleAndMessageReadTime currentUserId={currentUserId}
-                                                               eachMessage={eachMessage}/>}
+                                    {<ChatBubbleAndMessageReadTime currentUserId={currentUserId}
+                                                                   eachMessage={eachMessage} lastMessage={lastMessage}/>}
 
-                            </View>)
+                                </View>)
+                            }
+                        </View>
+                    </ScrollView>
+                    <MessageSendMainContainer>
+                        <SendMessageBox placeholder={'Send your Message'} placeholderTextColor={'grey'} multiline={true}
+                                        style={{width: hideSend ? '88%' : '100%'}}
+                                        defaultValue={sendMessage}
+                                        onChangeText={(text) => setSendMessage(text)}
+                                        onBlur={() => setHideSend(false)}
+                                        onFocus={() =>{
+                                            setHideSend(true);
+                                            ScrollViewRef.current.scrollToEnd({animated: true});
+                                        }}
+                        />
+                        { hideSend ?
+                            <Icon reverse raised name={'send'} type={'md'} size={15} style={{marginHorizontal: 5}}
+                                  disabledStyle={{backgroundColor: Colors.primaryBody}}
+                                  underlayColor={'rgba(255, 255, 255, 0.6)'}
+                                  reverseColor={sendMessage.trim() === '' ? Colors.primaryBodyLight : 'white'}
+
+                                  color={Colors.primaryBody} onPress={() => SendMessage(message.id)}
+                                  disabled={sendMessage.trim() === ''}/> : null
                         }
-                    </View>
-                </ScrollView>
-                <MessageSendMainContainer>
-                    <SendMessageBox placeholder={'Send your Message'} placeholderTextColor={'grey'} multiline={true}
-                                    style={{width: hideSend ? '88%' : '100%'}}
-                                    defaultValue={sendMessage}
-                                    onChangeText={(text) => setSendMessage(text)}
-                                    onBlur={() => setHideSend(false)}
-                                    onFocus={() =>{
-                                        setHideSend(true);
-                                        ScrollViewRef.current.scrollToEnd({animated: true});
-                                    }}
-                    />
-                    { hideSend ?
-                        <Icon reverse raised name={'send'} type={'md'} size={15} style={{marginHorizontal: 5}}
-                              disabledStyle={{backgroundColor: Colors.primaryBody}}
-                              underlayColor={'rgba(255, 255, 255, 0.6)'}
-                              reverseColor={sendMessage.trim() === '' ? Colors.primaryBodyLight : 'white'}
 
-                              color={Colors.primaryBody} onPress={() => SendMessage(message.id)}
-                              disabled={sendMessage.trim() === ''}/> : null
-                    }
-
-                </MessageSendMainContainer>
+                    </MessageSendMainContainer>
+                </ImageBackground>
 
             </ModalView>
         </Modal>
@@ -143,56 +189,61 @@ export const ChatModal = (props) => {
 const StatusBarAndTopHeaderBGColor = '#d0ff00';
 
 const ModalView = styled.View`
-                            backgroundColor: white;
-                            shadowColor: #000;
-                            shadowOpacity: 0.25;
-                            shadowRadius: 4px;
-                            elevation: 5;
-                            height:100%;
+                                backgroundColor: white;
+                                height:100%;
 
-                            `;
+                                `;
 
 const ModalHeader = styled.View`
-                         
-                            width:100%;
-                            flexDirection: row;
-                            alignItems: center;
-                            paddingVertical:10px;
-                            paddingHorizontal:20px;
-                            justifyContent: space-between;
-                            `;
+
+                                width:100%;
+                                flexDirection: row;
+                                alignItems: center;
+                                paddingVertical:10px;
+                                paddingHorizontal:20px;
+                                justifyContent: space-between;
+                                `;
 
 const ListingInfo = styled.View`
-                            flexDirection: row;
-                            maxWidth: 45%;
-                            alignItems: center;
-                            justifyContent: flex-end;
-                            `
+                                flexDirection: row;
+                                maxWidth: 45%;
+                                alignItems: center;
+                                justifyContent: flex-end;
+                                `
 
-const NameAndAvatar = styled.View`
-                            marginLeft: 20px;
-                            flexDirection: row;
-                            alignItems: center;
-                            `;
+const NameAndOnlineStatus = styled.View`
+
+                                alignItems: center;
+                                `;
+
+const NameAndPhone = styled.View`
+                                flexDirection: row;
+                                alignItems: center;
+                                `;
+
+const IsUserOnline = styled.View`
+                                flexDirection: row;
+                                alignItems: center;
+
+                                `
 
 const SendMessageBox = styled.TextInput`
-borderRadius: 20px;
-color: white;
-backgroundColor: ${Colors.primaryBodyLight};
-paddingHorizontal: 15px;
-paddingVertical: 7px;
-maxHeight: 100px;
-fontSize: 15px;
-`;
+                                borderRadius: 20px;
+                                color: white;
+                                backgroundColor: ${Colors.primaryBodyLight};
+                                paddingHorizontal: 15px;
+                                paddingVertical: 8px;
+                                marginBottom: 5px;
+                                maxHeight: 100px;
+                                fontSize: 15px;
+                                `;
 
 const MessageSendMainContainer = styled.View`
-backgroundColor: ${Colors.primaryBody};
-paddingHorizontal: 5px;
-paddingVertical: 5px
-flexDirection: row;
-alignItems: center;
-justifyContent: space-between;
-`
+                                paddingHorizontal: 5px;
+                                flexDirection: row;
+                                alignItems: center;
+                                justifyContent: space-between;
+                                `
 
 
 

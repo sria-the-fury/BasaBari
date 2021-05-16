@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {Divider, Icon, Image} from "react-native-elements";
+import {Icon, Image} from "react-native-elements";
 import {ListingsUpdateModal} from "../modals/ListingsUpdateModal";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
@@ -19,7 +19,7 @@ import firestore from "@react-native-firebase/firestore";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {v4 as uuidv4} from "uuid";
-import {FAB} from "react-native-paper";
+import {Avatar, FAB} from "react-native-paper";
 
 
 export const ListingDetailsScreen = (props) => {
@@ -124,7 +124,7 @@ export const ListingDetailsScreen = (props) => {
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
 
-            <ModalView>
+            <BodyView>
                 <ModalHeader>
                     <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => navigation.goBack()}/>
                     { currentUserId !== userId ?
@@ -135,9 +135,10 @@ export const ListingDetailsScreen = (props) => {
                     <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
                 </ModalHeader>
 
-                <ScrollView showsVerticalScrollIndicator={false} style={{marginVertical: 5, marginBottom: 50}}>
+                <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1, height: '100%'}}>
 
                     <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
+                              style={{marginTop: 5}}
                               showsHorizontalScrollIndicator={false}/>
 
                     <AddressContainer>
@@ -262,8 +263,25 @@ export const ListingDetailsScreen = (props) => {
 
                     </MoreDetailsContainer>
 
-
                 </ScrollView>
+
+                { !currentUserListings ?
+                    <PostedBy>
+                        <View>
+                            <Avatar.Image size={35} source={{uri: postedUserInfo?.profilePhotoUrl}}/>
+                            { postedUserInfo?.isOnline ?
+                                <View style={{position: 'absolute', top: 0, right: 0, backgroundColor: 'white',
+                                    borderColor: 'white', borderRadius: 6, borderWidth: 2, height: 12, width: 12}}>
+
+                                    <View style={{backgroundColor: '#18f73d', height: 8, width: 8, borderRadius: 4}}/>
+                                </View> : null
+                            }
+                        </View>
+                        <TextComponent medium color={'white'}>  {postedUserInfo.userName}</TextComponent>
+
+                    </PostedBy> : null
+                }
+
 
                 { currentUserListings ?
                     <EditListingButton onPress={() => setListingUpdateModal(true)}>
@@ -290,11 +308,6 @@ export const ListingDetailsScreen = (props) => {
                             }
                         ]}
                         onStateChange={() => setSpeedDial(!openSpeedDial)}
-                        onPress={() => {
-                            if (openSpeedDial) {
-                                // do something if the speed dial is open
-                            }
-                        }}
                     />
                     // <ContactAndMessageContainer>
                     //     <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
@@ -306,6 +319,7 @@ export const ListingDetailsScreen = (props) => {
                     // </ContactAndMessageContainer>
 
                 }
+
 
                 <RBSheet
                     ref={SendMessageBottomSheet}
@@ -339,7 +353,7 @@ export const ListingDetailsScreen = (props) => {
 
 
 
-            </ModalView>
+            </BodyView>
             <ListingsUpdateModal modalVisible={openListingUpdateModal} modalHide={closeListingUpdateModal}
                                  listingsData={listingData}
             />
@@ -367,6 +381,7 @@ borderRadius: 10px;
 
 const StatusBarAndTopHeaderBGColor = Colors.primaryStatusbarColor;
 const Container = styled.SafeAreaView`
+flex:1
 
 `;
 
@@ -375,20 +390,20 @@ const AddressContainer = styled.View`
 marginTop: 10px;
   flexDirection: row;
    alignItems: center;
-   marginHorizontal: 10px;
+   marginHorizontal: 5px;
 
 `;
 
 const LocationContainer = styled.View`
 flexDirection: row;
    alignItems: center;
-   marginHorizontal: 10px;
-   marginBottom: 20px;
+   marginHorizontal: 5px;
+   marginBottom: 10px;
 `
 
-const ModalView = styled.View`
+const BodyView = styled.View`
 backgroundColor: white;
-height:100%;
+flex:1
 
 `;
 
@@ -408,7 +423,7 @@ alignItems: center;
 marginVertical: 10px;
 justifyContent: space-between;
 flexDirection: row;
-marginHorizontal: 10px;
+marginHorizontal: 5px;
 
 `
 
@@ -424,9 +439,9 @@ borderRadius: 50px;
 `;
 
 const FacilitiesContainer = styled.ScrollView`
-marginVertical: 20px;
+marginVertical: 15px;
 flexDirection: row;
-marginHorizontal: 10px;
+marginHorizontal: 5px;
 
 `;
 
@@ -441,7 +456,7 @@ marginHorizontal: 5px;
 `;
 
 const RentAndNegotiableContainer = styled.View`
-marginHorizontal: 10px;
+marginHorizontal: 5px;
 marginVertical: 10px;
 flexDirection: row;
 alignItems: center;
@@ -556,6 +571,16 @@ paddingHorizontal: 10px;
 width: 88%;
 fontSize: 18px;
 `;
+
+const PostedBy = styled.View`
+flexDirection: row;
+alignItems: center;
+backgroundColor: ${Colors.primaryBody};
+paddingHorizontal: 10px;
+
+paddingVertical: 5px;
+
+`
 
 const style = StyleSheet.create({
     sheetContainer : {

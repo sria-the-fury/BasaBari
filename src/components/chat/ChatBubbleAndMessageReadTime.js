@@ -1,11 +1,11 @@
-import React, {useState} from 'react'
-import {View, Text, Pressable, StyleSheet} from 'react-native'
+import React from 'react'
+import {View, StyleSheet} from 'react-native'
 import {TextComponent} from "../TextComponent";
 import moment from "moment";
 import {Icon} from "react-native-elements";
 
 export const ChatBubbleAndMessageReadTime = (props) => {
-    const {currentUserId, eachMessage} = props;
+    const {currentUserId, eachMessage, lastMessage} = props;
 
 
     const ChatBubble = (eachMessage) => {
@@ -43,8 +43,8 @@ export const ChatBubbleAndMessageReadTime = (props) => {
         const getDayDifference =  Math.round((new Date().getTime() - new Date(time).getTime())/(1000*3600*24));
         return(
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
-                <Icon name={'checkmark-done-outline'} color={'green'} type={'ionicon'} size={10}/>
-                <TextComponent extraTiny color={'grey'} style={{ textAlign: 'right'}}>
+                <Icon name={'checkmark-done-outline'} color={'#5c8ef2'} type={'ionicon'} size={10}/>
+                <TextComponent extraTiny color={'white'} style={{ textAlign: 'right'}}>
                     {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
                 </TextComponent>
             </View>
@@ -52,18 +52,16 @@ export const ChatBubbleAndMessageReadTime = (props) => {
         )
     };
 
-    const [showReadTime, setReadTime] = useState(false);
 
     return (
-        <View style={{width: '75%', marginVertical: 3}}>
-            <Pressable style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
+        <View style={{width: '75%', marginVertical: 2}}>
+            <View style={[{backgroundColor: currentUserId !== eachMessage?.senderId ? 'cyan' : '#49478e',
                 paddingHorizontal: 10, paddingVertical: 5, maxWidth: '100%'}, currentUserId === eachMessage?.senderId ? styles.rightAlignMessage : styles.leftAlignMessage]}
-                       onPress={() => setReadTime(!showReadTime)}
             >
                 {ChatBubble(eachMessage)}
                 {ChatSentTime(eachMessage.sentAt.seconds, eachMessage?.senderId)}
-            </Pressable>
-            {eachMessage.read && eachMessage.readAt && eachMessage?.senderId === currentUserId && showReadTime?
+            </View>
+            {eachMessage.read && eachMessage.readAt && eachMessage?.senderId === currentUserId && lastMessage.id === eachMessage.id ?
                 MessageSeenTime(eachMessage.readAt) : null}
 
 

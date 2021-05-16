@@ -4,7 +4,7 @@ import {
     StyleSheet,
     Text,
     View,
-    ScrollView, TouchableOpacity, Pressable,
+    ScrollView
 } from 'react-native';
 import {TextComponent} from "../components/TextComponent";
 import styled from "styled-components";
@@ -52,27 +52,24 @@ export default function MessagesScreen(props) {
 
             });
 
-        const listingSubscriber = firestore().collection('users').onSnapshot(
+        const usersSubscriber = firestore().collection('users').onSnapshot(
             docs=> {
                 let data=[];
                 if(docs) {
                     docs.forEach(doc => {
+                        const {userName, profilePhotoUrl, phoneNumber, isOnline, lastSeen} = doc.data();
                         data.push({
                             id: doc.id,
-                            userName: doc.data().userName,
-                            profilePhotoUrl: doc.data().profilePhotoUrl,
-                            phoneNumber: doc.data().phoneNumber
-
+                            userName, profilePhotoUrl, phoneNumber, isOnline, lastSeen
                         });
 
                     });
                     setUsers(data);
                 }
 
-
             });
 
-        const usersSubscriber = firestore().collection('listings').onSnapshot(
+        const listingSubscriber = firestore().collection('listings').onSnapshot(
             docs=> {
                 let data=[];
                 if(docs) {
@@ -158,18 +155,29 @@ export default function MessagesScreen(props) {
         const UserInfo = users && currentUserId !== interestedTenantId ? _.find(users, {id : interestedTenantId}) : users && currentUserId !== listingOwnerId ? _.find(users, {id : listingOwnerId}) : null;
         const lastMessage = messages[messages.length-1];
         const unreadMessage = _.filter(messages, {read: false});
-        const userName = UserInfo.userName.split(' ');
+        const userName = UserInfo?.userName.split(' ');
 
         if(findListingData && UserInfo){
             return(
                 <ListItem bottomDivider containerStyle={{overflow: 'hidden', paddingHorizontal: 5, paddingVertical: 5, backgroundColor: 'rgba(0,0,0,0)'}}>
-                    <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
+                    <View>
+                        <Avatar.Image size={60} source={{uri: UserInfo.profilePhotoUrl}}/>
+                        { UserInfo.isOnline ?
+                            <View style={{position: 'absolute', bottom: 0, right: 6, backgroundColor: 'white',
+                                borderColor: 'white', borderRadius: 8, borderWidth: 2, height: 16, width: 16}}>
+
+                                <View style={{backgroundColor: '#18f73d', height: 12, width: 12, borderRadius: 6}}/>
+                            </View> : null
+                        }
+                    </View>
+
                     <ListItem.Content>
                         <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
-                            <TextComponent medium bold>{userName.length >= 2 ? `${userName[0]} ${userName[1]}` : userName[0]}</TextComponent>
+                            <TextComponent medium bold>{userName.length >= 2 ? `${userName[0]} ${userName[1]}` : userName[0]}
+                                {UserInfo.id === findListingData.userId ? <Icon name={'home'} color={Colors.appIconColor} type={'ionicon'} size={13} style={{marginLeft: 2}}/> : null}</TextComponent>
                             <View style={{flexDirection: 'row', alignItems: "center"}}>
                                 {lastMessage.senderId === currentUserId && lastMessage.read ?
-                                    <Icon name={'checkmark-done-outline'} color={'green'} type={'ionicon'} size={10}/> : null}
+                                    <Icon name={'checkmark-done-outline'} color={'#5c8ef2'} type={'ionicon'} size={10}/> : null}
                                 <TextComponent tiny color={'grey'} >
                                     {sentAtTime(lastMessage.sentAt.seconds)}</TextComponent>
                             </View>
@@ -213,7 +221,7 @@ export default function MessagesScreen(props) {
             </Header>
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={'always'}>
                 {
-                    users && ListingsData && filterMessageByCurrentUser && filterMessageByCurrentUser.map(message =>
+                    users && ListingsData && filterMessageByCurrentUser?.map(message =>
                         <Messages key={message.id} message={message} users={users} listingData={ListingsData} notifications={notifications}>
                             {UserInfoAndListingInfo(message.listingId, message.interestedTenantId, message.listingOwnerId, message.messages)}
 

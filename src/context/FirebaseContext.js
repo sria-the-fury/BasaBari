@@ -4,7 +4,7 @@ import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import _ from "lodash";
-import {ToastAndroid} from "react-native";
+import {Alert, ToastAndroid} from "react-native";
 
 export const FirebaseContext = createContext(undefined);
 
@@ -549,6 +549,24 @@ const Firebase = {
 
         } catch (e){
             ToastAndroid.show(e.message+' @deleting message', ToastAndroid.SHORT);
+        }
+
+    },
+    userOnlineStatus: async (userId, onlineStatus) => {
+        try{
+            await firestore().collection('users').doc(userId).set({
+                isOnline: onlineStatus,
+                lastSeen: _.now()
+
+            }, {merge: true});
+        } catch (e) {
+            Alert.alert('Caution', e.message, [{
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+            }]);
+            console.log(e.message+' at online');
+
         }
 
     }
