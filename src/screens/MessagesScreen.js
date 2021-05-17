@@ -174,7 +174,7 @@ export default function MessagesScreen(props) {
                     <ListItem.Content>
                         <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', width: '100%'}}>
                             <TextComponent medium bold>{userName.length >= 2 ? `${userName[0]} ${userName[1]}` : userName[0]}
-                                {UserInfo.id === findListingData.userId ? <Icon name={'home'} color={Colors.appIconColor} type={'ionicon'} size={13} style={{marginLeft: 2}}/> : null}</TextComponent>
+                                {UserInfo.id === findListingData?.userId ? <Icon name={'home'} color={Colors.appIconColor} type={'ionicon'} size={13} style={{marginLeft: 2}}/> : null}</TextComponent>
                             <View style={{flexDirection: 'row', alignItems: "center"}}>
                                 {lastMessage.senderId === currentUserId && lastMessage.read ?
                                     <Icon name={'checkmark-done-outline'} color={'#5c8ef2'} type={'ionicon'} size={10}/> : null}

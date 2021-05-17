@@ -24,11 +24,9 @@ export const ChatModal = (props) => {
     const {modalVisible, modalHide, message, ToUserInfo, IncludeListing, currentUserId, notifications} = props;
     const firebase = useContext(FirebaseContext);
 
-    const firstName = ToUserInfo.userName.split(' ');
+    const firstName = ToUserInfo?.userName.split(' ');
 
     const [sendMessage, setSendMessage] = useState('');
-
-    console.assert(ToUserInfo.isOnline, 'Hello');
 
 
     const SendMessage = async (messageId) => {
@@ -93,19 +91,21 @@ export const ChatModal = (props) => {
 
                     <NameAndOnlineStatus>
                         <NameAndPhone>
-                            <Icon name={'call'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'white'} onPress={() => cellularCall(ToUserInfo.phoneNumber)}/>
+                            <Icon name={'call'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'white'} onPress={() => cellularCall(ToUserInfo?.phoneNumber)}/>
                             <TextComponent bold semiLarge color={'white'}>  {firstName[0]}</TextComponent>
                         </NameAndPhone>
 
-                        <IsUserOnline>
-                            <Icon name={ToUserInfo.isOnline ? 'ellipse' : 'ellipse-outline'} type={'ionicon'} size={ToUserInfo.isOnline ? 10 : 8} color={'#18f73d'}/>
-                            {
-                                ToUserInfo.isOnline ? <TextComponent tiny color={'white'} style={{marginLeft: 2}}>
-                                        Online
-                                    </TextComponent> :
-                                    !ToUserInfo.isOnline && ToUserInfo.lastSeen ? LastSeen(ToUserInfo.lastSeen): null
-                            }
-                        </IsUserOnline>
+                        { ToUserInfo?.isOnline || ToUserInfo?.lastSeen ?
+                            <IsUserOnline>
+                                <Icon name={ToUserInfo.isOnline ? 'ellipse' : 'ellipse-outline'} type={'ionicon'} size={ToUserInfo?.isOnline ? 10 : 8} color={'#18f73d'}/>
+                                {
+                                    ToUserInfo?.isOnline ? <TextComponent tiny color={'white'} style={{marginLeft: 2}}>
+                                            Online
+                                        </TextComponent> :
+                                        !ToUserInfo?.isOnline && ToUserInfo?.lastSeen ? LastSeen(ToUserInfo?.lastSeen): null
+                                }
+                            </IsUserOnline> : null
+                        }
 
 
                     </NameAndOnlineStatus>
@@ -138,8 +138,8 @@ export const ChatModal = (props) => {
 
                                     { currentUserId !== eachMessage.senderId ?
                                         <View>
-                                            <Avatar.Image size={35} source={{uri: ToUserInfo.profilePhotoUrl}} style={{ marginRight: 5}}/>
-                                            { ToUserInfo.isOnline ?
+                                            <Avatar.Image size={35} source={{uri: ToUserInfo?.profilePhotoUrl}} style={{ marginRight: 5}}/>
+                                            { ToUserInfo?.isOnline ?
                                                 <View style={{position: 'absolute', bottom: 0, right: 6, backgroundColor: 'white',
                                                     borderColor: 'white', borderRadius: 6, borderWidth: 2, height: 12, width: 12}}>
 

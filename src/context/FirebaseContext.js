@@ -161,7 +161,7 @@ const Firebase = {
             if(isListingImagesUploaded){
                 await firestore().collection('listings').doc(listingId).set(
                     {
-                        address: listingData.address,
+                        address: listingData.address.trim(),
                         postedTime: new Date(),
                         userId: currentUserUID,
                         roomNumbers: listingData.roomNumbers,
@@ -169,7 +169,7 @@ const Firebase = {
                         rentPerMonth: listingData.rentPerMonth.replace(/[^0-9]/g, ''),
                         forBachelor: listingData.forBachelor,
                         forFamily: listingData.forFamily,
-                        moreDetails: listingData.moreDetails,
+                        moreDetails: listingData.moreDetails.trim(),
                         listingId: listingId,
                         isNegotiable: listingData.isNegotiable,
                         images: [],
