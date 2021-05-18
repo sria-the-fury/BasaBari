@@ -17,6 +17,7 @@ import {FirebaseContext} from "../context/FirebaseContext";
 import {Avatar} from "react-native-paper";
 import {Messages} from "../components/messages/Messages";
 import moment from "moment";
+import LottieView from "lottie-react-native";
 
 
 
@@ -189,7 +190,7 @@ export default function MessagesScreen(props) {
                             {lastMessage.senderId === currentUserId ? <TextComponent medium> Me : </TextComponent> : null }
                             <TextComponent medium numberOfLines={1}
                                            color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9' : 'grey'}
-                            style={{width: '85%'}}>{lastMessage.message}</TextComponent>
+                                           style={{width: '85%'}}>{lastMessage.message}</TextComponent>
                             { lastMessage.senderId !== currentUserId && !lastMessage.read ?
                                 <Badge containerStyle={{marginLeft: 10}}
                                        value={<Text style={{color:'white', fontSize: 10}}>{unreadMessage.length}</Text>} /> : null
@@ -232,11 +233,17 @@ export default function MessagesScreen(props) {
             </ScrollView>
 
             {filterMessageByCurrentUser?.length === 0 ?
-            <View style={{flex: 1}}>
-                <TextComponent center medium>
-                    You have no message
-                </TextComponent>
-            </View> : null
+                <View style={{flex: 1}}>
+                    <TextComponent center medium>
+                        You have no message
+                    </TextComponent>
+                </View> : filterMessageByCurrentUser === null ?
+                    <View style={{flex: 1}}>
+                        <LoadingView>
+                            <LottieView source={require('../../assets/lottie-animations/message-loading.json')} autoPlay loop style={{width: 100}} />
+                        </LoadingView>
+                    </View>
+                    : null
 
             }
 
@@ -279,6 +286,9 @@ const styles = StyleSheet.create({
         marginVertical: 16
     }
 });
-
+const LoadingView = styled.View`
+alignItems: center;
+justifyContent: center;
+`;
 
 

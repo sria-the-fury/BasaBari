@@ -117,8 +117,12 @@ export default  function PhoneAuthScreen() {
             let data = await confirm.confirm(code);
 
             if(data.user.displayName && data.user.photoURL){
+                const userInfo = await firebase.getUserInfo(data.user.uid);
+                //console.log('userInfo in Auth => ', userInfo);
+                console.log('data => ', data);
                 setUser({
                     isLoggedIn: true,
+                    userType: userInfo.userType,
                     userName: data.user.displayName,
                     profileImageUrl: data.user.photoURL,
                     userPhoneNumber: data.user.phoneNumber
@@ -146,6 +150,14 @@ export default  function PhoneAuthScreen() {
     const resendCode = async () => {
         setCount(0);
         setResendDisable(true);
+        setOTP({
+            otp1: '',
+            otp2: '',
+            otp3: '',
+            otp4: '',
+            otp5: '',
+            otp6: ''
+        });
 
         try{
             await signInWithPhoneNumber();
@@ -168,11 +180,14 @@ export default  function PhoneAuthScreen() {
 
     };
 
-    const hasCurrentUser = () => {
+    const hasCurrentUser = async () => {
 
         if(currentUser && currentUser.displayName && currentUser.photoURL){
+            const userInfo = await firebase.getUserInfo(currentUser.uid);
+            console.log('userInfo in Auth => ', userInfo);
             setUser({
                 isLoggedIn: true,
+                userType: userInfo.userType,
                 userName: currentUser.displayName,
                 profileImageUrl: currentUser.photoURL,
                 userPhoneNumber: currentUser.phoneNumber
@@ -288,7 +303,8 @@ export default  function PhoneAuthScreen() {
                     <View>
                         <OTPInputsContainer style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 10}}>
                             <OTPTextInput
-                                onChange={() => {hasCurrentUser();
+                                onChange={ async () => {
+                                    await hasCurrentUser()
                                     if(OTP.otp1 === ''){
                                         inputRefs.otp2.current.focus();
                                     }
@@ -303,8 +319,9 @@ export default  function PhoneAuthScreen() {
                                 keyboardType={'number-pad'} maxLength={1}/>
 
                             <OTPTextInput
-                                onChange={() =>
-                                {hasCurrentUser();
+                                onChange={ async() =>
+                                {
+                                    await hasCurrentUser();
                                     if(OTP.otp2 === '') inputRefs.otp3.current.focus();
                                     else inputRefs.otp1.current.focus();
 
@@ -318,8 +335,9 @@ export default  function PhoneAuthScreen() {
                                 keyboardType={'number-pad'} maxLength={1}/>
 
                             <OTPTextInput autoFocus={false}
-                                          onChange={() =>
-                                          {hasCurrentUser();
+                                          onChange={async () =>
+                                          {
+                                              await hasCurrentUser();
                                               if(OTP.otp3 === '') inputRefs.otp4.current.focus();
                                               else if(OTP.otp3 !== '') inputRefs.otp2.current.focus();
 
@@ -330,8 +348,9 @@ export default  function PhoneAuthScreen() {
                                           }} keyboardType={'number-pad'} maxLength={1}/>
 
                             <OTPTextInput autoFocus={false}
-                                          onChange={() =>
-                                          {hasCurrentUser();
+                                          onChange={async () =>
+                                          {
+                                              await hasCurrentUser();
                                               if(OTP.otp4 === '') inputRefs.otp5.current.focus();
                                               else inputRefs.otp3.current.focus();
 
@@ -343,8 +362,9 @@ export default  function PhoneAuthScreen() {
                                           }} keyboardType={'number-pad'} maxLength={1}/>
 
                             <OTPTextInput autoFocus={false}
-                                          onChange={() =>
-                                          {hasCurrentUser();
+                                          onChange={async () =>
+                                          {
+                                              await hasCurrentUser();
                                               if(OTP.otp5 === '') inputRefs.otp6.current.focus();
                                               else inputRefs.otp4.current.focus();
 
@@ -356,8 +376,9 @@ export default  function PhoneAuthScreen() {
                                           }} keyboardType={'number-pad'} maxLength={1}/>
 
                             <OTPTextInput autoFocus={false}
-                                          onChange={() =>
-                                          {hasCurrentUser();
+                                          onChange={async () =>
+                                          {
+                                              await hasCurrentUser();
                                               if(OTP.otp6 !== '') inputRefs.otp5.current.focus();
 
                                           }}

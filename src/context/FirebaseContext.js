@@ -15,7 +15,7 @@ const Firebase = {
         return auth().currentUser;
     },
 
-    createUser: async (userName) => {
+    createUser: async (userName, userType) => {
 
         try {
 
@@ -28,6 +28,7 @@ const Firebase = {
                 userName: userName.trim(),
                 phoneNumber: phoneNumber,
                 createAt: new Date(),
+                userType
             }, {merge: true});
 
 
