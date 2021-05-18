@@ -1,7 +1,6 @@
 import React, {useState, createContext, useContext, useRef, useEffect} from 'react';
 import {FirebaseContext} from "./FirebaseContext";
 import {AppState} from "react-native";
-import firestore from "@react-native-firebase/firestore";
 
 
 export const UserContext = createContext([{}, p => {}]);
@@ -10,10 +9,8 @@ export const UserProvider =  (props) => {
     const firebase = useContext(FirebaseContext);
 
     const currentUser = firebase.getCurrentUser();
-
     const appState = useRef(AppState.currentState);
-    const [appStateVisible, setAppStateVisible] = useState(appState.current);
-    const [currentUserType, setCurrentUserType] = useState(null);
+    // const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
     useEffect(() => {
         AppState.addEventListener("change", _handleAppStateChange);
@@ -26,17 +23,17 @@ export const UserProvider =  (props) => {
     // console.log('currentUserType=>', currentUserType);
 
     const _handleAppStateChange = async (nextAppState) => {
+
         appState.current = nextAppState;
-        setAppStateVisible(appState.current);
+        // setAppStateVisible(appState.current);
         if (appState.current === 'active' && state.isLoggedIn) {
-            const userInfo = await firebase.getUserInfo(currentUser.uid);
-            if(userInfo) {
-                setState({...state, userType: userInfo.userType});
-                setCurrentUserType(state.userType)
-            }
+            const userInfo = await firebase.getUserInfo(currentUser?.uid);
+            if(userInfo) setState({...state, userType: userInfo.userType});
             await firebase.userOnlineStatus(currentUser?.uid, true);
-        } else if(appState.current !== 'active' && currentUser){
+            console.log('appState.current =>', appState.current);
+        } else if(appState.current === 'background' && currentUser){
             await firebase.userOnlineStatus(currentUser?.uid, false);
+            console.log('appState.current b=>', appState.current);
         }
 
     };
@@ -49,7 +46,7 @@ export const UserProvider =  (props) => {
 
 
     const [state, setState] = useState({
-        userType: currentUserType,
+        userType: null,
         isLoggedIn: hasUserWithName(),
         profilePhotoUrl: currentUser?.photoURL ?? null,
         userName: currentUser?.displayName ?? null,
