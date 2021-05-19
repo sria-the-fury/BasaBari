@@ -1,27 +1,65 @@
-import React, {useContext} from "react";
+import React, {useContext, useState,useEffect} from "react";
 import {View, Modal, Pressable, ScrollView, StyleSheet, Vibration, ToastAndroid} from "react-native";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
 import {Colors} from "../components/utilities/Colors";
 import {FirebaseContext} from "../context/FirebaseContext";
+import firestore from "@react-native-firebase/firestore";
 
 export const ListingDeleteConfirmModal = (props) => {
-    const {modalVisible, modalHide, listingName, actionProps} = props;
+    const {modalVisible, modalHide, listingName, actionProps, navigation} = props;
     const firebase = useContext(FirebaseContext);
+
+    const [messages, setMessages] = useState(null);
+    const [notifications, setNotifications] = useState(null);
+
+    useEffect(() => {
+        const thisListingMessages = firestore().collection('messages').where('listingId', '==', actionProps.itemId).onSnapshot(
+            docs=> {
+                let data=[]
+                if(docs) {
+                    docs.forEach(doc => {
+                        data.push({
+                            id: doc.id
+                        })
+                    });
+                    if(data.length > 0 ) setMessages(data);
+                }
+            });
+
+        const thisListingNotifications = firestore().collection('notifications').where('listingId', '==', actionProps.itemId).onSnapshot(
+            docs=> {
+                let data=[]
+                if(docs) {
+                    docs.forEach(doc => {
+                        data.push({
+                            id: doc.id
+                        })
+                    });
+                    if(data.length > 0 )  setNotifications(data);
+                }
+            });
+
+        return () => thisListingMessages() || thisListingNotifications();
+    }, []);
+
 
 
     //remove listing
     const removeListing = async (id, images) => {
-        // console.log('ok remove');
+        // console.log('images => ', images);
+
         Vibration.vibrate(30);
+        modalHide(false);
+        if(navigation) navigation.goBack();
         try {
-            await firebase.removeListing(id, images);
+            if(images) await firebase.removeListing(id, images, messages, notifications);
             ToastAndroid.show('Listing Deleted', ToastAndroid.LONG);
         } catch (error){
             alert(error.message);
         }finally {
-            modalHide(false)
+            modalHide(false);
         }
 
     };

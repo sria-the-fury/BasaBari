@@ -188,16 +188,17 @@ export default function AddListingScreen(props) {
 
     return (
         <Container>
-            <FocusedStatusbar barStyle="dark-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
+            <FocusedStatusbar barStyle="dark-content" backgroundColor={Colors.primaryBody}/>
             <HeaderContainer>
 
                     <Icon
                         name={'chevron-down-outline'}
                         type='ionicon'
-                        color={'black'} size={35} onPress={() => props.navigation.goBack()}
+                        color={'white'} size={35} onPress={() => props.navigation.goBack()}
                     />
 
-                <AddListingButton onPress={() => addListing()} disabled={disableSubmit() || loading}>
+                <AddListingButton onPress={() => addListing()} disabled={disableSubmit() || loading}
+                                  style={{backgroundColor : disableSubmit() || loading ? Colors.buttonPrimary : Colors.appIconColor}}>
                     {loading ? <Loading/> : <TextComponent medium bold color={disableSubmit() ? 'grey' : 'white'}>ADD LISTING</TextComponent> }
                 </AddListingButton>
 
@@ -597,7 +598,6 @@ elevation: 6;
 `;
 
 
-const StatusBarAndTopHeaderBGColor = Colors.addListingTop;
 
 
 const Container = styled.View`
@@ -606,12 +606,12 @@ flex:1;
 `;
 
 const HeaderContainer = styled.View`
-backgroundColor: ${StatusBarAndTopHeaderBGColor};
+backgroundColor: ${Colors.primaryBody};
 
  flexDirection: row;
  alignItems: center;
  paddingHorizontal: 20px;
-  paddingVertical: 12px;
+  paddingVertical: 10px;
  justifyContent: space-between;
 
 `;
@@ -758,7 +758,6 @@ fontSize: 18px;
 `
 
 const AddListingButton = styled.TouchableOpacity`
-backgroundColor: #1c3787;
 paddingHorizontal: 10px;
 paddingVertical: 10px;
 borderRadius: 10px;

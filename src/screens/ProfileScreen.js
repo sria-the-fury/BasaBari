@@ -21,6 +21,7 @@ export default function ProfileScreen(props) {
 
 
     // userContext
+    const [user] = useContext(UserContext);
     const[_,setUser] = useContext(UserContext);
     const firebase = useContext(FirebaseContext);
     const profileUserInfo = firebase.getCurrentUser() ? firebase.getCurrentUser() : '';
@@ -55,7 +56,7 @@ export default function ProfileScreen(props) {
     const loggedOut = async () => {
         const loggedOut = await firebase.loggedOut();
 
-        if(loggedOut) setUser({isLoggedIn: null});
+        if(loggedOut) setUser({isLoggedIn: null, userType: null});
     }
 
 
@@ -106,10 +107,10 @@ export default function ProfileScreen(props) {
         try {
             setLoading(true);
             await firebase.uploadProfilePhoto(path);
-            setUser(prev => ({
-                ...prev,
+            setUser( {
+                ...user,
                 profilePhotoUrl: profileUserInfo.photoURL
-            }));
+            });
 
 
         } catch (e) {
@@ -302,13 +303,13 @@ export default function ProfileScreen(props) {
 
 
 
-            <BottomContainer>
-                <MyListingsButton onPress={() => props.navigation.navigate('MyListings')}>
+            {/*<BottomContainer>*/}
+            {/*    <MyListingsButton onPress={() => props.navigation.navigate('MyListings')}>*/}
 
-                    <TextComponent center bold color={'white'}>MY LISTINGS</TextComponent>
-                </MyListingsButton>
+            {/*        <TextComponent center bold color={'white'}>MY LISTINGS</TextComponent>*/}
+            {/*    </MyListingsButton>*/}
 
-            </BottomContainer>
+            {/*</BottomContainer>*/}
 
             <TermsAndConditionsModal modalVisible={openTermsModal} modalHide={closeTermsModal}/>
 
