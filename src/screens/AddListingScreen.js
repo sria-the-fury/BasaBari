@@ -188,7 +188,7 @@ export default function AddListingScreen(props) {
 
     return (
         <Container>
-            <FocusedStatusbar barStyle="dark-content" backgroundColor={Colors.primaryBody}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryBody}/>
             <HeaderContainer>
 
                     <Icon

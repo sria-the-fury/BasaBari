@@ -11,6 +11,7 @@ import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar"
 import {Colors} from "../components/utilities/Colors";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {Avatar, Colors as RNPColors, TextInput} from "react-native-paper";
+import PushNotification from "react-native-push-notification";
 
 
 export default function ProfileScreen(props) {
@@ -54,6 +55,7 @@ export default function ProfileScreen(props) {
 
     //log out
     const loggedOut = async () => {
+        PushNotification.deleteChannel(profileUserInfo?.uid);
         const loggedOut = await firebase.loggedOut();
 
         if(loggedOut) setUser({isLoggedIn: null, userType: null});
@@ -188,11 +190,10 @@ export default function ProfileScreen(props) {
                             shadowRadius: 5.32,}}>
 
                             <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/default-profile-image.png')}/>
-                            <TouchableOpacity style={{position: "absolute", top: 5, left:6, backgroundColor: 'white',borderColor: 'white', borderWidth: 4, borderRadius:50}}
+                            <TouchableOpacity style={{position: "absolute", top: -5, left:6}}
                                               onPress={() => chooseProfileImage()} disabled={loading}>
                                 { loading ? <Loading/> :
-                                    <Icon name={'add-photo-alternate'} type={'md'} size={24} color={'red'}
-                                    />
+                                    <Icon name={'edit'} type={'md'} size={24} color={'blue'} style={{backgroundColor: 'white', borderRadius:50, padding:2, borderColor: Colors.primaryBody, borderWidth: 3}}/>
                                 }
                             </TouchableOpacity>
                         </ProfileImageContainer>
@@ -200,14 +201,14 @@ export default function ProfileScreen(props) {
                         <UserInfo>
 
                             <EachInfoWrapper>
-                                <Icon name={'person'} type={'material'} size={30} color={profileIconsColor} style={{marginRight: 3}}/>
+                                <Icon name={'person'} type={'material'} size={25} color={profileIconsColor} style={{marginRight: 3}}/>
 
                                 <TextComponent bold color={'white'}  semiLarge>{profileUserInfo.displayName}</TextComponent>
 
                             </EachInfoWrapper>
 
                             <EachInfoWrapper>
-                                <Icon name={'call'} type={'material'} size={25} color={profileIconsColor} style={{marginRight: 3}}/>
+                                <Icon name={'call'} type={'material'} size={20} color={profileIconsColor} style={{marginRight: 3}}/>
 
                                 <TextComponent bold color={'white'}  medium>{profileUserInfo.phoneNumber}</TextComponent>
 

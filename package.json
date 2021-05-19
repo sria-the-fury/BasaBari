@@ -28,6 +28,7 @@
     "react-native-gesture-handler": "^1.10.1",
     "react-native-get-random-values": "^1.6.0",
     "react-native-paper": "^4.7.2",
+    "react-native-push-notification": "^7.3.1",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",

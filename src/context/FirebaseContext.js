@@ -115,6 +115,20 @@ const Firebase = {
 
     },
 
+    getListingName: async (listingId) => {
+        try {
+            const listing = await firestore().collection('listings').doc(listingId).get();
+
+            if(listing.exists){
+
+                return listing.data().address;
+            }
+
+        }catch (error) {
+            console.log('Error @getUserInfo : ', error);
+        }
+    },
+
     loggedOut: async () => {
         try {
             await auth().signOut();
