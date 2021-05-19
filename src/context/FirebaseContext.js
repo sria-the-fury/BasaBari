@@ -4,7 +4,7 @@ import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import _ from "lodash";
-import {ToastAndroid} from "react-native";
+import {Alert, ToastAndroid} from "react-native";
 
 export const FirebaseContext = createContext(undefined);
 
@@ -15,7 +15,7 @@ const Firebase = {
         return auth().currentUser;
     },
 
-    createUser: async (userName) => {
+    createUser: async (userName, userType) => {
 
         try {
 
@@ -28,6 +28,7 @@ const Firebase = {
                 userName: userName.trim(),
                 phoneNumber: phoneNumber,
                 createAt: new Date(),
+                userType
             }, {merge: true});
 
 
@@ -161,7 +162,7 @@ const Firebase = {
             if(isListingImagesUploaded){
                 await firestore().collection('listings').doc(listingId).set(
                     {
-                        address: listingData.address,
+                        address: listingData.address.trim(),
                         postedTime: new Date(),
                         userId: currentUserUID,
                         roomNumbers: listingData.roomNumbers,
@@ -169,7 +170,7 @@ const Firebase = {
                         rentPerMonth: listingData.rentPerMonth.replace(/[^0-9]/g, ''),
                         forBachelor: listingData.forBachelor,
                         forFamily: listingData.forFamily,
-                        moreDetails: listingData.moreDetails,
+                        moreDetails: listingData.moreDetails.trim(),
                         listingId: listingId,
                         isNegotiable: listingData.isNegotiable,
                         images: [],
@@ -422,19 +423,20 @@ const Firebase = {
 
     //remove functions go here
 
-    removeListing: async (listingId, storageImages) => {
+    removeListing: async (listingId, storageImages, messages, notifications) => {
         try{
-            await firestore().collection('listings').doc(listingId).delete();
             //remove this listings images when remove the listings
             _.each(storageImages, async (image) => {
                 const imageRef = storage().ref(`listingImages/${listingId}`).child(image.imageId);
                 await imageRef.delete();
             });
+            await firestore().collection('listings').doc(listingId).delete();
 
+            _.each(messages, async (message) => await firestore().collection('messages').doc(message.id).delete());
+            _.each(notifications, async (notification) => await firestore().collection('notifications').doc(notification.id).delete());
 
         }catch (e) {
             console.log(e.message+'@removeListing');
-
         }
     },
 
@@ -549,6 +551,24 @@ const Firebase = {
 
         } catch (e){
             ToastAndroid.show(e.message+' @deleting message', ToastAndroid.SHORT);
+        }
+
+    },
+    userOnlineStatus: async (userId, onlineStatus) => {
+        try{
+            await firestore().collection('users').doc(userId).set({
+                isOnline: onlineStatus,
+                lastSeen: _.now()
+
+            }, {merge: true});
+        } catch (e) {
+            Alert.alert('Caution', e.message, [{
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+            }]);
+            console.log(e.message+' at online');
+
         }
 
     }

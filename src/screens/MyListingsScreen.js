@@ -1,13 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import { FlatList} from 'react-native';
+import {FlatList, View} from 'react-native';
 import {Icon} from "react-native-elements";
 import {FirebaseContext} from "../context/FirebaseContext";
 import firestore from "@react-native-firebase/firestore";
 import {EachListing} from "../components/listings/EachListing";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
+import LottieView from "lottie-react-native";
 
 export default function MyListingScreen(props) {
     const firebase =  useContext(FirebaseContext);
@@ -56,7 +57,6 @@ export default function MyListingScreen(props) {
 
     }, []);
 
-
     return (
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
@@ -70,9 +70,26 @@ export default function MyListingScreen(props) {
                 <TextComponent medium bold color={'white'}>MY LISTINGS</TextComponent>
 
             </HeaderContainer>
-            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
+
+            {
+                ListingsData?.length > 0 ?
+                    <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
+                    : ListingsData === null ?
+                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                        <LoadingView>
+                            <LottieView source={require('../../assets/lottie-animations/loading.json')} autoPlay loop style={{width: 100}} />
+                        </LoadingView>
+                    </View>
+
+                :
+                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                    <TextComponent medium>You don't add any listing yet. Please Add Listing.</TextComponent>
+                </View>
+            }
+
         </Container>
     )
+
 }
 const StatusBarAndTopHeaderBGColor = Colors.primaryStatusbarColor;
 
@@ -88,10 +105,15 @@ backgroundColor: ${StatusBarAndTopHeaderBGColor};
  flexDirection: row;
  alignItems: center;
  paddingHorizontal: 20px;
- paddingVertical: 12px;
+ paddingVertical: 10px;
  justifyContent: space-between;
 
 
+`;
+
+const LoadingView = styled.View`
+alignItems: center;
+justifyContent: center;
 `;
 
 
