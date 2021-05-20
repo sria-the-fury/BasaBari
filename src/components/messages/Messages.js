@@ -1,9 +1,9 @@
 import React, {useContext, useState, useRef} from 'react'
-import {View, Text, TouchableOpacity, StyleSheet, Vibration, ToastAndroid} from 'react-native'
+import { TouchableOpacity, StyleSheet, Vibration, ToastAndroid} from 'react-native'
 import {ChatModal} from "../../modals/ChatModal";
 import _ from "lodash";
 import {FirebaseContext} from "../../context/FirebaseContext";
-import {Divider, Icon} from "react-native-elements";
+import {Icon} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {Colors} from "../utilities/Colors";

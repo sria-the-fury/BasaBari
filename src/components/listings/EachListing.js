@@ -46,7 +46,10 @@ export const EachListing = (props) => {
     useEffect(() => {
         const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
-                if(doc) setPostedUser(doc.data());
+                if(doc){
+                    const {isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl} = doc.data();
+                    setPostedUser({id: doc.id, isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl});
+                }
             });
 
         return () => subscriber();
@@ -207,68 +210,78 @@ export const EachListing = (props) => {
                 </View>
 
             }
+            <BottomItemsContainer onPress={() => props.navigation.navigate('ListingDetails', {
+                listingId: item.id,
+                listingsData: item,
+                postedUserInfo: postedUser,
+                currentUserListings: currentUserListings()
+            })}>
 
-            <AddressContainer>
-                <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
-                <TextComponent style={{ flex:1,
-                    flexWrap: 'wrap'}} medium ellipsizeMode={'tail'} numberOfLines={2}>{item.address}</TextComponent>
+                <AddressContainer>
+                    <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
+                    <TextComponent style={{ flex:1,
+                        flexWrap: 'wrap'}} medium ellipsizeMode={'tail'} numberOfLines={2}>{item.address}</TextComponent>
 
-            </AddressContainer>
-
-
-            <LocationAndRentContainer>
-                <Location>
-                    <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
-                    <TextComponent color={'rgba(0,0,0, 0.9)'}>
-                        {location?.city === location?.county ? location.city : `${location.city}, ${location.county}`},
-                        <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location?.state}, {location?.country}</TextComponent>
-                    </TextComponent>
-
-                </Location>
-                <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50}}>
-                    <TextComponent color={'white'} bold>TK. {rentPerMonth}</TextComponent>
-
-                </View>
+                </AddressContainer>
 
 
-            </LocationAndRentContainer>
+                <LocationAndRentContainer>
+                    <Location>
+                        <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
+                        <TextComponent color={'rgba(0,0,0, 0.9)'}>
+                            {location?.city === location?.county ? location.city : `${location.city}, ${location.county}`},
+                            <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location?.state}, {location?.country}</TextComponent>
+                        </TextComponent>
+
+                    </Location>
+                    <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50}}>
+                        <TextComponent color={'white'} bold>TK. {rentPerMonth}</TextComponent>
+
+                    </View>
 
 
-            <HomeItemsNumbersContainer>
-                <HomeItemsNumbers>
-                    <Icon name={'bed'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.bedRoom}</TextComponent>
-                </HomeItemsNumbers>
-
-                <HomeItemsNumbers>
-                    <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.dining}</TextComponent>
-                </HomeItemsNumbers>
-
-                <HomeItemsNumbers>
-                    <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.washRoom}</TextComponent>
-                </HomeItemsNumbers>
-
-                <RentType>
-                    {
-                        forFamily && forBachelor ? <TextComponent color={'white'} bold tiny>Bachelor/Family</TextComponent>
-                            : forBachelor ? <TextComponent color={'white'} tiny bold>BACHELOR</TextComponent>
-                            : forFamily ? <TextComponent color={'white'} bold tiny>FAMILY</TextComponent> : null
+                </LocationAndRentContainer>
 
 
-                    }
-                </RentType>
+                <HomeItemsNumbersContainer>
+                    <HomeItemsNumbers>
+                        <Icon name={'bed'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
+                        <TextComponent>{roomNumbers.bedRoom}</TextComponent>
+                    </HomeItemsNumbers>
 
-                <Icon name={'chevron-forward-circle'} type={'ionicon'} size={35} style={{marginRight: 5}} color={'grey'}
-                      onPress={() => props.navigation.navigate('ListingDetails', {
-                          listingId: item.id,
-                          listingsData: item,
-                          postedUserInfo: postedUser,
-                          currentUserListings: currentUserListings()
-                      })}/>
+                    <HomeItemsNumbers>
+                        <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
+                        <TextComponent>{roomNumbers.dining}</TextComponent>
+                    </HomeItemsNumbers>
 
-            </HomeItemsNumbersContainer>
+                    <HomeItemsNumbers>
+                        <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
+                        <TextComponent>{roomNumbers.washRoom}</TextComponent>
+                    </HomeItemsNumbers>
+
+                    <RentType>
+                        {
+                            forFamily && forBachelor ? <TextComponent color={'white'} bold tiny>Bachelor/Family</TextComponent>
+                                : forBachelor ? <TextComponent color={'white'} tiny bold>BACHELOR</TextComponent>
+                                : forFamily ? <TextComponent color={'white'} bold tiny>FAMILY</TextComponent> : null
+
+
+                        }
+                    </RentType>
+
+                    {/*<Icon name={'chevron-forward-circle'} type={'ionicon'} size={35} style={{marginRight: 5}} color={'grey'}*/}
+                    {/*      onPress={() => props.navigation.navigate('ListingDetails', {*/}
+                    {/*          listingId: item.id,*/}
+                    {/*          listingsData: item,*/}
+                    {/*          postedUserInfo: postedUser,*/}
+                    {/*          currentUserListings: currentUserListings()*/}
+                    {/*      })}/>*/}
+
+                </HomeItemsNumbersContainer>
+
+
+
+            </BottomItemsContainer>
 
             <RBSheet
                 ref={ListingsBottomSheet}
@@ -333,7 +346,6 @@ marginHorizontal: 10px;
 const CardsContainer = styled.View`
  marginVertical:10px;
   backgroundColor: white;
-   paddingHorizontal: 10px;
    paddingVertical: 5px;
     
      overflow: hidden;
@@ -346,11 +358,16 @@ const CardsContainer = styled.View`
 
 const TimeContainer = styled.View`
 flexDirection : row;
+   paddingHorizontal: 10px;
 alignItems: center;
 paddingBottom: 5px;
 justifyContent: space-between;
 
 
+`;
+
+const BottomItemsContainer = styled.Pressable`
+paddingHorizontal: 10px;
 `;
 
 
@@ -389,7 +406,7 @@ alignItems: center;
 const HomeItemsNumbersContainer = styled.View`
 flexDirection : row;
 alignItems: center;
-paddingTop: 5px
+paddingTop: 10px
 justifyContent: space-between;
 `;
 

@@ -72,7 +72,7 @@ export const ChatModal = (props) => {
         const getDayDifference =  Math.round((new Date().getTime() - new Date(time).getTime())/(1000*3600*24));
         return(
             <TextComponent extraTiny color={'white'} style={{ marginLeft: 3}}>
-                {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
+               {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
             </TextComponent>
         )
     };
@@ -98,7 +98,7 @@ export const ChatModal = (props) => {
 
                         { ToUserInfo?.isOnline || ToUserInfo?.lastSeen ?
                             <IsUserOnline>
-                                <Icon name={ToUserInfo.isOnline ? 'ellipse' : 'ellipse-outline'} type={'ionicon'} size={ToUserInfo?.isOnline ? 10 : 8} color={'#18f73d'}/>
+                                {ToUserInfo.isOnline ? <Icon name={'ellipse'} type={'ionicon'} size={10} color={'#18f73d'}/> : null}
                                 {
                                     ToUserInfo?.isOnline ? <TextComponent tiny color={'white'} style={{marginLeft: 2}}>
                                             Online

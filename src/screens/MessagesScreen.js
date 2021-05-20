@@ -180,7 +180,9 @@ export default function MessagesScreen(props) {
                                 {lastMessage.senderId === currentUserId && lastMessage.read ?
                                     <Icon name={'checkmark-done-outline'} color={'#5c8ef2'} type={'ionicon'} size={10}/> : null}
                                 <TextComponent tiny color={'grey'} >
-                                    {sentAtTime(lastMessage.sentAt.seconds)}</TextComponent>
+                                    {lastMessage.senderId === currentUserId && lastMessage.read ?
+                                        LastMessageSeenTime(lastMessage.readAt)
+                                        : sentAtTime(lastMessage.sentAt.seconds) }</TextComponent>
                             </View>
 
                         </View>
@@ -190,10 +192,9 @@ export default function MessagesScreen(props) {
                             {lastMessage.senderId === currentUserId ? <TextComponent medium> Me : </TextComponent> : null }
                             <TextComponent medium numberOfLines={1}
                                            color={lastMessage.senderId !== currentUserId && !lastMessage.read ? '#3188D9' : 'grey'}
-                                           style={{width: '85%'}}>{lastMessage.message}</TextComponent>
+                                           style={{width: lastMessage.senderId !== currentUserId && !lastMessage.read ? '85%' : '100%'}}>{lastMessage.message}</TextComponent>
                             { lastMessage.senderId !== currentUserId && !lastMessage.read ?
-                                <Badge containerStyle={{marginLeft: 10}}
-                                       value={<Text style={{color:'white', fontSize: 10}}>{unreadMessage.length}</Text>} /> : null
+                                <Badge containerStyle={{marginHorizontal: 2}} value={<Text style={{color:'white', fontSize: 10}}>{unreadMessage.length}</Text>} /> : null
                             }
                         </View>
                         <View style={{flexDirection: "row", alignItems: "center"}}>

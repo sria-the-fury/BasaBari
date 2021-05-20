@@ -51,7 +51,7 @@ export default function MainStackScreen() {
 
 
     if(notifications?.length > 0) {
-        console.log('notifications=>', notifications);
+        PushNotification.removeAllDeliveredNotifications();
         PushNotification.createChannel(
             {
                 channelId: currentUserInfo.uid, // (required)
@@ -79,9 +79,9 @@ export default function MainStackScreen() {
                         bigText: notification.content,
                         subText: `Message @ ${listingName}`,
                         vibration: 300,
-                        actions: ["ReplyInput"],
-                        reply_placeholder_text: "Write your response...", // (required)
-                        reply_button_text: "Reply", // (required)
+                        // actions: ["ReplyInput"],
+                        // reply_placeholder_text: "Write your response...", // (required)
+                        // reply_button_text: "Reply", // (required)
                         playSound: true,
                         soundName: "default",
                         when: notification.notifyAt,
