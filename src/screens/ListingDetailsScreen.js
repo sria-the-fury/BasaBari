@@ -20,6 +20,7 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {v4 as uuidv4} from "uuid";
 import {Avatar, FAB} from "react-native-paper";
+import {UserContext} from "../context/UserContext";
 import {ListingDeleteConfirmModal} from "../modals/ListingDeleteConfirmModal";
 
 
@@ -31,7 +32,7 @@ export const ListingDetailsScreen = (props) => {
 
     const {listingId, listingsData, postedUserInfo, currentUserListings} = params;
     const [listingData, setListingData] = useState(listingsData);
-
+    const [user] = useContext(UserContext);
 
     useEffect(() => {
 
@@ -48,6 +49,7 @@ export const ListingDetailsScreen = (props) => {
     const {images, roomNumbers, facilities, forBachelor, forFamily, userId , usersInFav, address, rentPerMonth, isNegotiable, moreDetails, location, interestedTenantId} = listingData;
 
 
+    console.log('listingData =>', listingData);
 
     const makeCall = async (number) => {
         await Linking.openURL('tel:'+number);
@@ -158,7 +160,7 @@ export const ListingDetailsScreen = (props) => {
                         <Icon name={'home'} type={'ionicon'} size={25} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                         <TextComponent medium bold style={{ flex:1,
                             flexWrap: 'wrap'}}>
-                            {listingsData.address}
+                            {address}
                         </TextComponent>
                     </AddressContainer>
 
@@ -323,7 +325,7 @@ export const ListingDetailsScreen = (props) => {
                         onStateChange={() =>
                             setSpeedDial(!openSpeedDial)}
                     />
-                    :
+                    : user.userType === 'tenant' ?
                     <FAB.Group
                         fabStyle={{backgroundColor: Colors.buttonPrimary}}
                         open={openSpeedDial}
@@ -343,7 +345,7 @@ export const ListingDetailsScreen = (props) => {
                             }
                         ]}
                         onStateChange={() => setSpeedDial(!openSpeedDial)}
-                    />
+                    /> : null
                     // <ContactAndMessageContainer>
                     //     <ContactContainer onPress={()=>makeCall(postedUserInfo.phoneNumber)}>
                     //         <Icon name={'call'} type={'ionicon'} size={25} style={{marginRight: 5}} color={'white'}/>

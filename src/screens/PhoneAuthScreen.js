@@ -118,7 +118,7 @@ export default  function PhoneAuthScreen() {
 
             if(data.user.displayName && data.user.photoURL){
                 const userInfo = await firebase.getUserInfo(data.user.uid);
-                await firebase.userOnlineStatus(currentUser?.uid, true);
+                await firebase.userOnlineStatus(data.user.uid, true);
                 setUser({
                     isLoggedIn: true,
                     userType: userInfo.userType,

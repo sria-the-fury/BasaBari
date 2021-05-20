@@ -36,17 +36,10 @@ export default function MainStackScreen() {
                         docs.forEach(doc => {
                             const {notifyTo, notifyFrom, read, notifyAt, content, listingId} = doc.data();
                             data.push({
-                                id: doc.id,
-                                notifyTo,
-                                read,
-                                notifyAt,
-                                listingId,
-                                notifyFrom, content
+                                id: doc.id, notifyTo, read, notifyAt, listingId, notifyFrom, content
                             });
-
                         });
                         setNotifications(data);
-
                     }
 
                 });
@@ -57,7 +50,8 @@ export default function MainStackScreen() {
     }, []);
 
 
-    if(notifications) {
+    if(notifications?.length > 0) {
+        console.log('notifications=>', notifications);
         PushNotification.createChannel(
             {
                 channelId: currentUserInfo.uid, // (required)
@@ -160,7 +154,8 @@ export default function MainStackScreen() {
                 return (
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
                         <TextComponent color={focused ? 'white' :'#666666'} extraTiny>My</TextComponent>
-                        <Icon name={'roofing'} size={30} color={focused ? 'white' :'#666666' } type='md' style={{shadowColor: 'black', shadowOffset: {width: 0, height: 10}, shadowRadius: 5,
+                        <Icon name={'roofing'} size={30} color={focused ? 'white' :'#666666' } type='md'
+                              style={{shadowColor: 'black', shadowOffset: {width: 0, height: 10}, shadowRadius: 5,
                             shadowOpacity: 0.3, elevation: 10}}/>
                     </View>
                 )
@@ -204,7 +199,8 @@ export default function MainStackScreen() {
     return (
         <MainStack.Navigator tabBarOptions={tabBarOptions} screenOptions={screenOptions} >
             <MainStack.Screen name={'Home'} component={HomeScreen}/>
-            {user.userType === 'tenant' ?
+            {
+                user.userType === 'tenant' ?
                 <MainStack.Screen name={'Favorite'} component={FavoriteListingsScreen}/> : null
             }
             <MainStack.Screen name={'Messages'} component={MessagesScreen}/>
@@ -221,7 +217,8 @@ export default function MainStackScreen() {
                                   })}
                 /> : null }
 
-            {user.userType === 'landlord' ?
+            {
+                user.userType === 'landlord' ?
                 <MainStack.Screen name={'MyListings'} component={MyListingScreen}/> : null
 
             }
