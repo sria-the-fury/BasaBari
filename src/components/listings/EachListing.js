@@ -234,7 +234,7 @@ export const EachListing = (props) => {
                         </TextComponent>
 
                     </Location>
-                    <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50}}>
+                    <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50,}}>
                         <TextComponent color={'white'} bold>TK. {rentPerMonth}</TextComponent>
 
                     </View>
@@ -375,9 +375,7 @@ const LocationAndRentContainer = styled.View`
 flexDirection : row;
 alignItems: center;
 justifyContent: space-between;
-marginRight: 10px;
 overflow: hidden;
-
 `;
 
 const Location = styled.View`

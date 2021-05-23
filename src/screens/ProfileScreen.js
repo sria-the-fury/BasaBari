@@ -16,7 +16,7 @@ import PushNotification from "react-native-push-notification";
 
 export default function ProfileScreen(props) {
 
-    const [loading, setLoading] = useState(false);
+    const [profileImageLoading, setProfileImageLoading] = useState(false);
     const [nameLoading, setNameLoading] = useState(false);
     const [updatedName, setUpdateName] = useState('');
 
@@ -107,7 +107,7 @@ export default function ProfileScreen(props) {
 
     const uploadUpdateProfileImage = async (path) => {
         try {
-            setLoading(true);
+            setProfileImageLoading(true);
             await firebase.uploadProfilePhoto(path);
             setUser( {
                 ...user,
@@ -118,7 +118,7 @@ export default function ProfileScreen(props) {
         } catch (e) {
             alert(e.message);
         } finally {
-            setLoading(false);
+            setProfileImageLoading(false);
             removeTempImages();
 
         }
@@ -190,10 +190,10 @@ export default function ProfileScreen(props) {
                             shadowRadius: 5.32,}}>
 
                             <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/default-profile-image.png')}/>
-                            <TouchableOpacity style={{position: "absolute", top: -5, left:6}}
-                                              onPress={() => chooseProfileImage()} disabled={loading}>
-                                { loading ? <Loading/> :
-                                    <Icon name={'edit'} type={'md'} size={24} color={'blue'} style={{backgroundColor: 'white', borderRadius:50, padding:2, borderColor: Colors.primaryBody, borderWidth: 3}}/>
+                            <TouchableOpacity style={[{position: "absolute"}, profileImageLoading ? {alignSelf: 'center'} : {top: -5, left:6}]}
+                                              onPress={() => chooseProfileImage()} disabled={profileImageLoading}>
+                                { profileImageLoading ? <Loading/> :
+                                    <Icon name={'edit'} type={'md'} size={24} color={Colors.primaryBody} style={{backgroundColor: 'white', borderRadius:50, padding:2, borderColor: Colors.primaryBody, borderWidth: 3}}/>
                                 }
                             </TouchableOpacity>
                         </ProfileImageContainer>
@@ -475,8 +475,8 @@ alignItems: center;
 
 
 const Loading = styled.ActivityIndicator.attrs(() => ({
-    color: 'red',
-    size: 'small',
+    color: 'white',
+    size: 'large',
 
 
 

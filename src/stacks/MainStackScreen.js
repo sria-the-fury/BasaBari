@@ -101,7 +101,7 @@ export default function MainStackScreen() {
     const tabBarOptions = {
         showLabel: false,
         style: {
-            backgroundColor: '#320A28',
+            backgroundColor: Colors.primaryBody,
             paddingBottom: 5,
             paddingTop:5,
             height: 54

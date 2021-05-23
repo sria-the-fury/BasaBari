@@ -26,11 +26,12 @@ export const UserProvider =  (props) => {
 
         appState.current = nextAppState;
         // setAppStateVisible(appState.current);
-        if (appState.current === 'active' && state.isLoggedIn) {
+        console.log('appState.current =>', appState.current);
+        if (appState.current !== 'background' && state.isLoggedIn) {
+            console.log('appState.current in =>', appState.current);
             const userInfo = await firebase.getUserInfo(currentUser?.uid);
             if(userInfo) setState({...state, userType: userInfo.userType});
             await firebase.userOnlineStatus(currentUser?.uid, true);
-            console.log('appState.current =>', appState.current);
         } else if(appState.current === 'background' && currentUser){
             await firebase.userOnlineStatus(currentUser?.uid, false);
             console.log('appState.current b=>', appState.current);

@@ -300,15 +300,19 @@ export const ListingDetailsScreen = (props) => {
                         <View>
                             <Avatar.Image size={35} source={{uri: listingOwnerInfo?.profilePhotoUrl}}/>
                             { listingOwnerInfo?.isOnline ?
-                                <View style={{position: 'absolute', top: 0, right: 0, backgroundColor: 'white',
-                                    borderColor: 'white', borderRadius: 6, borderWidth: 2, height: 12, width: 12}}>
+                                <View style={{position: 'absolute', top: -2, right: 0, backgroundColor: Colors.primaryBody,
+                                    borderColor: Colors.primaryBody, borderRadius: 6, borderWidth: 2, height: 12, width: 12}}>
 
-                                    <View style={{backgroundColor: '#18f73d', height: 8, width: 8, borderRadius: 4}}/>
+                                    <View style={{backgroundColor: Colors.onlineStatusDotColor, height: 8, width: 8, borderRadius: 4}}/>
                                 </View> : null
                             }
                         </View>
                         <View style={{marginHorizontal: 5}}>
-                            <TextComponent medium color={'white'}>{listingOwnerInfo.userName}</TextComponent>
+                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                <TextComponent medium color={'white'}>{listingOwnerInfo.userName}</TextComponent>
+                                {currentUserListings ? <Icon name={'home'} color={Colors.appIconColor} type={'ionicon'} size={13} style={{marginLeft: 2}}/> : null}
+
+                            </View>
                             {listingOwnerInfo.isOnline ?
                                 <TextComponent tiny color={'white'}>Online</TextComponent> :
                                 !listingOwnerInfo?.isOnline && listingOwnerInfo.lastSeen ?
@@ -318,7 +322,6 @@ export const ListingDetailsScreen = (props) => {
 
                         </View>
 
-                        {currentUserListings ? <Icon name={'home'} color={Colors.appIconColor} type={'ionicon'} size={13} style={{marginLeft: 2}}/> : null}
 
                     </PostedBy>
 

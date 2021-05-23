@@ -13,7 +13,7 @@ import {Colors} from "../components/utilities/Colors";
 import {TextInput} from "react-native-paper";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {SearchPlaces} from "../components/utilities/SearchPlaces";
-import {Notifier} from "../components/utilities/Notifier";
+import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 
 export const ListingsUpdateModal = (props) => {
     const searchBottomSheet = useRef();
@@ -261,7 +261,6 @@ export const ListingsUpdateModal = (props) => {
 
     return (
         <Container>
-            {/*<FocusedStatusbar barStyle="dark-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>*/}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -280,7 +279,7 @@ export const ListingsUpdateModal = (props) => {
                             }
                         </UpdateListingButton>
                     </ModalHeader>
-                    <ScrollView showsVerticalScrollIndicator={false} style={{paddingHorizontal: 10}}>
+                    <ScrollView showsVerticalScrollIndicator={false} style={{paddingHorizontal: 5}}>
                         <BodyView>
 
                             <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
