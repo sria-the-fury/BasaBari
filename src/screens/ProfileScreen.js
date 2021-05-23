@@ -465,7 +465,6 @@ borderColor: ${Colors.primaryBodyLight};
 `;
 
 const SettingsCardContainer = styled.TouchableOpacity`
-borderRadius: 15px;
 paddingHorizontal:20px;
 flexDirection: row
 paddingVertical: 10px;
