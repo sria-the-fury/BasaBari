@@ -44,7 +44,7 @@ export const ChatBubbleAndMessageReadTime = (props) => {
         return(
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end'}}>
                 <Icon name={'checkmark-done-outline'} color={'#5c8ef2'} type={'ionicon'} size={10}/>
-                <TextComponent extraTiny color={'white'} style={{ textAlign: 'right'}}>
+                <TextComponent extraTiny color={'grey'} style={{ textAlign: 'right'}}>
                     {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
                 </TextComponent>
             </View>

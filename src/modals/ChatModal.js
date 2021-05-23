@@ -18,6 +18,7 @@ import _ from 'lodash';
 import moment from "moment";
 import {FirebaseContext} from "../context/FirebaseContext";
 import {ChatBubbleAndMessageReadTime} from "../components/chat/ChatBubbleAndMessageReadTime";
+import PushNotification from "react-native-push-notification";
 
 
 export const ChatModal = (props) => {
@@ -35,7 +36,7 @@ export const ChatModal = (props) => {
             // ScrollViewRef.current.scrollToEnd({animated: true});
             await firebase.sendMessageAtMessageScreen(messageId, currentUserId, sendMessage);
             setSendMessage('');
-            await firebase.createNotification(ToUserInfo.id, currentUserId, false, messageId, IncludeListing.id, message);
+            await firebase.createNotification(ToUserInfo.id, currentUserId, false, messageId, IncludeListing.id, sendMessage);
 
         } catch (e) {
             ToastAndroid.show(e.message+ '@front sent msg', ToastAndroid.LONG);
@@ -71,7 +72,7 @@ export const ChatModal = (props) => {
         const getDayDifference =  Math.round((new Date().getTime() - new Date(time).getTime())/(1000*3600*24));
         return(
             <TextComponent extraTiny color={'white'} style={{ marginLeft: 3}}>
-                {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
+               {getDayDifference > 0 ? moment(time).calendar() : moment(time).startOf('minutes').fromNow()}
             </TextComponent>
         )
     };
@@ -92,12 +93,12 @@ export const ChatModal = (props) => {
                     <NameAndOnlineStatus>
                         <NameAndPhone>
                             <Icon name={'call'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'white'} onPress={() => cellularCall(ToUserInfo?.phoneNumber)}/>
-                            <TextComponent bold semiLarge color={'white'}>  {firstName[0]}</TextComponent>
+                            <TextComponent bold semiLarge color={'white'}>  {ToUserInfo ? firstName[0] : null}</TextComponent>
                         </NameAndPhone>
 
                         { ToUserInfo?.isOnline || ToUserInfo?.lastSeen ?
                             <IsUserOnline>
-                                <Icon name={ToUserInfo.isOnline ? 'ellipse' : 'ellipse-outline'} type={'ionicon'} size={ToUserInfo?.isOnline ? 10 : 8} color={'#18f73d'}/>
+                                {ToUserInfo.isOnline ? <Icon name={'ellipse'} type={'ionicon'} size={10} color={'#18f73d'}/> : null}
                                 {
                                     ToUserInfo?.isOnline ? <TextComponent tiny color={'white'} style={{marginLeft: 2}}>
                                             Online
@@ -124,6 +125,7 @@ export const ChatModal = (props) => {
                                     ScrollViewRef.current.scrollToEnd({animated: true});
                                     if(lastMessage.senderId !== currentUserId && !lastMessage.read) Vibration.vibrate(30);
                                     await messageActions();
+                                    PushNotification.removeAllDeliveredNotifications();
 
                                     if(notifications.length > 0 ) await firebase.readNotifications(notifications, true);
                                 }}

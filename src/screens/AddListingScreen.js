@@ -188,7 +188,7 @@ export default function AddListingScreen(props) {
 
     return (
         <Container>
-            <FocusedStatusbar barStyle="dark-content" backgroundColor={Colors.primaryBody}/>
+            <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryBody}/>
             <HeaderContainer>
 
                     <Icon
@@ -617,15 +617,14 @@ backgroundColor: ${Colors.primaryBody};
 `;
 
 const BodyView = styled.View`
-paddingHorizontal : 10px;
 marginBottom: 20px;
-
-
+paddingHorizontal : 5px;
 
 `;
 
 const FormViewContainer = styled.ScrollView`
-paddingHorizontal : 10px;
+paddingHorizontal: 5px;
+
 `;
 
 const LabelAndInputWrapper = styled.View`
