@@ -55,7 +55,6 @@ export const ListingDetailsScreen = (props) => {
 
     const {images, roomNumbers, facilities, forBachelor, forFamily, userId , usersInFav, address, rentPerMonth, isNegotiable, moreDetails, location, interestedTenantId} = listingData;
 
-
     const makeCall = async (number) => {
         await Linking.openURL('tel:'+number);
     }
@@ -145,31 +144,30 @@ export const ListingDetailsScreen = (props) => {
         return (
             <Container>
                 <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
+                <ModalHeader>
+                    <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => navigation.goBack()}/>
+                    { currentUserId !== userId ?
+                        <Icon name={isCurrentUserFavList ? 'heart' : 'heart-outline'} type={'ionicon'} size={35}
+                              style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'white'}
+                              onPress={() => addRemoveFavorite(listingId)}/> : null
+                    }
+                    <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
+                </ModalHeader>
 
                 <BodyView>
-                    <ModalHeader>
-                        <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => navigation.goBack()}/>
-                        { currentUserId !== userId ?
-                            <Icon name={isCurrentUserFavList ? 'heart' : 'heart-outline'} type={'ionicon'} size={35}
-                                  style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'white'}
-                                  onPress={() => addRemoveFavorite(listingId)}/> : null
-                        }
-                        <TextComponent bold medium color={'white'}>LISTING DETAILS</TextComponent>
-                    </ModalHeader>
 
                     <ScrollView showsVerticalScrollIndicator={false}>
 
-                        { images?.length > 0 ?
-                            <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
-                                      style={{marginTop: 5}}
-                                      showsHorizontalScrollIndicator={false}/> :
-                            <View style={{flexDirection: 'row', marginTop: 5}}>
-                                <ListingsImagesContainer/>
-                                <ListingsImagesContainer/>
-                                <ListingsImagesContainer/>
-                            </View>
-                        }
-
+                        <FlatList data={images} renderItem={({item}) => renderImage(item)} keyExtractor={item => item.imageId} horizontal={true}
+                                  ListEmptyComponent={
+                                      <View style={{flexDirection: 'row'}}>
+                                          <ListingsImagesContainer/>
+                                          <ListingsImagesContainer/>
+                                          <ListingsImagesContainer/>
+                                          <ListingsImagesContainer/>
+                                      </View>}
+                                  style={{marginTop: 5}}
+                                  showsHorizontalScrollIndicator={false}/>
 
 
                         <AddressContainer>
@@ -447,7 +445,7 @@ export const ListingDetailsScreen = (props) => {
 const renderImage= (image) => {
 
     return(
-        <View style={{marginHorizontal:15}}>
+        <View style={{marginHorizontal:10}}>
             <Image source={{uri: image.imageUrl}} style={{ height: 250, width: 250, borderRadius: 10}}  PlaceholderContent={<ActivityIndicator size="large" color={'white'}/>}/>
         </View>
     )
@@ -479,7 +477,6 @@ flexDirection: row;
 const BodyView = styled.View`
 backgroundColor: white;
 flex:1
-
 `;
 
 const ModalHeader = styled.View`

@@ -63,7 +63,9 @@ export default function  HomeScreen (props) {
             {/*    <TextComponent medium bold color={'white'}>SEARCH</TextComponent>*/}
 
             {/*</HeaderContainer>*/}
-            <FlatList data={ListingsData} renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> } keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
+            <FlatList data={ListingsData}
+                      renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> }
+                      keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
 
         </Container>
     )
