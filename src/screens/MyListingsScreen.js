@@ -22,7 +22,7 @@ export default function MyListingScreen(props) {
 
     useEffect(() => {
 
-        const subscriber = firestore().collection('listings').where('userId', '==', currentUserId).onSnapshot(
+        const subscriber = firestore().collection('listings').orderBy('postedTime', 'desc').where('userId', '==', currentUserId).onSnapshot(
             docs=> {
                 let data=[];
                 if(docs) {
@@ -48,7 +48,6 @@ export default function MyListingScreen(props) {
                     });
                     setListingsData(data);
                 }
-
 
             });
 
