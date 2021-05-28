@@ -1,17 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
-import {TouchableOpacity, FlatList, View, Text, ScrollView} from 'react-native';
-import {Icon, Slider} from "react-native-elements";
+import {FlatList, ScrollView, View} from 'react-native';
+import {Icon} from "react-native-elements";
 import {EachListing} from "../components/listings/EachListing";
 import firestore from "@react-native-firebase/firestore";
-import {FirebaseContext} from "../context/FirebaseContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Colors} from "../components/utilities/Colors";
-import moment from "moment";
 
 import _ from "lodash";
 import {Chip} from "react-native-paper";
+import LottieView from "lottie-react-native";
 
 export default function  HomeScreen (props) {
 
@@ -62,12 +61,10 @@ export default function  HomeScreen (props) {
     }
     const sortByRentTenantType = () => {
         if(rentForBachelor) {
-            let sortByBachelor = _.filter(ListingsData, {forBachelor: true});
-            return sortByBachelor
+            return _.filter(ListingsData, {forBachelor: true})
         }
         else if(rentForFamily) {
-            let sortByFamily = _.filter(ListingsData, {forFamily: true});
-            return sortByFamily
+            return _.filter(ListingsData, {forFamily: true})
         }
         else return ListingsData;
 
@@ -84,13 +81,14 @@ export default function  HomeScreen (props) {
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <Chip icon={sortByRent ? 'sort-ascending' : "sort-descending"} mode={'outlined'}
-                          style={{marginHorizontal: 5}}
+                          style={{marginHorizontal: 5, backgroundColor: Colors.primaryBodyLight}}
                           onPress={() => sorting()}
+                          theme={{color: {background: 'transparent', primary: 'red'}}}
                           children={<TextComponent color={'white'}>Rent/Month</TextComponent>}/>
 
                     <Chip mode={'outlined'}
                           onPress={() => {setRentForFamily(false); setRentForBachelor(!rentForBachelor);}}
-                          style={[{marginHorizontal: 5}, rentForBachelor ? {backgroundColor: Colors.favorite} : null]}
+                          style={{marginHorizontal: 5, backgroundColor: rentForBachelor ? Colors.favorite : Colors.primaryBodyLight}}
                           children={
                               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                   <Icon name={'person'} type={'md'} color={Colors.appIconColor} size={15}/>
@@ -100,7 +98,7 @@ export default function  HomeScreen (props) {
                           }/>
                     <Chip mode={'outlined'}
                           onPress={() => {setRentForBachelor(false);setRentForFamily(!rentForFamily)}}
-                          style={[{marginHorizontal: 5}, rentForFamily ? {backgroundColor: Colors.favorite} : null]}
+                          style={{marginHorizontal: 5, backgroundColor: rentForFamily ? Colors.favorite : Colors.primaryBodyLight}}
                           children={
                               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                   <Icon name={'family-restroom'} type={'md'} color={Colors.appIconColor} size={15}/>
@@ -150,7 +148,11 @@ export default function  HomeScreen (props) {
 
 
             <FlatList data={sortByRentTenantType()}
-                      ListEmptyComponent={<TextComponent>No Listing found</TextComponent>}
+                      ListEmptyComponent={
+                          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: '10%'}}>
+                              <LottieView source={require('../../assets/lottie-animations/home.json')} autoPlay loop style={{width: 120}} />
+                              <TextComponent bold medium>No listing found</TextComponent>
+                          </View>}
                       renderItem={({item}) => <EachListing item = {item} navigation={props.navigation}/> }
                       keyExtractor={item => item.id} showsVerticalScrollIndicator={false}/>
 
@@ -158,7 +160,6 @@ export default function  HomeScreen (props) {
     )
 
 }
-
 
 const Container = styled.SafeAreaView`
 flex:1;

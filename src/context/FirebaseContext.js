@@ -28,6 +28,10 @@ const Firebase = {
                 userName: userName.trim(),
                 phoneNumber: phoneNumber,
                 createAt: new Date(),
+                usersSettings:{
+                    onlineStatus: true,
+                    getNotification: true
+                },
                 userType
             }, {merge: true});
 
@@ -585,6 +589,26 @@ const Firebase = {
 
         }
 
+    },
+    userSettingsUpdate: async (userId, updateValue, updateType) => {
+        try{
+            if(updateType === 'ONLINE_STATUS'){
+                await firestore().collection('users').doc(userId).update({
+                    'usersSettings.onlineStatus': updateValue
+
+                });
+            }
+            if(updateType === 'GET_NOTIFICATION'){
+                await firestore().collection('users').doc(userId).update({
+                    'usersSettings.getNotification' : updateValue
+
+                });
+            }
+
+
+        } catch (e) {
+            console.log(e.message);
+        }
     }
 
 
