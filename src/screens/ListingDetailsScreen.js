@@ -171,7 +171,7 @@ export const ListingDetailsScreen = (props) => {
 
 
                         <AddressContainer>
-                            <Icon name={'home'} type={'ionicon'} size={25} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
+                            <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                             <TextComponent medium bold style={{ flex:1,
                                 flexWrap: 'wrap'}}>
                                 {address}

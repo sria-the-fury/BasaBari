@@ -1,6 +1,14 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import styled from "styled-components";
-import {ActivityIndicator, Linking, StyleSheet, ToastAndroid, TouchableOpacity} from 'react-native';
+import {
+    ActivityIndicator,
+    Linking,
+    StyleSheet, Switch,
+    ToastAndroid,
+    TouchableHighlight,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import {TextComponent} from "../components/TextComponent";
 import {Divider, Icon} from "react-native-elements";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
@@ -12,6 +20,7 @@ import {Colors} from "../components/utilities/Colors";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {Avatar, Colors as RNPColors, TextInput} from "react-native-paper";
 import PushNotification from "react-native-push-notification";
+import firestore from "@react-native-firebase/firestore";
 
 
 export default function ProfileScreen(props) {
@@ -19,6 +28,7 @@ export default function ProfileScreen(props) {
     const [profileImageLoading, setProfileImageLoading] = useState(false);
     const [nameLoading, setNameLoading] = useState(false);
     const [updatedName, setUpdateName] = useState('');
+    const [userInfoFromDB, setUserInfo] = useState(null);
 
 
     // userContext
@@ -28,6 +38,18 @@ export default function ProfileScreen(props) {
     const profileUserInfo = firebase.getCurrentUser() ? firebase.getCurrentUser() : '';
 
 
+    useEffect(() => {
+        const findOneUser = firestore().collection('users').doc(profileUserInfo?.uid).onSnapshot(
+            doc=> {
+                if(doc) {
+                    setUserInfo(doc.data());
+                    setOnlineStatus(doc.data().usersSettings.onlineStatus);
+                }
+            });
+
+        return () => findOneUser();
+
+    }, []);
 
     //openModal
     const [openTermsModal, setTermsModal] = useState(false);
@@ -135,7 +157,7 @@ export default function ProfileScreen(props) {
         }).then(image => {
             if(image.length){
                 uploadUpdateProfileImage(image[0].path).then(() => {
-                    setLoading(false);
+                    setProfileImageLoading(false);
                 })
             }
 
@@ -164,6 +186,25 @@ export default function ProfileScreen(props) {
     const disableUpdateNameButton = () => {
         return (updatedName.trim() === profileUserInfo.displayName || updatedName === '' || updatedName.length < 3);
 
+    };
+
+    const [isNotificationStop, setNotification] = useState(false);
+
+
+    const [isShowOnline, setOnlineStatus] = useState(userInfoFromDB?.usersSettings.onlineStatus);
+
+    const changeOnlineStatus = async () => {
+
+        if(isShowOnline){
+            await firebase.userOnlineStatus(profileUserInfo?.uid, false);
+            await firebase.userSettingsUpdate(profileUserInfo?.uid, false, 'ONLINE_STATUS');
+            setOnlineStatus(false);
+        }
+        if(!isShowOnline){
+            await firebase.userOnlineStatus(profileUserInfo?.uid, true);
+            await firebase.userSettingsUpdate(profileUserInfo?.uid, true, 'ONLINE_STATUS');
+            setOnlineStatus(true);
+        }
     }
 
 
@@ -175,7 +216,7 @@ export default function ProfileScreen(props) {
             <Header>
                 <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => props.navigation.goBack()}/>
                 <TextComponent color={'white'} medium bold center>PROFILE</TextComponent>
-                <Icon name={'log-out'} type={'ionicon'} size={35} color={'red'} onPress={() => loggedOut()}/>
+                <Icon raised name={'log-out'} type={'ionicon'} size={15} color={'red'} onPress={() => loggedOut()}/>
 
             </Header>
 
@@ -193,7 +234,7 @@ export default function ProfileScreen(props) {
                             <TouchableOpacity style={[{position: "absolute"}, profileImageLoading ? {alignSelf: 'center'} : {top: -5, left:6}]}
                                               onPress={() => chooseProfileImage()} disabled={profileImageLoading}>
                                 { profileImageLoading ? <Loading/> :
-                                    <Icon name={'edit'} type={'md'} size={24} color={Colors.primaryBody} style={{backgroundColor: 'white', borderRadius:50, padding:2, borderColor: Colors.primaryBody, borderWidth: 3}}/>
+                                    <Icon name={'edit'} type={'md'} size={24} color={Colors.primaryBody} style={{backgroundColor: isShowOnline ? Colors.onlineStatusDotColor : 'white', borderRadius:50, padding:2, borderColor: Colors.primaryBody, borderWidth: 3}}/>
                                 }
                             </TouchableOpacity>
                         </ProfileImageContainer>
@@ -226,18 +267,60 @@ export default function ProfileScreen(props) {
                 </InfoContainer>
 
                 <BodyContainer>
+                    <TouchableHighlight style={{paddingHorizontal: 20}}>
+                        <View style={{flexDirection: 'row',
+                            paddingVertical: 10,
+                            alignItems: 'center', justifyContent : 'space-between'}}>
+                            <View style={{flexDirection: 'row',
+                                alignItems: 'center'}}>
+                                <Icon name={isNotificationStop ? 'notifications-off':'notifications'} type={'ionicon'} size={20} style={{marginRight: 10}}/>
+                                <TextComponent bold medium color={'black'}>{isNotificationStop ? 'Stop Notification' : 'Get Notification'}</TextComponent>
+                            </View>
+                            <Switch
+                                trackColor={{ false: "#767577", true: RNPColors.green400 }}
+                                thumbColor={isNotificationStop ? "#81b0ff" : "#f4f3f4"}
+                                onValueChange={() =>  setNotification(!isNotificationStop)}
+                                value={isNotificationStop}
+                            />
+
+                        </View>
+
+                    </TouchableHighlight>
+
+                    <Divider backrgoundColor={'grey'}/>
+
+                    <TouchableHighlight style={{paddingHorizontal: 20}}>
+                        <View style={{flexDirection: 'row',
+                            paddingVertical: 10,
+                            alignItems: 'center', justifyContent : 'space-between'}}>
+                            <View style={{flexDirection: 'row',
+                                alignItems: 'center'}}>
+                                <Icon name={'ellipse'} type={'ionicon'} size={20} style={{marginRight: 10}} color={!isShowOnline ? Colors.onlineStatusDotColor : 'grey'}/>
+                                <TextComponent bold medium color={'black'}>{isShowOnline ? 'Hide online status' : 'Show online status'}</TextComponent>
+                            </View>
+                            <Switch
+                                trackColor={{ false: "#767577", true: '#81b0ff' }}
+                                thumbColor={isShowOnline ? Colors.onlineStatusDotColor : "#f4f3f4"}
+                                onValueChange={() =>  changeOnlineStatus()}
+                                value={isShowOnline}
+                            />
+
+                        </View>
+
+                    </TouchableHighlight>
+                    <Divider backrgoundColor={'grey'}/>
 
 
                     <SettingsCardContainer onPress={() => setTermsModal(true)}>
-                        <Icon name={'article'} type={'material'} size={25} color={'white'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium color={'white'}>Terms & Conditions</TextComponent>
+                        <Icon name={'article'} type={'material'} size={20} color={'black'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'black'}>Terms & Conditions</TextComponent>
                     </SettingsCardContainer>
 
-                    <Divider backrgoundColor={'white'}/>
+                    <Divider backrgoundColor={'grey'}/>
 
                     <SettingsCardContainer onPress={() => mailTo()}>
-                        <Icon name={'email'} type={'material'} size={25} color={'white'} style={{marginRight: 10}}/>
-                        <TextComponent bold medium color={'white'}>Email us</TextComponent>
+                        <Icon name={'email'} type={'material'} size={20} color={'black'} style={{marginRight: 10}}/>
+                        <TextComponent bold medium color={'black'}>Email us</TextComponent>
                     </SettingsCardContainer>
 
                 </BodyContainer>
@@ -326,7 +409,7 @@ const profileIconsColor = 'white';
 const Container = styled.SafeAreaView`
 
 flex:1;
-backgroundColor: ${Colors.primaryBodyLight};
+backgroundColor: white;
 
 
 `;
@@ -423,50 +506,18 @@ alignItems: center;
 
 const BodyContainer = styled.View`
 width:100%;
-paddingVertical: 15px;
-marginBottom: 50px;
-
-
 `;
 
 const ScrollViewContainer = styled.ScrollView`
-backgroundColor: ${Colors.primaryBodyLight};
+backgroundColor: white;
 width:100%;
 overflow:hidden;
-marginBottom: 60px;
-
-
-
 `;
 
-const BottomContainer = styled.View`
-backgroundColor: red;
-alignItems: center;
-justifyContent: center;
-paddingHorizontal: 20px;
-borderTopRightRadius: 20px;
-borderTopLeftRadius: 20px;
-bottom:0;
-position: absolute;
-width:100%;
-height: 60px;
-
-`;
-
-const MyListingsButton = styled.TouchableOpacity`
-backgroundColor: red;
-paddingHorizontal: 20px;
-paddingVertical: 15px;
-borderRadius: 30px;
-borderWidth:7px;
-borderColor: ${Colors.primaryBodyLight};
-
-
-`;
 
 const SettingsCardContainer = styled.TouchableOpacity`
 paddingHorizontal:20px;
-flexDirection: row
+flexDirection: row;
 paddingVertical: 10px;
 alignItems: center;
 

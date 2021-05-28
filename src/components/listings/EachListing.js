@@ -207,6 +207,8 @@ export const EachListing = (props) => {
                     <ListingsImagesContainer/>
                     <ListingsImagesContainer/>
                     <ListingsImagesContainer/>
+                    <ListingsImagesContainer/>
+                    <ListingsImagesContainer/>
                 </View>
 
             }
@@ -218,7 +220,7 @@ export const EachListing = (props) => {
             })}>
 
                 <AddressContainer>
-                    <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
+                    <Icon name={'home'} type={'ionicon'} size={15} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
                     <TextComponent style={{ flex:1,
                         flexWrap: 'wrap'}} medium ellipsizeMode={'tail'} numberOfLines={2}>{item.address}</TextComponent>
 
