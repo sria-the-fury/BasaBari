@@ -17,6 +17,8 @@ export default function MyListingScreen(props) {
 
     const [ListingsData, setListingsData] = useState(null);
 
+    console.log('ListingsData=>', ListingsData);
+
 
 
 

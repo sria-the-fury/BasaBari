@@ -351,7 +351,7 @@ const CardsContainer = styled.View`
    paddingVertical: 5px;
     
      overflow: hidden;
-     elevation: 5;
+     elevation: 2;
          shadowColor: #000;
           shadowOpacity: 1;
                     shadowRadius: 5.32px;
