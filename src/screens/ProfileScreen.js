@@ -228,9 +228,7 @@ export default function ProfileScreen(props) {
                           size={40} color={Colors.primaryBody} onPress={() => props.navigation.goBack()}/>
                 </View>
 
-                <View style={{ backgroundColor: Colors.primaryBody,
-                    paddingHorizontal:12, paddingVertical: 5, flexDirection: 'row',
-                    alignItems: 'center', alignSelf: 'flex-end', borderBottomLeftRadius: 25}}>
+                <NameImageAndPhone>
                     <View>
                         <Avatar.Image size={60} source={{uri: profileUserInfo?.photoURL}}/>
                         { isShowOnline ? <View style={{position: 'absolute', top: 2, right: 2, backgroundColor: Colors.primaryBody,
@@ -248,21 +246,12 @@ export default function ProfileScreen(props) {
                             <TextComponent color={'white'}>{profileUserInfo?.phoneNumber}</TextComponent>
                         </View>
                     </View>
-                </View>
+                </NameImageAndPhone>
             </Header>
-
-            {/*<Header>*/}
-            {/*    <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => props.navigation.goBack()}/>*/}
-            {/*    <TextComponent color={'white'} medium bold center>PROFILE</TextComponent>*/}
-            {/*    /!*<Icon raised name={'log-out'} type={'ionicon'} size={15} color={'red'} onPress={() => loggedOut()}/>*!/*/}
-
-            {/*</Header>*/}
 
             <ScrollViewContainer>
 
-                <View style={{marginTop: 20, marginBottom: 20, backgroundColor: 'white', shadowColor: 'black', elevation: 2,
-                    paddingHorizontal:12, paddingVertical: 5,
-                    borderRadius: 10, marginHorizontal: 25}}>
+                <UserTopSettings>
                     <TouchableHighlightContainer
                         onPress={() => {
                             setBSForPhoto(false);
@@ -361,11 +350,10 @@ export default function ProfileScreen(props) {
                         </TouchContainer>
                     </TouchableHighlightContainer>
 
-                </View>
+                </UserTopSettings>
 
 
-                <View style={{paddingHorizontal: 10, backgroundColor: 'white',
-                    shadowColor: 'black', elevation: 2, paddingVertical: 10}}>
+                <UserBottomSettings>
                     <View style={{flexDirection: 'row'}}>
                         <Icon name={'cog-outline'} type={'ionicon'} size={18} style={{marginRight: 10}}/>
                         <TextComponent bold medium>Settings</TextComponent>
@@ -410,19 +398,13 @@ export default function ProfileScreen(props) {
 
                         </View>
                     </TouchableHighlight>
-                </View>
+                </UserBottomSettings>
 
             </ScrollViewContainer>
 
-            <View style={{position: "absolute", bottom: 0, left: -10,
-                backgroundColor: Colors.primaryBody, borderTopRightRadius: 50}}>
+            <LogOut>
                 <Icon reverse name={'logout'} type={'md'} size={25} color={Colors.primaryBody}/>
-            </View>
-
-            {/*<View style={{position: "absolute", bottom: 0, right: -10,*/}
-            {/*    backgroundColor: Colors.primaryBody, borderTopLeftRadius: 50}}>*/}
-            {/*    <Icon reverse name={'logout'} type={'md'} size={25} color={Colors.primaryBody}/>*/}
-            {/*</View>*/}
+            </LogOut>
 
             <RBSheet
                 ref={UpdateNameBottomSheet}
@@ -515,9 +497,7 @@ export default function ProfileScreen(props) {
             >
                 <View style={{marginVertical: 10, alignItems: "center", justifyContent: 'center', flex: 1}}>
 
-                    <ProfileImageContainer style={{elevation: 10,
-                        shadowColor: '#000', shadowOpacity: 1,
-                        shadowRadius: 5.32}}>
+                    <ProfileImageContainer>
 
                         <ProfileImage source={profileUserInfo.photoURL ? {uri : profileUserInfo.photoURL} : require('../../assets/default-profile-image.png')}/>
                         <TouchableOpacity style={[{position: "absolute"}, profileImageLoading ? {alignSelf: 'center'} : {top: 4, left:10}]}
@@ -546,37 +526,57 @@ export default function ProfileScreen(props) {
 }
 
 
-const StatusBarAndTopHeaderBGColor = '#d0ff00';
 const profileIconsColor = 'white';
-const Container = styled.SafeAreaView`
 
+const Container = styled.SafeAreaView`
 flex:1;
 backgroundColor: white;
-
-
 `;
 
 const Header = styled.View`
 flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
+`;
+
+const NameImageAndPhone = styled.View`
+backgroundColor: ${Colors.primaryBody};
+                    paddingHorizontal:12px
+                    paddingVertical: 5px;
+                    flexDirection: row;
+                    alignItems: center;
+                     alignSelf: flex-end;
+                    borderBottomLeftRadius: 25px;
+
+`;
+
+const UserTopSettings = styled.View`
+marginVertical: 20px;
+ backgroundColor: white;
+  shadowColor: black;
+   elevation: 2;
+   paddingHorizontal:12px;
+    paddingVertical: 5px;
+    borderRadius: 10px;
+     marginHorizontal: 25px;
+`;
+
+const UserBottomSettings = styled.View`
+paddingHorizontal: 10px;
+ backgroundColor: white;
+ shadowColor: black;
+ elevation: 2;
+ paddingVertical: 10px
+`;
+
+const LogOut = styled.View`
+position: absolute;
+ bottom: 0;
+  left: -10px;
+backgroundColor: ${Colors.primaryBody};
+borderTopRightRadius: 50px;
 `
 
-const InfoContainer = styled.View`
-width:100%;
-backgroundColor: ${Colors.primaryStatusbarColor};
-paddingHorizontal: 10px;
-paddingVertical: 10px
-borderBottomRightRadius: 20px;
-borderBottomLeftRadius: 20px;
-
-`;
-
-const ProfileAndUserInfoContainer = styled.View`
-flexDirection: row;
-alignItems: center;
-
-`;
 
 const ProfileImageContainer = styled.View`
 height:170px;
@@ -586,20 +586,17 @@ alignItems: center;
 justifyContent:center;
 borderRadius:85px;
 alignSelf: center;
-
+elevation: 10;
+shadowColor: #000;
+ shadowOpacity: 1;
+shadowRadius: 5.32px;
 `;
+
 const ProfileImage = styled.Image`
 height:160px;
 width:160px;
 borderRadius: 80px;
 
-
-`;
-
-const UserInfo = styled.View`
-paddingHorizontal: 10px;
-justifyContent: flex-start;
-overflow:hidden;
 `;
 
 
@@ -638,40 +635,11 @@ alignSelf: center;
 borderRadius: 20px;
 `;
 
-const LoadingWrapper = styled.View`
-backgroundColor: ${RNPColors.green400}
-paddingHorizontal: 5px;
-paddingVertical: 5px;
-position: absolute;
-alignSelf: center;
-borderRadius: 50px;
-
-`
-
-const EachInfoWrapper = styled.View`
-flexDirection : row;
-alignItems: center;
-
-`;
-
-
-const BodyContainer = styled.View`
-width:100%;
-`;
 
 const ScrollViewContainer = styled.ScrollView`
 backgroundColor: white;
 width:100%;
 overflow:hidden;
-`;
-
-
-const SettingsCardContainer = styled.TouchableOpacity`
-paddingHorizontal:20px;
-flexDirection: row;
-paddingVertical: 10px;
-alignItems: center;
-
 `;
 
 const TouchableHighlightContainer = styled.TouchableHighlight`

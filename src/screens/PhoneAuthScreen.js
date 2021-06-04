@@ -1,5 +1,5 @@
-import React, {useContext, useState, useEffect, useRef} from 'react';
-import { Text, ToastAndroid, TouchableOpacity, View, Keyboard} from 'react-native';
+import React, {useContext, useState, useRef} from 'react';
+import {Text, ToastAndroid, TouchableOpacity, View, Keyboard} from 'react-native';
 import styled from "styled-components";
 import {Icon} from "react-native-elements";
 import {TextComponent} from "../components/TextComponent";
@@ -8,7 +8,6 @@ import {UserContext} from "../context/UserContext";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {TermsAndConditionsModal} from "../modals/TermsAndConditionsModal";
 import LottieView from "lottie-react-native";
-import {CircularProgress} from "../components/circular-progress/CircularProgress";
 import {Colors} from "../components/utilities/Colors";
 import {TextInput,} from "react-native-paper";
 
@@ -47,10 +46,6 @@ export default  function PhoneAuthScreen() {
     //sign in loading
     const [signInLoading,setSignInLoading] = useState(false);
 
-    //resend button
-    const [isResendDisable, setResendDisable] = useState(true);
-    const [count, setCount] = useState(0);
-
     //check input is number
     const isInputHasNumber = /^0\d+[1-9]+$/g;
     const isNumber = isInputHasNumber.test(number);
@@ -64,30 +59,12 @@ export default  function PhoneAuthScreen() {
     }
 
 
-    useEffect(() => {
-
-
-        let interval = setInterval(() => {
-            setCount(prev => {
-                if (prev === 30) {
-                    clearInterval(interval);
-                    setResendDisable(false);
-
-                }
-                if(prev < 30) return prev + 1;
-            })
-        },1000)
-        // interval cleanup on component unmount
-        return () => clearInterval(interval);
-    }, [isResendDisable]);
-
-
     const currentUser = firebase.getCurrentUser();
 
 
     const signInWithPhoneNumber = async () => {
         Keyboard.dismiss();
-        setLoading(true)
+        setLoading(true);
 
         try {
 
@@ -95,8 +72,6 @@ export default  function PhoneAuthScreen() {
             const confirmation = await firebase.signInWithPhoneNumber(phoneNumber);
             if(confirmation) {
                 ToastAndroid.show('OTP has been sent', ToastAndroid.SHORT);
-                setResendDisable(true);
-                setCount(0);
                 setConfirm(confirmation);
             }
 
@@ -109,7 +84,7 @@ export default  function PhoneAuthScreen() {
 
     };
 
-    const  confirmCode = async () => {
+    const confirmCode = async () => {
         Keyboard.dismiss();
         setSignInLoading(true);
         try{
@@ -147,8 +122,6 @@ export default  function PhoneAuthScreen() {
     };
 
     const resendCode = async () => {
-        setCount(0);
-        setResendDisable(true);
         setOTP({
             otp1: '',
             otp2: '',
@@ -386,13 +359,12 @@ export default  function PhoneAuthScreen() {
                                               setOTP((otp)=>({...otp, otp6: otp6}));
                                           }} keyboardType={'number-pad'} maxLength={1}/>
 
-                            <OTPAndCircularProgressContainer onPress={() => resendCode()} disabled={isResendDisable}>
+                            <OTPAndCircularProgressContainer onPress={() => resendCode()}>
 
-                                <CircularProgress fillRatio={count} percentage={30} size={40}/>
                                 <ResendOTPButton>
                                     <Icon
                                         name='phonelink-lock'
-                                        color={!isResendDisable ? 'lavender' : Colors.primaryBody}
+                                        color={'lavender'}
                                         type='md'
                                         size={25}
                                     />
@@ -468,8 +440,6 @@ borderTopLeftRadius: 20px;
 
 `;
 
-
-
 const LabelAndInputWrapper = styled.View`
 flexDirection: row;
 borderRadius: 10px;
@@ -477,19 +447,8 @@ backgroundColor: #eddefc;
 paddingHorizontal: 15px;
 alignItems: center;
 marginBottom: 30px;
-
-
 `;
 
-// const TextInput = styled.TextInput`
-//
-// fontSize: 20px;
-// `;
-
-const IconAndCountryCode = styled.View`
-flexDirection: row;
-
-`
 
 const BottomButtonContainer = styled.TouchableOpacity`
 marginBottom: 30px;
@@ -513,11 +472,9 @@ paddingVertical: 5px;
 const ResendOTPButton = styled.View`
 height: 30px;
 width :30px;
-position: absolute;
 alignItems: center;
 justifyContent: center;
 borderRadius: 20px;
-
 `;
 
 
