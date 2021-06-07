@@ -209,10 +209,6 @@ export default function ProfileScreen(props) {
         }
     }
 
-
-    const [bsForName, setBSForName] = useState(false);
-    const [bsForPhoto, setBSForPhoto] = useState(false);
-
     return (
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={Colors.primaryStatusbarColor}/>
@@ -220,10 +216,7 @@ export default function ProfileScreen(props) {
             <Header>
                 <View style={{alignItems: 'center',
                     flexDirection: 'row', paddingHorizontal: 10}}>
-                    <View style={{height: 25, width: 5,
-                        backgroundColor: Colors.primaryBody, position: "absolute", top: -15, left: '65%',
-                        shadowColor: 'black', elevation: 5
-                    }}/>
+                    <VerticalLine/>
                     <Icon name={'chevron-back-circle'} type={'ionicon'} style={{shadowColor: 'black', elevation: 5}}
                           size={40} color={Colors.primaryBody} onPress={() => props.navigation.goBack()}/>
                 </View>
@@ -254,8 +247,6 @@ export default function ProfileScreen(props) {
                 <UserTopSettings>
                     <TouchableHighlightContainer
                         onPress={() => {
-                            setBSForPhoto(false);
-                            setBSForName(true);
                             UpdateNameBottomSheet.current.open()}}  activeOpacity={0.6}
                         underlayColor="#DDDDDD">
                         <TouchContainer>
@@ -273,13 +264,12 @@ export default function ProfileScreen(props) {
 
                     <TouchableHighlightContainer
                         onPress={() => {
-                            setBSForPhoto(true);
                             PhotoChangeBottomSheet.current.open()}}  activeOpacity={0.6}
                         underlayColor="#DDDDDD">
                         <TouchContainer>
                             <IconAndTextContainer>
                                 <Icon name={'portrait'} type={'md'} size={15} style={{marginRight: 10}}/>
-                                <TextComponent>Change Profile Picture</TextComponent>
+                                <TextComponent>Change Display Photo</TextComponent>
                             </IconAndTextContainer>
 
                             <Icon name={'add-photo-alternate'} type={'md'} size={15}/>
@@ -402,7 +392,7 @@ export default function ProfileScreen(props) {
 
             </ScrollViewContainer>
 
-            <LogOut>
+            <LogOut onPress={() => loggedOut()}>
                 <Icon reverse name={'logout'} type={'md'} size={25} color={Colors.primaryBody}/>
             </LogOut>
 
@@ -539,6 +529,18 @@ alignItems: center;
 justifyContent: space-between;
 `;
 
+const VerticalLine = styled.View`
+height: 25px;
+width: 5px;;
+backgroundColor: ${Colors.primaryBody};
+position: absolute; 
+top: -15px;
+left: 70%;
+shadowColor: black;
+elevation: 5;
+                 
+`
+
 const NameImageAndPhone = styled.View`
 backgroundColor: ${Colors.primaryBody};
                     paddingHorizontal:12px
@@ -569,7 +571,7 @@ paddingHorizontal: 10px;
  paddingVertical: 10px
 `;
 
-const LogOut = styled.View`
+const LogOut = styled.TouchableHighlight`
 position: absolute;
  bottom: 0;
   left: -10px;

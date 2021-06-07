@@ -19,7 +19,7 @@ export const EachListing = (props) => {
     const firebase = useContext(FirebaseContext);
     const {item} = props;
     const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth, interestedTenantId} = item;
-    const [postedUser, setPostedUser] = useState('');
+    const [postedUser, setPostedUser] = useState(null);
     const currentUserId = firebase.getCurrentUser().uid;
 
 
@@ -47,7 +47,7 @@ export const EachListing = (props) => {
         const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
                 if(doc){
-                    const {isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl} = doc.data();
+                    let {isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl} = doc.data();
                     setPostedUser({id: doc.id, isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl});
                 }
             });
