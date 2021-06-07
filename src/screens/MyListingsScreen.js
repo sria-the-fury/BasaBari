@@ -36,7 +36,6 @@ export default function MyListingScreen(props) {
                     });
                     setListingsData(data);
                 }
-                else setListingsData(data);
 
             });
 
@@ -44,6 +43,8 @@ export default function MyListingScreen(props) {
 
 
     }, []);
+
+    const isListingEmpty = ListingsData ? [...ListingsData] : [];
 
     return (
         <Container>
@@ -69,12 +70,8 @@ export default function MyListingScreen(props) {
                         </LoadingView>
                     </View>
 
-                    :
-                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                        <TextComponent medium>You don't add any listing yet. Please Add Listing.</TextComponent>
-                    </View>
+                    : null
             }
-
         </Container>
     )
 

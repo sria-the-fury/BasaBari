@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {Badge, Icon} from "react-native-elements";
-import {Text, TouchableOpacity, View} from "react-native";
+import {Text, View} from "react-native";
 import _ from 'lodash';
 import HomeScreen from "../screens/HomeScreen";
 import FavoriteListingsScreen from "../screens/FavoriteListingsScreen";
@@ -27,7 +27,7 @@ export default function MainStackScreen() {
     const [notifications, setNotifications] = useState(null);
     useEffect(() => {
 
-        const subscriber = firestore().collection('notifications')
+        const notificationsCollection = firestore().collection('notifications')
             .where('type', '==', 'message')
             .where('notifyTo', '==', currentUserInfo.uid).where('read', '==', false).onSnapshot(
                 docs=> {
@@ -44,7 +44,7 @@ export default function MainStackScreen() {
 
                 });
 
-        return () => subscriber();
+        return () => notificationsCollection();
 
 
     }, []);
@@ -95,7 +95,7 @@ export default function MainStackScreen() {
             }
         })
 
-    };
+    }
 
 
     const tabBarOptions = {
