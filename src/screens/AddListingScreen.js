@@ -2,7 +2,7 @@ import React, {useState, useContext, useRef} from 'react';
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 
-import {View, TouchableOpacity, FlatList} from 'react-native';
+import {View, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
 import { Divider } from 'react-native-elements';
 import {Icon} from "react-native-elements";
 import ImagePicker from "react-native-customized-image-picker";
@@ -290,7 +290,7 @@ export default function AddListingScreen(props) {
                 </SelectPlacesContainer>
 
 
-                <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary}}
+                <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, marginHorizontal: 5}}
                            mode={'outlined'}
                            label="Write specific address"
                            autoCorrect={false}
@@ -317,12 +317,10 @@ export default function AddListingScreen(props) {
                 <FacilitiesContainer>
 
 
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 5}}>
                         <TextComponent semiLarge bold>FACILITIES</TextComponent>
                         <TextComponent semiLarge bold>ROOMS</TextComponent>
                     </View>
-
-                    <Divider style={{ backgroundColor: 'blue' }} />
 
                     <CheckBoxAndRoomWrapper>
                         <CheckBoxWrapper>
@@ -470,7 +468,7 @@ export default function AddListingScreen(props) {
 
                 <BachelorOrFamilyContainer>
 
-                    <TextComponent center bold color={'white'} medium>RENT AVAILABLE FOR:</TextComponent>
+                    <TextComponent center bold color={'white'} medium>RENT AVAILABLE FOR</TextComponent>
 
                     <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                         <CustomCheckbox title={'Bachelor?'} textSize={16} textColor={'white'}
@@ -504,7 +502,10 @@ export default function AddListingScreen(props) {
 
 
                 <MainContainerForRent>
-                    <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
+                    <View style={styles.textMargin}>
+                        <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
+                    </View>
+
                     <RentContainer>
 
                         <TextInput style={{backgroundColor: 'rgba(1,65, 114, 1)', fontSize: 20, marginBottom: 10, width: 150, overflow: 'hidden'}}
@@ -623,20 +624,9 @@ paddingHorizontal : 5px;
 `;
 
 const FormViewContainer = styled.ScrollView`
-paddingHorizontal: 5px;
 
 `;
 
-const LabelAndInputWrapper = styled.View`
-                        flexDirection: row;
-                        borderRadius: 10px;
-                        backgroundColor: #eddefc;
-                        paddingHorizontal: 5px;
-                        alignItems: center;
-                        marginBottom: 10px;
-
-
-                        `;
 
 // const TextInput = styled.TextInput`
 //
@@ -649,7 +639,7 @@ const LabelAndInputWrapper = styled.View`
 const CheckBoxWrapper = styled.View`
 
 backgroundColor:#eddefc;
-paddingHorizontal: 10px;
+paddingHorizontal: 5px;
 marginTop: 10px;
 alignItems: center;
 justifyContent: center;
@@ -662,9 +652,7 @@ borderTopRightRadius: 15px;
 
 const CheckBoxAndRoomWrapper = styled.View`
 flexDirection: row;
-
 justifyContent: space-between;
-
 
 `;
 
@@ -672,7 +660,7 @@ const RoomInputWrapper = styled.View`
 alignItems: center;
 backgroundColor:#eddefc;
 paddingVertical: 10px;
-paddingHorizontal: 10px;
+paddingHorizontal: 5px;
 marginTop: 10px;
 justifyContent: center;
 borderBottomLeftRadius: 15px;
@@ -707,7 +695,6 @@ marginVertical: 10px;
 backgroundColor: #014172;
 paddingVertical: 10px;
 paddingHorizontal: 10px;
-borderRadius: 10px;
 flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
@@ -717,9 +704,8 @@ justifyContent: space-between;
 
 
 const BachelorOrFamilyContainer = styled.View`
-paddingHorizontal: 10px;
+paddingHorizontal: 5px;
 backgroundColor: #f7047e;
-borderRadius: 10px;
 marginTop: 20px;
 
 `;
@@ -735,6 +721,7 @@ borderRadius: 10px;
 
 const MoreDetailsContainer= styled.View`
 marginTop: 15px;
+marginHorizontal: 5px;
 marginBottom: 15px;
 
 `;
@@ -766,6 +753,7 @@ const SelectPlacesContainer = styled.View`
 backgroundColor: lavender;
  paddingVertical: 13px;
   borderRadius:10px;
+  marginHorizontal: 5px;
    paddingHorizontal: 10px;
     display: flex;
      flexDirection: row;
@@ -784,3 +772,9 @@ const Loading = styled.ActivityIndicator.attrs(() => ({
 
 
 }))``;
+
+const styles = StyleSheet.create({
+    textMargin: {
+        marginHorizontal: 5
+    }
+})

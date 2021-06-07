@@ -1,6 +1,6 @@
 import React, {useContext, useRef, useState} from "react";
 import {View, Modal, ScrollView, FlatList, ToastAndroid, ActivityIndicator, TouchableOpacity} from "react-native";
-import {Divider, Image} from "react-native-elements";
+import { Image} from "react-native-elements";
 import styled from "styled-components";
 import {TextComponent} from "../components/TextComponent";
 import {Icon} from "react-native-elements";
@@ -13,7 +13,6 @@ import {Colors} from "../components/utilities/Colors";
 import {TextInput} from "react-native-paper";
 import RBSheet from "react-native-raw-bottom-sheet";
 import {SearchPlaces} from "../components/utilities/SearchPlaces";
-import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 
 export const ListingsUpdateModal = (props) => {
     const searchBottomSheet = useRef();
@@ -279,7 +278,7 @@ export const ListingsUpdateModal = (props) => {
                             }
                         </UpdateListingButton>
                     </ModalHeader>
-                    <ScrollView showsVerticalScrollIndicator={false} style={{paddingHorizontal: 5}}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
                         <BodyView>
 
                             <View style={{flexDirection: "row", alignItems: "center", justifyContent: 'space-between'}}>
@@ -357,7 +356,7 @@ export const ListingsUpdateModal = (props) => {
 
                         <FormViewContainer showsVerticalScrollIndicator={false}>
 
-                            <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary}}
+                            <TextInput style={{backgroundColor: 'lavender', fontSize: 20, marginBottom: 10, color: Colors.buttonPrimary, marginHorizontal: 5}}
                                        mode={'outlined'}
                                        label="Address"
                                        autoCorrect={false}
@@ -383,12 +382,10 @@ export const ListingsUpdateModal = (props) => {
                             <FacilitiesContainer>
 
 
-                                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 5}}>
                                     <TextComponent semiLarge bold>FACILITIES</TextComponent>
                                     <TextComponent semiLarge bold>ROOMS</TextComponent>
                                 </View>
-
-                                <Divider style={{ backgroundColor: 'blue' }} />
 
                                 <CheckBoxAndRoomWrapper>
                                     <CheckBoxWrapper>
@@ -539,7 +536,7 @@ export const ListingsUpdateModal = (props) => {
 
                             <BachelorOrFamilyContainer>
 
-                                <TextComponent center bold color={'white'} medium>RENT AVAILABLE FOR:</TextComponent>
+                                <TextComponent center bold color={'white'} medium>RENT AVAILABLE FOR</TextComponent>
 
                                 <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                                     <CustomCheckbox title={'Bachelor?'} textSize={16} textColor={'white'}
@@ -573,7 +570,9 @@ export const ListingsUpdateModal = (props) => {
 
 
                             <MainContainerForRent>
-                                <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
+                                <View style={{marginHorizontal: 5}}>
+                                    <TextComponent semiLarge bold>RENT/MONTH</TextComponent>
+                                </View>
                                 <RentContainer>
 
                                     <TextInput style={{backgroundColor: 'rgba(1,65, 114, 1)', fontSize: 20, marginBottom: 10, width: 150, overflow: 'hidden'}}
@@ -641,9 +640,6 @@ export const ListingsUpdateModal = (props) => {
 };
 
 
-
-const StatusBarAndTopHeaderBGColor = 'red';
-
 const Container = styled.SafeAreaView`
 
 `;
@@ -659,7 +655,7 @@ height:100%;
 `;
 
 const ModalHeader = styled.View`
-backgroundColor: ${StatusBarAndTopHeaderBGColor};
+backgroundColor: ${Colors.primaryBody};
 width:100%;
 flexDirection: row;
 alignItems: center;
@@ -703,6 +699,7 @@ elevation: 6;
 
 
 const BodyView = styled.View`
+marginHorizontal: 5px;
 
 
 
@@ -717,7 +714,7 @@ marginTop: 20px;
 const CheckBoxWrapper = styled.View`
 
 backgroundColor:#eddefc;
-paddingHorizontal: 10px;
+paddingHorizontal: 5px;
 marginTop: 10px;
 alignItems: center;
 justifyContent: center;
@@ -730,7 +727,6 @@ borderTopRightRadius: 15px;
 
 const CheckBoxAndRoomWrapper = styled.View`
 flexDirection: row;
-
 justifyContent: space-between;
 
 
@@ -740,7 +736,7 @@ const RoomInputWrapper = styled.View`
 alignItems: center;
 backgroundColor:#eddefc;
 paddingVertical: 10px;
-paddingHorizontal: 10px;
+paddingHorizontal: 5px;
 marginTop: 10px;
 justifyContent: center;
 borderBottomLeftRadius: 15px;
@@ -761,7 +757,6 @@ marginVertical: 10px;
 backgroundColor: #014172;
 paddingVertical: 10px;
 paddingHorizontal: 10px;
-borderRadius: 10px;
 flexDirection: row;
 alignItems: center;
 justifyContent: space-between;
@@ -770,9 +765,8 @@ justifyContent: space-between;
 
 
 const BachelorOrFamilyContainer = styled.View`
-paddingHorizontal: 10px;
+paddingHorizontal: 5px;
 backgroundColor: #f7047e;
-borderRadius: 10px;
 marginTop: 20px;
 
 `;
@@ -787,8 +781,8 @@ borderRadius: 10px;
 
 
 const MoreDetailsContainer= styled.View`
-marginTop: 15px;
-marginBottom: 15px;
+marginVertical: 15px;
+marginHorizontal: 5px;
 
 `;
 
@@ -827,6 +821,7 @@ backgroundColor: lavender;
       alignItems: center;
       justifyContent: space-between;
       height: 60px;
+      marginHorizontal: 5px;
                       
 
 `;

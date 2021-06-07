@@ -18,40 +18,29 @@ export default function MyListingScreen(props) {
     const [ListingsData, setListingsData] = useState(null);
 
 
-
-
     useEffect(() => {
 
-        const subscriber = firestore().collection('listings').orderBy('postedTime', 'desc').where('userId', '==', currentUserId).onSnapshot(
+        const listingsCollection = firestore().collection('listings').orderBy('postedTime', 'desc').where('userId', '==', currentUserId).onSnapshot(
             docs=> {
                 let data=[];
                 if(docs) {
                     docs.forEach(doc => {
+                        const {listingId, postedTime, address, images, userId, roomNumbers, facilities, forBachelor,
+                        forFamily, rentPerMonth, isNegotiable, usersInFav, moreDetails, location} = doc.data();
                         data.push({
                             id: doc.id,
-                            listingId: doc.data().listingId,
-                            postedTime: doc.data().postedTime,
-                            address: doc.data().address,
-                            images: doc.data().images,
-                            userId: doc.data().userId,
-                            roomNumbers: doc.data().roomNumbers,
-                            facilities: doc.data().facilities,
-                            forBachelor: doc.data().forBachelor,
-                            forFamily: doc.data().forFamily,
-                            rentPerMonth: doc.data().rentPerMonth,
-                            isNegotiable: doc.data().isNegotiable,
-                            usersInFav: doc.data().usersInFav,
-                            moreDetails: doc.data().moreDetails,
-                            location: doc.data().location
+                            listingId, postedTime, address, images, userId, roomNumbers, facilities, forBachelor,
+                            forFamily, rentPerMonth, isNegotiable, usersInFav, moreDetails, location
                         });
 
                     });
                     setListingsData(data);
                 }
+                else setListingsData(data);
 
             });
 
-        return () => subscriber();
+        return () => listingsCollection();
 
 
     }, []);
@@ -80,10 +69,10 @@ export default function MyListingScreen(props) {
                         </LoadingView>
                     </View>
 
-                :
-                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                    <TextComponent medium>You don't add any listing yet. Please Add Listing.</TextComponent>
-                </View>
+                    :
+                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                        <TextComponent medium>You don't add any listing yet. Please Add Listing.</TextComponent>
+                    </View>
             }
 
         </Container>

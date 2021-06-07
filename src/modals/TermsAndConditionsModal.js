@@ -21,9 +21,9 @@ export const TermsAndConditionsModal = (props) => {
                 <ModalView>
                     <ModalHeader style={{backgroundColor: HeaderColor }}>
                         <Pressable onPress={() => modalHide()}>
-                            <Icon name={'chevron-down-circle'} type={'ionicon'} size={40} color={'white'}/>
+                            <Icon name={'chevron-down'} type={'ionicon'} size={40} color={'white'}/>
                         </Pressable>
-                        <TextComponent bold medium color={'white'}>Terms & Conditions</TextComponent>
+                        <TextComponent bold medium color={'white'}>TERMS & CONDITIONS</TextComponent>
                     </ModalHeader>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{paddingHorizontal: 10, paddingVertical: 10}}>
