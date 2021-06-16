@@ -32,10 +32,9 @@ export const ListingDetailsScreen = (props) => {
     const {params} = route;
     const currentUserId = firebase.getCurrentUser().uid;
 
-    const {listingId, listingsData, postedUserInfo, currentUserListings} = params;
+    const {listingId, listingsData, postedUserInfo, currentUserListings, currentUserType} = params;
     const [listingData, setListingData] = useState(listingsData);
     const [listingOwnerInfo, setListingOwnerInfo] = useState(postedUserInfo);
-    const [user] = useContext(UserContext);
 
     useEffect(() => {
 
@@ -146,7 +145,7 @@ export const ListingDetailsScreen = (props) => {
                 <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
                 <ModalHeader>
                     <Icon name={'chevron-back-outline'} type={'ionicon'} size={35} color={'white'} onPress={() => navigation.goBack()}/>
-                    { currentUserId !== userId ?
+                    { currentUserId !== userId && currentUserType === 'tenant' ?
                         <Icon name={isCurrentUserFavList ? 'heart' : 'heart-outline'} type={'ionicon'} size={35}
                               style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'white'}
                               onPress={() => addRemoveFavorite(listingId)}/> : null
@@ -349,7 +348,7 @@ export const ListingDetailsScreen = (props) => {
                             onStateChange={() =>
                                 setSpeedDial(!openSpeedDial)}
                         />
-                        : user.userType === 'tenant' ?
+                        : currentUserType === 'tenant' ?
                             <FAB.Group
                                 fabStyle={{backgroundColor: Colors.buttonPrimary}}
                                 open={openSpeedDial}

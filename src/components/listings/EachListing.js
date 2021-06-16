@@ -20,6 +20,7 @@ export const EachListing = (props) => {
     const {item} = props;
     const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth, interestedTenantId} = item;
     const [postedUser, setPostedUser] = useState(null);
+    const [currentUserType, setCurrentUserType] = useState(null);
     const currentUserId = firebase.getCurrentUser().uid;
 
 
@@ -44,15 +45,22 @@ export const EachListing = (props) => {
     }
 
     useEffect(() => {
-        const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
+        const findPostedUser = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
                 if(doc){
                     let {isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl} = doc.data();
                     setPostedUser({id: doc.id, isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl});
                 }
             });
+        const findCurrentUserType = firestore().collection('users').doc(currentUserId).onSnapshot(
+            doc=> {
+                if(doc){
+                    let {userType} = doc.data();
+                    setCurrentUserType(userType);
+                }
+            });
 
-        return () => subscriber();
+        return () => findPostedUser() || findCurrentUserType();
     },[]);
 
     const getFirstNameFromPostedUser = () => {
@@ -150,6 +158,7 @@ export const EachListing = (props) => {
     //
     // // removeListing(deleteListingInfo.listingId, deleteListingInfo.listingImages)
 
+
     return (
         <CardsContainer>
 
@@ -162,10 +171,10 @@ export const EachListing = (props) => {
 
                         <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
-                    :
+                    : currentUserType === 'tenant' ?
                     <Icon name={isCurrentUserFavList ? 'heart' : 'heart-outline'} type={'ionicon'} size={25}
                           style={{marginRight: 5}} color={isCurrentUserFavList ? '#b716af' : 'grey'}
-                          onPress={() => addRemoveFavorite(item.id)}/>
+                          onPress={() => addRemoveFavorite(item.id)}/> : null
                 }
 
                 <View style={{alignItems: "center", flexDirection: 'row'}}>
@@ -216,6 +225,7 @@ export const EachListing = (props) => {
                 listingId: item.id,
                 listingsData: item,
                 postedUserInfo: postedUser,
+                currentUserType,
                 currentUserListings: currentUserListings()
             })}>
 
