@@ -1,3 +1,3 @@
 # BasaBari is an Android application using ReactNative
 
-read more about BasaBari [@basabari.oasisoneiric.tech](https://basabari.oasisoneiric.tech/)
+read more about BasaBari [@https://basa-bari-docs.vercel.app/](https://basa-bari-docs.vercel.app/)
