@@ -57,3 +57,7 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 android/app/build
+
+*.hprof
+
+package-lock.json

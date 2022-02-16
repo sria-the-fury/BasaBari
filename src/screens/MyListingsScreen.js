@@ -36,7 +36,9 @@ export default function MyListingScreen(props) {
                     });
                     setListingsData(data);
                 }
-                else setListingsData(data);
+                else if (docs?.length === 0){
+                    setListingsData(data);
+                }
 
             });
 
@@ -44,6 +46,7 @@ export default function MyListingScreen(props) {
 
 
     }, []);
+
 
     return (
         <Container>
