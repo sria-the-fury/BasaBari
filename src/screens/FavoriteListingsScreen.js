@@ -70,7 +70,7 @@ export default function FavoriteListingsScreen(props) {
             <FocusedStatusbar barStyle="light-content" backgroundColor={StatusBarAndTopHeaderBGColor}/>
             <HeaderContainer>
                 <View>
-                    <Icon name={'heart'} type={'ionicon'} size={35}
+                    <Icon name={'heart'} type={'ionicon'} size={32}
                           style={{marginRight: 5}} color={Colors.favorite}
                     />
 

@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react'
-import {View, Text, TouchableOpacity, ToastAndroid} from 'react-native'
+import {View, Text, TouchableOpacity, ToastAndroid, Pressable} from 'react-native'
 import styled from "styled-components";
 import {FocusedStatusbar} from "../components/custom-statusbar/FocusedStatusbar";
 import {Icon} from "react-native-elements";
@@ -9,6 +9,7 @@ import {UserContext} from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import {Colors} from "../components/utilities/Colors";
 import {Avatar, TextInput} from "react-native-paper";
+import {TextComponent} from "../components/TextComponent";
 
 const InitialUpdateProfile = (props) => {
     const [_, setUser] = useContext(UserContext);
@@ -72,15 +73,31 @@ const InitialUpdateProfile = (props) => {
     const updateProfile = async () => {
         setUpdateLoading(true);
         try {
-            await firebase.createUser(userName);
+            if(isTenant){
+                await firebase.createUser(userName, 'tenant');
 
-            setUser({
-                isLoggedIn: true,
-                userName: getCurrentUser.displayName,
-                profileImageUrl: getCurrentUser.photoURL,
-                userPhoneNumber: getCurrentUser.phoneNumber
+                setUser({
+                    isLoggedIn: true,
+                    userType: 'tenant',
+                    userName: getCurrentUser.displayName,
+                    profileImageUrl: getCurrentUser.photoURL,
+                    userPhoneNumber: getCurrentUser.phoneNumber
 
-            });
+                });
+            }
+            else if(isLandlord){
+                await firebase.createUser(userName, 'landlord');
+
+                setUser({
+                    isLoggedIn: true,
+                    userType: 'landlord',
+                    userName: getCurrentUser.displayName,
+                    profileImageUrl: getCurrentUser.photoURL,
+                    userPhoneNumber: getCurrentUser.phoneNumber
+
+                });
+            }
+
 
 
         } catch (e) {
@@ -95,8 +112,33 @@ const InitialUpdateProfile = (props) => {
     };
 
     const disableSubmit = () => {
-        return ( userName.length < 3 || (profileImageUri === null || getCurrentUser?.photoURL === null))
+        return ( userName.length < 3 || (profileImageUri === null && getCurrentUser?.photoURL === null) || (!(isTenant || isLandlord)))
     }
+
+    const [isTenant, setIsTenant] = useState(false);
+    const [isLandlord, setIsLandlord] = useState(false);
+
+    const selectAsTenant = () => {
+        setIsLandlord(false);
+        setIsTenant(true);
+
+    };
+
+    const selectAsLandlord = () => {
+        setIsTenant(false);
+        setIsLandlord(true);
+    };
+
+    // console.log('isTenant=>', isTenant);
+    // console.log('isLandlord=>', isLandlord);
+    // console.log('!(isTenant || isLandlord)=>', !(isTenant || isLandlord));
+    // console.log('userName.length < 3=>', (userName.length < 3));
+    // console.log('(profileImageUri === null || getCurrentUser?.photoURL === null)=>', (profileImageUri === null || getCurrentUser?.photoURL === null));
+    // console.log('profileImageUri === null=>', profileImageUri === null);
+    // console.log('getCurrentUser?.photoURL => ', !!(getCurrentUser?.photoURL));
+    // console.log('disableSubmit=>', disableSubmit());
+
+
     return (
         <Container>
             <FocusedStatusbar barStyle="light-content" backgroundColor={backgroundColor}/>
@@ -162,10 +204,26 @@ const InitialUpdateProfile = (props) => {
 
                 </ProfilePhotoContainer>
 
-                <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginBottom: 30, marginTop: 60}}
+                <UserTypeContainer>
+                    <Pressable style={{backgroundColor: isTenant ? 'rgba(255, 255, 255, 0.7)' : Colors.primaryBody, width: '45%', paddingVertical: 10, borderRadius: 50}}
+                    onPress={() => selectAsTenant()}>
+                        <TextComponent center bold>Tenant</TextComponent>
+                    </Pressable>
+
+                    <Pressable style={{backgroundColor: isLandlord ? 'rgba(255, 255, 255, 0.7)' : Colors.primaryBody, width: '45%', paddingVertical: 10, borderRadius: 50}}
+
+                               onPress={() => selectAsLandlord()}>
+                        <TextComponent center bold>Landlord</TextComponent>
+                    </Pressable>
+
+                </UserTypeContainer>
+
+                <TextInput style={{backgroundColor: Colors.primaryBody, fontSize: 20, marginBottom: 20, marginTop: 20}}
                            mode={'outlined'}
                            label="Your Name"
                            autoCompleteType={'name'} maxLength={23} autoCapitalize={'words'}
+                           placeholder={'Your Name'}
+                           placeholderTextColor={'grey'}
                            onChangeText={(name) => setUserName(name)}
                            theme={{ colors: { placeholder: 'lavender', text: 'lavender', primary: 'lavender', underlineColor:'transparent'}}}
 
@@ -306,4 +364,12 @@ const LoadingView = styled.View`
 alignItems: center;
 justifyContent: center;
 `;
+
+const UserTypeContainer = styled.View`
+marginTop: 60px;
+flexDirection: row;
+alignItems: center;
+justifyContent: space-between;
+
+`
 

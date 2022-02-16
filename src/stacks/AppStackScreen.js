@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import AuthStackScreen from './AuthStackScreen';
 import MainStackScreen from "./MainStackScreen";
@@ -10,13 +10,18 @@ import InitialUpdateProfile from "../screens/InitialUpdateProfile";
 import {ListingDetailsScreen} from "../screens/ListingDetailsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import MessagesScreen from "../screens/MessagesScreen";
+import {FirebaseContext} from "../context/FirebaseContext";
+import firestore from "@react-native-firebase/firestore";
+import {LoadingScreen} from "../screens/LoadingScreen";
 
 
 export default function AppStackScreen() {
+    const firebase = useContext(FirebaseContext)
+    const currentUser = firebase.getCurrentUser();
     const AppStack = createStackNavigator();
     const[user] = useContext(UserContext);
 
-    if(user.isLoggedIn === true ){
+    if(user.isLoggedIn === true && user.userType){
         return (
             <AppStack.Navigator headerMode="none">
 
@@ -28,9 +33,9 @@ export default function AppStackScreen() {
                 <AppStack.Screen name={'AddListing'} component={AddListingScreen} options={{
                     ...TransitionPresets.ModalSlideFromBottomIOS
                 }}/>
-                <AppStack.Screen name={'MyListings'} component={MyListingScreen} options={{
-                    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
-                }}/>
+                {/*<AppStack.Screen name={'MyListings'} component={MyListingScreen} options={{*/}
+                {/*    ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'*/}
+                {/*}}/>*/}
 
                 <AppStack.Screen name={'ListingDetails'} component={ListingDetailsScreen} options={{
                     ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
@@ -40,7 +45,6 @@ export default function AppStackScreen() {
                                  options={{
                                      ...TransitionPresets.SlideFromRightIOS, gestureDirection: 'vertical-inverted'
                                  }}/>
-                <AppStack.Screen name={'MessagesScreen'} component={MessagesScreen}/>
 
 
             </AppStack.Navigator>
@@ -57,12 +61,20 @@ export default function AppStackScreen() {
         )
 
     }
-    else if(user.isLoggedIn === null){
+    else if(user.isLoggedIn === null && user.userType === null){
         return (
             <AppStack.Navigator headerMode="none">
                 <AppStack.Screen name={'Auth'} component={AuthStackScreen} />
             </AppStack.Navigator>
 
+        )
+    }
+
+    else{
+        return (
+            <AppStack.Navigator headerMode="none">
+                <AppStack.Screen name={'Loading'} component={LoadingScreen} />
+            </AppStack.Navigator>
         )
     }
 

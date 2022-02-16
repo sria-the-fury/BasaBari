@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, FlatList, View, StyleSheet, Vibration} from 'react-native';
+import {ActivityIndicator, FlatList, View, StyleSheet, Vibration, ToastAndroid} from 'react-native';
 import {Divider, Icon, Image} from "react-native-elements";
 import {TextComponent} from "../TextComponent";
 import styled from "styled-components";
@@ -19,7 +19,7 @@ export const EachListing = (props) => {
     const firebase = useContext(FirebaseContext);
     const {item} = props;
     const {images, roomNumbers, forFamily, forBachelor, usersInFav, moreDetails, location, rentPerMonth, interestedTenantId} = item;
-    const [postedUser, setPostedUser] = useState('');
+    const [postedUser, setPostedUser] = useState(null);
     const currentUserId = firebase.getCurrentUser().uid;
 
 
@@ -46,7 +46,10 @@ export const EachListing = (props) => {
     useEffect(() => {
         const subscriber = firestore().collection('users').doc(item.userId).onSnapshot(
             doc=> {
-                if(doc) setPostedUser(doc.data());
+                if(doc){
+                    let {isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl} = doc.data();
+                    setPostedUser({id: doc.id, isOnline, lastSeen, phoneNumber, userName, profilePhotoUrl});
+                }
             });
 
         return () => subscriber();
@@ -74,14 +77,17 @@ export const EachListing = (props) => {
         Vibration.vibrate(20);
 
         try{
-            const isCurrentUserFavList = usersInFav ? usersInFav.find(userId => userId === currentUserId) : null;
-            if(currentUserId === isCurrentUserFavList){
+            if(isCurrentUserFavList){
                 const updateType= 'REMOVE'
 
                 await firebase.updateFavoriteListing(listingId, currentUserId, updateType);
+                ToastAndroid.show('Removed from favorite', ToastAndroid.LONG);
 
             }
-            else await firebase.updateFavoriteListing(listingId, currentUserId);
+            else {
+                await firebase.updateFavoriteListing(listingId, currentUserId);
+                ToastAndroid.show('Added as favorite', ToastAndroid.LONG);
+            }
         } catch (e) {
             alert(e.message);
 
@@ -89,7 +95,7 @@ export const EachListing = (props) => {
     }
 
 
-    const isCurrentUserFavList = usersInFav ? usersInFav.includes(currentUserId) : false;
+    const isCurrentUserFavList = usersInFav?.includes(currentUserId) ?? false;
 
     // onPress={() => removeListing(item.id, images)}
 
@@ -117,7 +123,7 @@ export const EachListing = (props) => {
     };
 
     //open Delete Confirm Modal
-    const [openDeleteConfirmModal, setConfirmModal] = useState(false);
+    const [openDeleteConfirmModal, setDeleteConfirmModal] = useState(false);
 
     // const fadeAnim = useRef(new Animated.Value(0)).current;
     // const windowWidth = Dimensions.get('window').width;
@@ -175,11 +181,20 @@ export const EachListing = (props) => {
                     :
 
                     <View style={{alignItems: "center", flexDirection: 'row'}}>
-                        <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+                        <View>
+                            <Avatar.Image size={20} source={{uri: postedUser?.profilePhotoUrl}}/>
+                            { postedUser?.isOnline ?
+                                <View style={{position: 'absolute', top: -3, right: -5, backgroundColor: 'white',
+                                    borderColor: 'white', borderRadius: 5, borderWidth: 2, height: 10, width: 10}}>
+
+                                    <View style={{backgroundColor: '#18f73d', height: 6, width: 6, borderRadius: 6}}/>
+                                </View> : null
+                            }
+                        </View>
+
                         <TextComponent style={{marginLeft: 2}}>{getFirstNameFromPostedUser()}</TextComponent>
                     </View>
                 }
-
 
 
             </TimeContainer>
@@ -192,71 +207,83 @@ export const EachListing = (props) => {
                     <ListingsImagesContainer/>
                     <ListingsImagesContainer/>
                     <ListingsImagesContainer/>
+                    <ListingsImagesContainer/>
+                    <ListingsImagesContainer/>
                 </View>
 
             }
+            <BottomItemsContainer onPress={() => props.navigation.navigate('ListingDetails', {
+                listingId: item.id,
+                listingsData: item,
+                postedUserInfo: postedUser,
+                currentUserListings: currentUserListings()
+            })}>
 
-            <AddressContainer>
-                <Icon name={'home'} type={'ionicon'} size={20} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
-                <TextComponent style={{ flex:1,
-                    flexWrap: 'wrap'}} medium ellipsizeMode={'tail'} numberOfLines={2}>{item.address}</TextComponent>
+                <AddressContainer>
+                    <Icon name={'home'} type={'ionicon'} size={15} style={{marginRight: 5}} color={Colors.buttonPrimary}/>
+                    <TextComponent style={{ flex:1,
+                        flexWrap: 'wrap'}} medium ellipsizeMode={'tail'} numberOfLines={2}>{item.address}</TextComponent>
 
-            </AddressContainer>
-
-
-            <LocationAndRentContainer>
-                <Location>
-                    <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
-                    <TextComponent color={'rgba(0,0,0, 0.9)'}>
-                        {location?.city === location?.county ? location.city : `${location.city}, ${location.county}`},
-                        <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location?.state}, {location?.country}</TextComponent>
-                    </TextComponent>
-
-                </Location>
-                <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50}}>
-                    <TextComponent color={'white'} bold>TK. {rentPerMonth}</TextComponent>
-
-                </View>
+                </AddressContainer>
 
 
-            </LocationAndRentContainer>
+                <LocationAndRentContainer>
+                    <Location>
+                        <Icon name={'location'} type={'ionicon'} size={15} style={{marginRight: 5}} color={'rgba(0,0,0, 0.9)'}/>
+                        <TextComponent color={'rgba(0,0,0, 0.9)'}>
+                            {location?.city === location?.county ? location.city : `${location.city}, ${location.county}`},
+                            <TextComponent tiny color={'rgba(0,0,0, 0.6)'}> {location?.state}, {location?.country}</TextComponent>
+                        </TextComponent>
+
+                    </Location>
+                    <View style={{backgroundColor: '#06D6A0', paddingHorizontal: 5, paddingVertical: 5, borderRadius:50,}}>
+                        <TextComponent color={'white'} bold>TK. {rentPerMonth}</TextComponent>
+
+                    </View>
 
 
-            <HomeItemsNumbersContainer>
-                <HomeItemsNumbers>
-                    <Icon name={'bed'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.bedRoom}</TextComponent>
-                </HomeItemsNumbers>
-
-                <HomeItemsNumbers>
-                    <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.dining}</TextComponent>
-                </HomeItemsNumbers>
-
-                <HomeItemsNumbers>
-                    <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
-                    <TextComponent>{roomNumbers.washRoom}</TextComponent>
-                </HomeItemsNumbers>
-
-                <RentType>
-                    {
-                        forFamily && forBachelor ? <TextComponent color={'white'} bold tiny>Bachelor/Family</TextComponent>
-                            : forBachelor ? <TextComponent color={'white'} tiny bold>BACHELOR</TextComponent>
-                            : forFamily ? <TextComponent color={'white'} bold tiny>FAMILY</TextComponent> : null
+                </LocationAndRentContainer>
 
 
-                    }
-                </RentType>
+                <HomeItemsNumbersContainer>
+                    <HomeItemsNumbers>
+                        <Icon name={'bed'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
+                        <TextComponent>{roomNumbers.bedRoom}</TextComponent>
+                    </HomeItemsNumbers>
 
-                <Icon name={'chevron-forward-circle'} type={'ionicon'} size={35} style={{marginRight: 5}} color={'grey'}
-                      onPress={() => props.navigation.navigate('ListingDetails', {
-                          listingId: item.id,
-                          listingsData: item,
-                          postedUserInfo: postedUser,
-                          currentUserListings: currentUserListings()
-                      })}/>
+                    <HomeItemsNumbers>
+                        <Icon name={'restaurant'} type={'ionicon'} size={20} style={{marginRight: 5}} color={'grey'} />
+                        <TextComponent>{roomNumbers.dining}</TextComponent>
+                    </HomeItemsNumbers>
 
-            </HomeItemsNumbersContainer>
+                    <HomeItemsNumbers>
+                        <Icon name={'toilet'} type={'font-awesome-5'} size={20} style={{marginRight: 5}} color={'grey'} />
+                        <TextComponent>{roomNumbers.washRoom}</TextComponent>
+                    </HomeItemsNumbers>
+
+                    <RentType>
+                        {
+                            forFamily && forBachelor ? <TextComponent color={'white'} bold tiny>Bachelor/Family</TextComponent>
+                                : forBachelor ? <TextComponent color={'white'} tiny bold>BACHELOR</TextComponent>
+                                : forFamily ? <TextComponent color={'white'} bold tiny>FAMILY</TextComponent> : null
+
+
+                        }
+                    </RentType>
+
+                    {/*<Icon name={'chevron-forward-circle'} type={'ionicon'} size={35} style={{marginRight: 5}} color={'grey'}*/}
+                    {/*      onPress={() => props.navigation.navigate('ListingDetails', {*/}
+                    {/*          listingId: item.id,*/}
+                    {/*          listingsData: item,*/}
+                    {/*          postedUserInfo: postedUser,*/}
+                    {/*          currentUserListings: currentUserListings()*/}
+                    {/*      })}/>*/}
+
+                </HomeItemsNumbersContainer>
+
+
+
+            </BottomItemsContainer>
 
             <RBSheet
                 ref={ListingsBottomSheet}
@@ -273,7 +300,7 @@ export const EachListing = (props) => {
 
                 }}>
 
-                <DeleteContainer onPress={() => {ListingsBottomSheet.current.close(); setConfirmModal(true)}}>
+                <DeleteContainer onPress={() => {ListingsBottomSheet.current.close(); setDeleteConfirmModal(true)}}>
                     <Icon name={'trash'} color={'red'} type={'ionicon'} size={15} style={{marginRight: 10}}/>
                     <TextComponent  medium color={'white'}>DELETE </TextComponent>
                 </DeleteContainer>
@@ -291,7 +318,7 @@ export const EachListing = (props) => {
                                  listingsData={EditListingInfo}/>
 
             <ListingDeleteConfirmModal modalVisible={openDeleteConfirmModal} actionProps={{itemId: item.id, images: item.images}}
-                                       modalHide={setConfirmModal} listingName={item.address}/>
+                                       modalHide={setDeleteConfirmModal} listingName={item.address}/>
         </CardsContainer>
 
     )
@@ -321,11 +348,10 @@ marginHorizontal: 10px;
 const CardsContainer = styled.View`
  marginVertical:10px;
   backgroundColor: white;
-   paddingHorizontal: 10px;
    paddingVertical: 5px;
     
      overflow: hidden;
-     elevation: 5;
+     elevation: 2;
          shadowColor: #000;
           shadowOpacity: 1;
                     shadowRadius: 5.32px;
@@ -334,6 +360,7 @@ const CardsContainer = styled.View`
 
 const TimeContainer = styled.View`
 flexDirection : row;
+   paddingHorizontal: 10px;
 alignItems: center;
 paddingBottom: 5px;
 justifyContent: space-between;
@@ -341,14 +368,16 @@ justifyContent: space-between;
 
 `;
 
+const BottomItemsContainer = styled.Pressable`
+paddingHorizontal: 10px;
+`;
+
 
 const LocationAndRentContainer = styled.View`
 flexDirection : row;
 alignItems: center;
 justifyContent: space-between;
-marginRight: 10px;
 overflow: hidden;
-
 `;
 
 const Location = styled.View`
@@ -377,7 +406,7 @@ alignItems: center;
 const HomeItemsNumbersContainer = styled.View`
 flexDirection : row;
 alignItems: center;
-paddingTop: 5px
+paddingTop: 10px
 justifyContent: space-between;
 `;
 
